@@ -107,7 +107,7 @@ struct sAsteroid
         if (baseSpeed < 0.5f) baseSpeed = (float)GetRandomValue(2, 5);
 
         auto spawnChild = [&](float angleDeg) {
-            const float rad = angleDeg * (std::numbers::pi_v<float> / 180.0f);
+            const float rad = angleDeg * (3.14159265358979323846f / 180.0f);
             const float rx = dirX * std::cos(rad) - dirY * std::sin(rad);
             const float ry = dirX * std::sin(rad) + dirY * std::cos(rad);
 
