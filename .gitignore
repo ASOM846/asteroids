@@ -1,0 +1,43 @@
+# Build directories
+build/
+build-*/
+out/
+cmake-build-*/
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+install_manifest.txt
+CTestTestfile.cmake
+
+# IDE-specific CMake generators
+Makefile
+compile_commands.json
+CMakeUserPresets.json
+
+# Ninja
+.ninja_deps
+.ninja_log
+
+# Visual Studio
+*.sln
+*.vcxproj*
+*.opensdf
+*.sdf
+*.vc.db
+*.VC.db
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Linux
+*.swp
+*.swo
+
+# Misc
+*.log
+
