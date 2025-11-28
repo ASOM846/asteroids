@@ -41,13 +41,14 @@ void GameHelper::handleCollision(std::vector<Laser>& lasers,
                     lvx /= len;
                     lvy /= len;
                 }
-
+                
                 float impulse = (float)l.getDamage() / (float)a.radius * 2.0f;
                 a.applyImpulse(lvx * impulse, lvy * impulse);
                 l.active = false;
 
                 if (!a.active) {
                     maybeSpawnDrop(a.x, a.y);
+                    player->increaseScore(a.radius);
                 }
                 break;
             }
@@ -73,6 +74,9 @@ void GameHelper::checkCollisionPlayerDrop(std::vector<sDrop>& drops, Rectangle p
             }
             if (d.getType() == DropType::Shield && playerShieldPtr) {
                 *playerShieldPtr = std::min(100, *playerShieldPtr + 20);
+            }
+            if(d.getType() == DropType::Ammo)   {
+                player->increaseAmmo(50);
             }
 
             d.active = false;

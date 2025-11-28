@@ -64,9 +64,8 @@ private:
 
 	Color BcgColour;
 	GameState gameState;
-
+	Camera2D camera;
 	std::vector<Laser> lasers;
 	std::vector<sAsteroid> asteroids;
 	std::vector<sDrop> drops;
 };
-

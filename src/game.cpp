@@ -1,7 +1,7 @@
 #include "game.h"
 
 Game::Game() : screenWidth(1280), screenHeight(720), player(),
-BcgColour(BLACK), gameHelper(),
+BcgColour(BLACK), gameHelper(), camera(),
 gameState(GameState::Menu),
 menu(this) {
     initialize();
@@ -26,6 +26,11 @@ void Game::initialize() {
     InitWindow(screenWidth, screenHeight, "Asteroids Game");
     SetWindowState(FLAG_VSYNC_HINT);
     SetTargetFPS(60);
+
+    camera.target = player.getPosition();
+    camera.offset = (Vector2){ screenWidth / 2.0f, screenHeight / 2.0f };
+    camera.rotation = 0.0f;
+    camera.zoom = 1.0f;
 
     gameHelper.setPlayer(&player);
     gameHelper.setPlayerHealthPtr(player.getHealthPtr());
@@ -114,6 +119,7 @@ void Game::updatePlaying() {
     }
 
     player.update();
+    camera.target = player.getPosition();
     laserHelper.updateLasers(lasers, screenWidth, screenHeight);
     asteroidHelper.updateAsteroids(asteroids, screenWidth, screenHeight);
 
@@ -126,11 +132,18 @@ void Game::updatePlaying() {
 }
 
 void Game::renderPlaying() {
+    BeginMode2D(camera);
+
     laserHelper.renderLasers(lasers);
     asteroidHelper.renderAsteroids(asteroids);
     dropHelper.renderDrops(drops);
     player.render();
-    ui.draw(player.getHealth(), player.getShield(), player.getAmmo());
+
+    EndMode2D();
+
+    ui.draw(player.getHealth(), player.getShield(), 
+            player.getAmmo(), player.getMaxAmmo(),
+        player.getScore());
 }
 
 void Game::updatePaused() {
@@ -140,11 +153,18 @@ void Game::updatePaused() {
 }
 
 void Game::renderPaused() {
+    BeginMode2D(camera);
+
     laserHelper.renderLasers(lasers);
     asteroidHelper.renderAsteroids(asteroids);
     dropHelper.renderDrops(drops);
     player.render();
-    ui.draw(player.getHealth(), player.getShield(), player.getAmmo());
+
+    EndMode2D();
+
+    ui.draw(player.getHealth(), player.getShield(), 
+            player.getAmmo(),player.getMaxAmmo(),
+            player.getScore());
 
     DrawRectangle(0, 0, screenWidth, screenHeight, Fade(BLACK, 0.6f));
     DrawText("PAUZA", screenWidth / 2 - 90, screenHeight / 2 - 40, 50, WHITE);

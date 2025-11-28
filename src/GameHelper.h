@@ -37,6 +37,6 @@ private:
     Player* player = nullptr;
     std::vector<sDrop>* drops = nullptr;
     float dropSpawnChance = 0.30f;
-
+    
     void maybeSpawnDrop(float x, float y);
 };

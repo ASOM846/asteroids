@@ -25,10 +25,15 @@ public:
     int getHealth() const { return health; }
     int getShield() const { return shield; }
     int getAmmo() const { return ammo; }
+    int getMaxAmmo() const { return maxAmmo; }
     int* getHealthPtr() { return &health; }
     int* getShieldPtr() { return &shield; }
+    int getScore() {return score;}
+
 
     void takeDamage(int amount);
+    void increaseAmmo(int amount);
+    void increaseScore(int aomunt);
     void setTexture(Texture2D texture) {
         playerTexture = texture;
     }
@@ -45,6 +50,9 @@ private:
     int shield;
 
     int ammo;
+    int maxAmmo;
+
+    int score;
 
     float vx;
     float vy;

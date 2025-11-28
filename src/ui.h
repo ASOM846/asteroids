@@ -7,5 +7,6 @@ public:
     Ui();
     ~Ui();
 
-    void draw(int health, int shield, int ammo);
+    void draw(int health, int shield, 
+            int ammo, int maxAmmo, int score);
 };

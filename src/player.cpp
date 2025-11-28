@@ -3,7 +3,8 @@
 Player::Player() : x(GetScreenWidth()/2), y(GetScreenHeight()/2), speed(5.0f), rotation(0.0f),
 turnSpeed(3.5f), health(100), shield(0), size(50), vPosition{ x,y },
 vx(0.0f), vy(0.0f), thrust(0.18f), friction(0.985f),
-maxSpeed(9.0f), shootInterval(0.18f), shootTimer(0.0f), ammo(300) {
+maxSpeed(9.0f), shootInterval(0.18f), shootTimer(0.0f), ammo(300),
+maxAmmo(500),score(0) {
 }
 
 Player::~Player() {}
@@ -44,11 +45,11 @@ void Player::update() {
     const int screenW = GetScreenWidth();
     const int screenH = GetScreenHeight();
 
-    if (x < -half)            x = screenW + half;
-    else if (x > screenW + half) x = -half;
+    // if (x < -half)            x = screenW + half;
+    // else if (x > screenW + half) x = -half;
 
-    if (y < -half)            y = screenH + half;
-    else if (y > screenH + half) y = -half;
+    // if (y < -half)            y = screenH + half;
+    // else if (y > screenH + half) y = -half;
 
     vPosition = { x, y };
 
@@ -92,6 +93,17 @@ void Player::tryShoot(std::vector<Laser>& lasers) {
     }
 }
 
+void Player::increaseAmmo(int amount) {
+    if (amount <= 0) return;
+    ammo += amount;
+    if (ammo > maxAmmo) ammo = maxAmmo;
+}
+
+void Player::increaseScore(int amount)  {
+    if(amount <= 0 ) return;
+    score += amount;
+}
+
 void Player::takeDamage(int amount) {
     if (amount <= 0) return;
 
@@ -106,3 +118,4 @@ void Player::takeDamage(int amount) {
         if (health < 0) health = 0;
     }
 }
+
