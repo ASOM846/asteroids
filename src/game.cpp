@@ -120,8 +120,8 @@ void Game::updatePlaying() {
 
     player.update();
     camera.target = player.getPosition();
-    laserHelper.updateLasers(lasers, screenWidth, screenHeight);
-    asteroidHelper.updateAsteroids(asteroids, screenWidth, screenHeight);
+    laserHelper.updateLasers(lasers, (int)player.getPosition().x, (int)player.getPosition().y);
+    asteroidHelper.updateAsteroids(asteroids, player.getPosition());
 
     gameHelper.handleCollision(lasers, asteroids, player.getRect());
     gameHelper.checkCollisionPlayerDrop(drops, player.getRect());
@@ -144,6 +144,8 @@ void Game::renderPlaying() {
     ui.draw(player.getHealth(), player.getShield(), 
             player.getAmmo(), player.getMaxAmmo(),
         player.getScore());
+
+    gameHelper.drawPosition();
 }
 
 void Game::updatePaused() {

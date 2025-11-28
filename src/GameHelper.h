@@ -30,6 +30,7 @@ public:
     void setPlayer(Player* pPlayer) { player = pPlayer; }
     void setDrops(std::vector<sDrop>* d) { drops = d; }
 
+    void drawPosition();
 private:
     int* playerHealthPtr = nullptr;
     int* playerShieldPtr = nullptr;
@@ -37,6 +38,6 @@ private:
     Player* player = nullptr;
     std::vector<sDrop>* drops = nullptr;
     float dropSpawnChance = 0.30f;
-    
+
     void maybeSpawnDrop(float x, float y);
 };

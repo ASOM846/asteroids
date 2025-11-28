@@ -35,15 +35,15 @@ struct sAsteroid
     {
     }
 
-    void update(int screenW, int screenH) {
-        if (!active) return;
+    void update(Vector2 playerPos) {
+        if (!active)
+            return;
         x += vx;
         y += vy;
-        rotation += rotationSpeed;
-        if (rotation > 360.0f) rotation -= 360.0f;
-        if (rotation < 0.0f)   rotation += 360.0f;
-
-        if (x < 0 - radius || x > screenW + radius || y < 0 - radius || y > screenH + radius)
+        float dx = x - playerPos.x;
+        float dy = y - playerPos.y;
+        const float maxDist = 800.0f;
+        if (dx * dx + dy * dy > maxDist * maxDist)
             active = false;
     }
 
@@ -145,9 +145,9 @@ public:
         sAsteroid::setTextureManager(texManager);
     }
 
-    void updateAsteroids(std::vector<sAsteroid>& asteroids, int screenW, int screenH)
+    void updateAsteroids(std::vector<sAsteroid>& asteroids, Vector2 playerPos)
     {
-        for (auto& a : asteroids) a.update(screenW, screenH);
+        for (auto& a : asteroids) a.update(playerPos);
         auto it = std::remove_if(asteroids.begin(), asteroids.end(),
             [](const sAsteroid& l) { return !l.active; });
         asteroids.erase(it, asteroids.end());

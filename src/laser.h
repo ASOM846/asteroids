@@ -19,12 +19,15 @@ struct Laser
             radius(3), damage(10) {
     }
 
-    void update(int screenW, int screenH)
+    void update(int playerX, int playerY)
     {
         if (!active) return;
         x += vx;
         y += vy;
-        if (x < 0 || x > screenW || y < 0 || y > screenH) active = false;
+        float dx = x - playerX;
+        float dy = y - playerY;
+        const float maxDist = 800.0f;
+        if (dx*dx + dy*dy > maxDist*maxDist) active = false;
     }
 
     void render() const
@@ -42,9 +45,9 @@ public:
     LaserHelper() = default;
     ~LaserHelper() = default;
 
-    void updateLasers(std::vector<Laser>& lasers, int screenW, int screenH)
+    void updateLasers(std::vector<Laser>& lasers, int playerX, int playerY)
     {
-        for (auto& l : lasers) l.update(screenW, screenH);
+        for (auto& l : lasers) l.update(playerX, playerY);
         auto it = std::remove_if(lasers.begin(), lasers.end(),
             [](const Laser& l) { return !l.active; });
         lasers.erase(it, lasers.end());

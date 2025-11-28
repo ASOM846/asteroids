@@ -95,3 +95,9 @@ void GameHelper::setTextures(TextureManager& textureManager,
     Player& player) {
     player.setTexture(textureManager.get(TextureId::Player));
 }
+
+void GameHelper::drawPosition() {
+    if (!player) return;
+    Vector2 pos = player->getPosition();
+    DrawText(TextFormat("Player Position: (%d, %d)", (int)pos.x, (int)pos.y), 10, 10, 20, WHITE);
+}
