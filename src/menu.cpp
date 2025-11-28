@@ -10,6 +10,7 @@ void Menu::update() {
     if (IsKeyPressed(KEY_ESCAPE)) {
         CloseWindow();
     }
+    lastMousePos = GetMousePosition();
 }
 
 void Menu::render() {
@@ -24,5 +25,5 @@ void Menu::render() {
 }
 
 void Menu::renderStars() {
-    uiPtr->drawStars(GetMousePosition());
+    uiPtr->drawStars(lastMousePos);
 }

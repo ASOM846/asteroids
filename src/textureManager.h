@@ -15,7 +15,8 @@ enum class TextureId {
     MGreyBig4,
     UpHealth,
     UpShield,
-    UpAmmo
+    UpAmmo,
+    Enemy1,
 };
 
 class TextureManager {
@@ -36,6 +37,7 @@ public:
         load(TextureId::UpHealth, "assets/health.png");
         load(TextureId::UpShield, "assets/shield.png");
         load(TextureId::UpAmmo, "assets/ammo.png");
+        load(TextureId::Enemy1, "assets/enemy1.png");
     }
 
     const Texture2D& get(TextureId id) const {
@@ -54,7 +56,7 @@ public:
 private:
     void load(TextureId id, const char* path) {
         Texture2D tex = LoadTexture(path);
-        if (tex.id == 0) throw std::runtime_error(std::string("Nie uda³o siê wczytaæ: ") + path);
+        if (tex.id == 0) throw std::runtime_error(std::string("Nie udaï¿½o siï¿½ wczytaï¿½: ") + path);
         textures.emplace(id, tex);
     }
 

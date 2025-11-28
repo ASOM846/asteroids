@@ -4,6 +4,7 @@
 #include "laser.h"
 #include "asteroid.h"
 #include "drop.h"
+#include "enemy.hpp"
 
 class TextureManager;
 class Player;

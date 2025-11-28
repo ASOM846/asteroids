@@ -16,4 +16,6 @@ private:
 
     Game* gamePtr;
     Ui* uiPtr;
+
+    Vector2 lastMousePos;
 };
