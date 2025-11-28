@@ -3,7 +3,7 @@
 Game::Game() : screenWidth(1280), screenHeight(720), player(),
 BcgColour(BLACK), gameHelper(), camera(),
 gameState(GameState::Menu),
-menu(this) {
+menu(this, &ui) {
     initialize();
     runLoop();
     shutdown();
@@ -63,7 +63,6 @@ void Game::startGame() {
     player = Player();
     gameHelper.setPlayerHealthPtr(player.getHealthPtr());
     gameHelper.setTextures(textureManager, player);
-    asteroidHelper.initAsteroids(asteroids, 5);
     gameState = GameState::Playing;
 }
 

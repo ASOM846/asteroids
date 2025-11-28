@@ -152,47 +152,81 @@ public:
             [](const sAsteroid& l) { return !l.active; });
         asteroids.erase(it, asteroids.end());
 
-        if (asteroids.size() < 5)
-            generateAsteroid(asteroids);
+        if (asteroids.size() < 10)
+            generateAsteroid(asteroids, playerPos);
     }
 
     void renderAsteroids(const std::vector<sAsteroid>& asteroids) const {
         for (const auto& a : asteroids) a.render();
     }
 
-    void initAsteroids(std::vector<sAsteroid>& asteroids, int count) {
-        for (int i = 0; i < count; ++i)
-            generateAsteroid(asteroids);
-    }
+    void generateAsteroid(std::vector<sAsteroid>& asteroids, Vector2 playerPos) {
+        const int screenW = GetScreenWidth();
+        const int screenH = GetScreenHeight();
 
-    void generateAsteroid(std::vector<sAsteroid>& asteroids) {
-        int screenW = GetScreenWidth();
-        int screenH = GetScreenHeight();
+        const int radius = GetRandomValue(20, 60);
+        const float offscreen = (float)radius + 20.0f;
 
-        int edge = GetRandomValue(1, 4);
-        int radius = GetRandomValue(20, 60);
-        const int offscreen = radius + 2;
-        int px = 0, py = 0;
-        float dirX = 0.0f, dirY = 0.0f;
+        const float halfW = screenW / 2.0f;
+        const float halfH = screenH / 2.0f;
 
+        const float visibleMinX = playerPos.x - halfW;
+        const float visibleMaxX = playerPos.x + halfW;
+        const float visibleMinY = playerPos.y - halfH;
+        const float visibleMaxY = playerPos.y + halfH;
+
+        auto randFloat = [](float min, float max) {
+            if (max <= min) return min;
+            constexpr int precision = 1000;
+            const float t = (float)GetRandomValue(0, precision) / (float)precision;
+            return min + t * (max - min);
+        };
+
+        float px = playerPos.x;
+        float py = playerPos.y;
+
+        const int edge = GetRandomValue(1, 4);
         switch (edge) {
-        case 1: px = -offscreen;        py = GetRandomValue(0, screenH); dirX = 1.0f;  dirY = (float)GetRandomValue(-100, 100) / 100.0f; break;
-        case 2: px = GetRandomValue(0, screenW); py = -offscreen;        dirX = (float)GetRandomValue(-100, 100) / 100.0f; dirY = 1.0f;  break;
-        case 3: px = screenW + offscreen; py = GetRandomValue(0, screenH); dirX = -1.0f; dirY = (float)GetRandomValue(-100, 100) / 100.0f; break;
-        case 4: px = GetRandomValue(0, screenW); py = screenH + offscreen; dirX = (float)GetRandomValue(-100, 100) / 100.0f; dirY = -1.0f; break;
+        case 1: // left of player view
+            px = visibleMinX - offscreen;
+            py = randFloat(visibleMinY, visibleMaxY);
+            break;
+        case 2: // top of player view
+            px = randFloat(visibleMinX, visibleMaxX);
+            py = visibleMinY - offscreen;
+            break;
+        case 3: // right of player view
+            px = visibleMaxX + offscreen;
+            py = randFloat(visibleMinY, visibleMaxY);
+            break;
+        case 4: // bottom of player view
+        default:
+            px = randFloat(visibleMinX, visibleMaxX);
+            py = visibleMaxY + offscreen;
+            break;
         }
 
+        const float targetX = randFloat(visibleMinX, visibleMaxX);
+        const float targetY = randFloat(visibleMinY, visibleMaxY);
+
+        float dirX = targetX - px;
+        float dirY = targetY - py;
         float len = std::sqrt(dirX * dirX + dirY * dirY);
         if (len > 0.0001f) {
             dirX /= len;
             dirY /= len;
+        }
+        else {
+            const float angle = (float)GetRandomValue(0, 628) / 100.0f;
+            dirX = std::cos(angle);
+            dirY = std::sin(angle);
         }
 
         float speed = (float)GetRandomValue(2, 5);
 
         const Texture2D* texPtr = sAsteroid::randomTextureForRadius(radius);
 
-        asteroids.emplace_back((float)px, (float)py, dirX, dirY, speed, radius, texPtr);
+        asteroids.emplace_back(px, py, dirX, dirY, speed, radius, texPtr);
     }
 
 private:
