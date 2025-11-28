@@ -1,9 +1,63 @@
 #include "ui.h"
 #include <string>
 #include <algorithm>
+#include <cmath>
+#include <random>
 
-Ui::Ui() {}
+Ui::Ui() : cachedWidth(0), cachedHeight(0), hasLastPlayerPos(false) {
+    std::random_device rd;
+    rng.seed(rd());
+}
 Ui::~Ui() {}
+
+void Ui::initStarLayers(int screenW, int screenH) {
+    cachedWidth = screenW;
+    cachedHeight = screenH;
+    starLayers.clear();
+
+    struct LayerConfig {
+        int count;
+        float parallax;
+        Color color;
+        float minSize;
+        float maxSize;
+        float minTwinkle;
+        float maxTwinkle;
+    };
+
+    const LayerConfig configs[] = {
+        {140, 0.18f, {255, 255, 255, 110}, 0.8f, 1.4f, 0.4f, 0.7f},
+        { 90, 0.28f, {255, 255, 255, 170}, 1.1f, 2.0f, 0.6f, 1.0f},
+        { 60, 0.46f, {255, 255, 255, 230}, 1.6f, 2.6f, 0.8f, 1.2f}
+    };
+
+    constexpr float twoPi = 6.28318530718f;
+    const float marginX = screenW * 0.25f;
+    const float marginY = screenH * 0.25f;
+
+    for (const auto& cfg : configs) {
+        starLayers.emplace_back();
+        StarLayer& layer = starLayers.back();
+        layer.parallax = cfg.parallax;
+        layer.color = cfg.color;
+        layer.stars.reserve(cfg.count);
+
+        std::uniform_real_distribution<float> sizeDist(cfg.minSize, cfg.maxSize);
+        std::uniform_real_distribution<float> twinkleDist(cfg.minTwinkle, cfg.maxTwinkle);
+        std::uniform_real_distribution<float> phaseDist(0.0f, twoPi);
+        std::uniform_real_distribution<float> posXDist(-marginX, screenW + marginX);
+        std::uniform_real_distribution<float> posYDist(-marginY, screenH + marginY);
+
+        for (int i = 0; i < cfg.count; ++i) {
+            Star star;
+            star.position = { posXDist(rng), posYDist(rng) };
+            star.size = sizeDist(rng);
+            star.twinkleSpeed = twinkleDist(rng);
+            star.twinkleOffset = phaseDist(rng);
+            layer.stars.push_back(star);
+        }
+    }
+}
 
 void Ui::draw(int health, int shield, int ammo, int maxAmmo, int score) {
     const int screenW = GetScreenWidth();
@@ -99,4 +153,73 @@ void Ui::draw(int health, int shield, int ammo, int maxAmmo, int score) {
     // Optional tiny HUD accents: thin separators in matrix color, very subtle
     DrawLine(20, bandY + 2, screenW - 20, bandY + 2, {0,50,20,100});
     DrawLine(20, screenH - 2, screenW - 20, screenH - 2, {0,50,20,100});
+}
+
+void Ui::drawStars(Vector2 playerPos) {
+    const int screenW = GetScreenWidth();
+    const int screenH = GetScreenHeight();
+    if (screenW <= 0 || screenH <= 0) {
+        return;
+    }
+
+    if (starLayers.empty() || screenW != cachedWidth || screenH != cachedHeight) {
+        initStarLayers(screenW, screenH);
+    }
+
+    Vector2 delta = {0.0f, 0.0f};
+    if (hasLastPlayerPos) {
+        delta.x = playerPos.x - lastPlayerPos.x;
+        delta.y = playerPos.y - lastPlayerPos.y;
+    }
+    lastPlayerPos = playerPos;
+    hasLastPlayerPos = true;
+
+    const float time = static_cast<float>(GetTime());
+    const float marginX = cachedWidth * 0.25f;
+    const float marginY = cachedHeight * 0.25f;
+
+    auto randRange = [this](float minVal, float maxVal) {
+        std::uniform_real_distribution<float> dist(minVal, maxVal);
+        return dist(rng);
+    };
+
+    for (auto& layer : starLayers) {
+        const float moveX = delta.x * layer.parallax;
+        const float moveY = delta.y * layer.parallax;
+
+        for (auto& star : layer.stars) {
+            star.position.x -= moveX;
+            star.position.y -= moveY;
+
+            if (star.position.x < -marginX) {
+                star.position.x = cachedWidth + marginX;
+                star.position.y = randRange(-marginY, cachedHeight + marginY);
+            }
+            else if (star.position.x > cachedWidth + marginX) {
+                star.position.x = -marginX;
+                star.position.y = randRange(-marginY, cachedHeight + marginY);
+            }
+
+            if (star.position.y < -marginY) {
+                star.position.y = cachedHeight + marginY;
+                star.position.x = randRange(-marginX, cachedWidth + marginX);
+            }
+            else if (star.position.y > cachedHeight + marginY) {
+                star.position.y = -marginY;
+                star.position.x = randRange(-marginX, cachedWidth + marginX);
+            }
+
+            const float flicker = 0.85f + 0.15f * std::sin(time * star.twinkleSpeed + star.twinkleOffset);
+            Color drawColor = layer.color;
+            float alpha = drawColor.a * flicker;
+            if (alpha < 0.0f) alpha = 0.0f;
+            if (alpha > 255.0f) alpha = 255.0f;
+            drawColor.a = static_cast<unsigned char>(alpha);
+
+            if (star.position.x >= -1.0f && star.position.x <= cachedWidth + 1.0f &&
+                star.position.y >= -1.0f && star.position.y <= cachedHeight + 1.0f) {
+                DrawCircleV(star.position, star.size, drawColor);
+            }
+        }
+    }
 }

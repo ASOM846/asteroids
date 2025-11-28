@@ -132,6 +132,7 @@ void Game::updatePlaying() {
 }
 
 void Game::renderPlaying() {
+    ui.drawStars(player.getPosition());
     BeginMode2D(camera);
 
     laserHelper.renderLasers(lasers);
@@ -155,6 +156,7 @@ void Game::updatePaused() {
 }
 
 void Game::renderPaused() {
+    ui.drawStars(player.getPosition());
     BeginMode2D(camera);
 
     laserHelper.renderLasers(lasers);
@@ -183,6 +185,7 @@ void Game::updateGameOver() {
 }
 
 void Game::renderGameOver() {
+    ui.drawStars(player.getPosition());
     DrawText("GAME OVER", screenWidth / 2 - 190, screenHeight / 2 - 80, 60, RED);
     DrawText("R - Restart", screenWidth / 2 - 120, screenHeight / 2 + 10, 30, GRAY);
     DrawText("M - Menu", screenWidth / 2 - 100, screenHeight / 2 + 50, 30, GRAY);
