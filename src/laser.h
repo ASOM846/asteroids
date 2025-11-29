@@ -11,11 +11,16 @@ struct Laser
     float vx;
     float vy;
     bool active;
+    bool isPlayerOwned = true;
     int radius;
     int damage;
 
-    Laser(float px, float py, float dirX, float dirY, float speed)
-        : x(px), y(py), vx(dirX* speed), vy(dirY* speed), active(true), 
+    bool getIsPlayerOwned() const { return isPlayerOwned; }
+
+    Laser(float px, float py, float dirX, 
+        float dirY, float speed, bool playerOwned = true)
+        : x(px), y(py), vx(dirX* speed), vy(dirY* speed), 
+        active(true), isPlayerOwned(playerOwned),
             radius(3), damage(10) {
     }
 

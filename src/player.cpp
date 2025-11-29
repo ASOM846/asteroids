@@ -45,12 +45,6 @@ void Player::update() {
     const int screenW = GetScreenWidth();
     const int screenH = GetScreenHeight();
 
-    // if (x < -half)            x = screenW + half;
-    // else if (x > screenW + half) x = -half;
-
-    // if (y < -half)            y = screenH + half;
-    // else if (y > screenH + half) y = -half;
-
     vPosition = { x, y };
 
     if (shootTimer > 0.0f) shootTimer -= dt;
@@ -88,7 +82,8 @@ void Player::tryShoot(std::vector<Laser>& lasers) {
         const float spawnX = x + dirX * muzzleOffset;
         const float spawnY = y + dirY * muzzleOffset;
 
-        lasers.emplace_back(spawnX, spawnY, dirX, dirY, 12.0f);
+        lasers.emplace_back(spawnX, spawnY, 
+            dirX, dirY, 12.0f, true);
         shootTimer = shootInterval;
     }
 }

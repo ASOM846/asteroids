@@ -32,7 +32,7 @@ void Game::initialize() {
     camera.rotation = 0.0f;
     camera.zoom = 1.0f;
 
-    enemyManager.setPointers(&textureManager, &enemies);
+    enemyManager.setPointers(&textureManager, &enemies, &lasers);
     gameHelper.setPlayer(&player);
     gameHelper.setPlayerHealthPtr(player.getHealthPtr());
     gameHelper.setPlayerShieldPtr(player.getShieldPtr());
@@ -43,6 +43,7 @@ void Game::initialize() {
     gameHelper.setDropHelper(&dropHelper);
     gameHelper.setDrops(&drops);
     gameHelper.setDropChance(1.00f);
+    gameHelper.setPointers(&enemies, &lasers);
 
     enemyManager.generateEnemy(EnemyType::Basic);
     enemyManager.generateEnemy(EnemyType::Fast);
@@ -130,6 +131,7 @@ void Game::updatePlaying() {
 
     gameHelper.handleCollision(lasers, asteroids, player.getRect());
     gameHelper.checkCollisionPlayerDrop(drops, player.getRect());
+    gameHelper.checkCollisionLaserPlayerEnemy();
 
     dropHelper.updateDrops(drops);
 

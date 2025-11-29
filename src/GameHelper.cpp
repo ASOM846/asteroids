@@ -26,6 +26,7 @@ void GameHelper::handleCollision(std::vector<Laser>& lasers,
     for (auto& a : asteroids) {
         if (!a.active) continue;
 
+        //kolizja asteroidy z laserami
         for (auto& l : lasers) {
             if (!l.active) continue;
 
@@ -54,6 +55,7 @@ void GameHelper::handleCollision(std::vector<Laser>& lasers,
             }
         }
 
+        //kolizja asteroidy z graczem
         if (CheckCollisionCircleRec(Vector2{ a.x, a.y },
             (float)a.radius, playerRect)) {
             damageToPlayer += a.radius;
@@ -80,6 +82,39 @@ void GameHelper::checkCollisionPlayerDrop(std::vector<sDrop>& drops, Rectangle p
             }
 
             d.active = false;
+        }
+    }
+}
+
+
+void GameHelper::checkCollisionLaserPlayerEnemy()
+{
+    if (!enemies || !lasers) return;
+
+    for (auto& e : *enemies) {
+        if (!e.active) continue;
+
+        for (auto& l : *lasers) {
+            if (!l.active) continue;
+            if (l.getIsPlayerOwned()) continue;
+
+            if (CheckCollisionCircleRec(Vector2{ l.x, l.y }, (float)l.radius,
+                player->getRect()) && l.getIsPlayerOwned() == false) {
+
+                player->takeDamage(l.getDamage());
+                l.active = false;
+                break;
+            }
+
+            if (CheckCollisionCircles(Vector2{l.x, l.y}, (float)l.radius,
+                                      e.getPosition(), (float)e.getRadius())
+                                    && l.getIsPlayerOwned() == true)
+            {
+
+                e.takeDamage(l.getDamage());
+                l.active = false;
+                break;
+            }
         }
     }
 }

@@ -22,14 +22,20 @@ public:
         const Rectangle& playerRect);
     void checkCollisionPlayerDrop(std::vector<sDrop>& drops,
         Rectangle playerRect);
-
-    void setTextures(TextureManager& textureManager, Player& player);
+    void checkCollisionLaserPlayerEnemy();
+    void setTextures(TextureManager &textureManager, Player &player);
 
     void setPlayerHealthPtr(int* ptr);
     void setPlayerShieldPtr(int* ptr) { playerShieldPtr = ptr; }
     void setDropHelper(DropHelper* helper) { dropHelper = helper; }
     void setPlayer(Player* pPlayer) { player = pPlayer; }
     void setDrops(std::vector<sDrop>* d) { drops = d; }
+
+    void setPointers(std::vector<sEnemy>* enemyList,
+        std::vector<Laser>* laserList) {
+        enemies = enemyList;
+        lasers = laserList;
+    }
 
     void drawPosition();
 private:
@@ -38,6 +44,9 @@ private:
     DropHelper* dropHelper = nullptr;
     Player* player = nullptr;
     std::vector<sDrop>* drops = nullptr;
+    std::vector<sEnemy>* enemies = nullptr;
+    std::vector<Laser>* lasers = nullptr;
+
     float dropSpawnChance = 0.30f;
 
     void maybeSpawnDrop(float x, float y);
