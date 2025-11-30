@@ -17,6 +17,7 @@ enum class TextureId {
     UpShield,
     UpAmmo,
     Enemy1,
+    Enemy2,
 };
 
 class TextureManager {
@@ -38,6 +39,8 @@ public:
         load(TextureId::UpShield, "assets/shield.png");
         load(TextureId::UpAmmo, "assets/ammo.png");
         load(TextureId::Enemy1, "assets/enemy1.png");
+        load(TextureId::Enemy2, "assets/enemy2.png");
+        
     }
 
     const Texture2D& get(TextureId id) const {

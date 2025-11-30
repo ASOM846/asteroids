@@ -25,6 +25,7 @@ struct sEnemy
 
     float speed;
     const Texture2D *texture = nullptr;
+    float rotation;
 
     float shootInterval;
     float shootTimer;
@@ -76,6 +77,9 @@ struct sEnemy
             dir.x /= len; dir.y /= len;
             position.x += dir.x * speed;
             position.y += dir.y * speed;
+
+            float angleRad = atan2f(dir.y, dir.x);
+            rotation = angleRad * (180.0f / std::numbers::pi_v<float>);
         }
 
         shoot(playerPos, lasers);
@@ -88,7 +92,7 @@ struct sEnemy
             Rectangle src{ 0,0,(float)texture->width,(float)texture->height };
             Rectangle dst{ position.x, position.y, radius * 2.0f, radius * 2.0f };
             Vector2 origin{ static_cast<float>(radius), static_cast<float>(radius) };
-            DrawTexturePro(*texture, src, dst, origin, 0.0f, WHITE);
+            DrawTexturePro(*texture, src, dst, origin, rotation, WHITE);
         }
         else {
             DrawCircle((int)position.x, (int)position.y, (float)radius, BLUE);
@@ -174,7 +178,7 @@ public:
             enemy.texture = &texManager->get(TextureId::Enemy1);
             break;
         case EnemyType::Tank:
-            enemy.texture = &texManager->get(TextureId::Enemy1);
+            enemy.texture = &texManager->get(TextureId::Enemy2);
             break;
         }
 
