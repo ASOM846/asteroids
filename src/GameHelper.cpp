@@ -89,31 +89,31 @@ void GameHelper::checkCollisionPlayerDrop(std::vector<sDrop>& drops, Rectangle p
 
 void GameHelper::checkCollisionLaserPlayerEnemy()
 {
-    if (!enemies || !lasers) return;
+    if (!enemies || !lasers || !player) return;
 
     for (auto& e : *enemies) {
         if (!e.active) continue;
 
         for (auto& l : *lasers) {
             if (!l.active) continue;
-            if (l.getIsPlayerOwned()) continue;
 
-            if (CheckCollisionCircleRec(Vector2{ l.x, l.y }, (float)l.radius,
-                player->getRect()) && l.getIsPlayerOwned() == false) {
-
-                player->takeDamage(l.getDamage());
-                l.active = false;
-                break;
+            if (l.getIsPlayerOwned()) {
+                // player's laser -> check collision with enemy
+                if (CheckCollisionCircles(Vector2{ l.x, l.y }, (float)l.radius,
+                    e.getPosition(), (float)e.getRadius())) {
+                    e.takeDamage(l.getDamage());
+                    l.active = false;
+                    break;
+                }
             }
-
-            if (CheckCollisionCircles(Vector2{l.x, l.y}, (float)l.radius,
-                                      e.getPosition(), (float)e.getRadius())
-                                    && l.getIsPlayerOwned() == true)
-            {
-
-                e.takeDamage(l.getDamage());
-                l.active = false;
-                break;
+            else {
+                // enemy laser -> check collision with player
+                if (CheckCollisionCircleRec(Vector2{ l.x, l.y }, (float)l.radius,
+                    player->getRect())) {
+                    player->takeDamage(l.getDamage());
+                    l.active = false;
+                    break;
+                }
             }
         }
     }
