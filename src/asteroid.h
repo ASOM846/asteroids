@@ -138,8 +138,10 @@ struct sAsteroid
 class AsteroidHelper
 {
 public:
-    AsteroidHelper() {}
+    AsteroidHelper() : asteroidCount(0) {}
 
+    void setAsteroidCount(int count) { asteroidCount = count; }
+    int getAsteroidCount() const { return asteroidCount; }
     void setTextureManager(TextureManager& tm) {
         texManager = &tm;
         sAsteroid::setTextureManager(texManager);
@@ -152,7 +154,7 @@ public:
             [](const sAsteroid& l) { return !l.active; });
         asteroids.erase(it, asteroids.end());
 
-        if (asteroids.size() < 10)
+        if (asteroids.size() < asteroidCount)
             generateAsteroid(asteroids, playerPos);
     }
 
@@ -229,6 +231,15 @@ public:
         asteroids.emplace_back(px, py, dirX, dirY, speed, radius, texPtr);
     }
 
+    void generateAsteroidShower(std::vector<sAsteroid>& asteroids, 
+        Vector2 playerPos, int count)
+    {
+        for (int i = 0; i < count; ++i) {
+            generateAsteroid(asteroids, playerPos);
+        }
+    }
+
 private:
+    int asteroidCount;
     const TextureManager* texManager = nullptr;
 };

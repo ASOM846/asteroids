@@ -44,10 +44,6 @@ void Game::initialize() {
     gameHelper.setDrops(&drops);
     gameHelper.setDropChance(1.00f);
     gameHelper.setPointers(&enemies, &lasers);
-
-    enemyManager.generateEnemy(EnemyType::Basic);
-    enemyManager.generateEnemy(EnemyType::Fast);
-    enemyManager.generateEnemy(EnemyType::Tank);
 }
 
 void Game::shutdown() {
@@ -123,6 +119,13 @@ void Game::updatePlaying() {
         return;
     }
 
+    if(IsKeyPressed(KEY_H))
+        enemyManager.generateEnemyWave(5, EnemyType::Basic);
+    if(IsKeyPressed(KEY_J))
+        enemyManager.generateEnemyWave(5, EnemyType::Fast);
+    if(IsKeyPressed(KEY_K))
+        enemyManager.generateEnemyWave(5, EnemyType::Tank);
+        
     player.update();
     camera.target = player.getPosition();
     laserHelper.updateLasers(lasers, (int)player.getPosition().x, (int)player.getPosition().y);

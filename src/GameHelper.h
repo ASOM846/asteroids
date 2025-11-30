@@ -31,6 +31,7 @@ public:
     void setPlayer(Player* pPlayer) { player = pPlayer; }
     void setDrops(std::vector<sDrop>* d) { drops = d; }
 
+
     void setPointers(std::vector<sEnemy>* enemyList,
         std::vector<Laser>* laserList) {
         enemies = enemyList;
@@ -38,6 +39,7 @@ public:
     }
 
     void drawPosition();
+    void handleGameTiming(float playTime);
 private:
     int* playerHealthPtr = nullptr;
     int* playerShieldPtr = nullptr;

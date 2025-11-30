@@ -1,5 +1,7 @@
 #pragma once
+#include <array>
 #include <cmath>
+#include <functional>
 #include <numbers>
 #include <vector>
 #include <algorithm>
@@ -185,6 +187,25 @@ public:
         enemies->emplace_back(enemy);
     }
 
+    void generateEnemyWave(int count, EnemyType type)
+    {
+        switch(type){
+            case EnemyType::Basic: 
+                for(int i=0; i<count; ++i)
+                    generateEnemy(EnemyType::Basic);
+                break;
+            case EnemyType::Fast:
+                for(int i=0; i<count; ++i)
+                    generateEnemy(EnemyType::Fast);
+                break;
+            case EnemyType::Tank:
+                for(int i=0; i<count; ++i)
+                    generateEnemy(EnemyType::Tank);
+                break;
+
+        }
+    }
+    
 private:
     TextureManager* texManager = nullptr;
     std::vector<sEnemy>* enemies = nullptr;

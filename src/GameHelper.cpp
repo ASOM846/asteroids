@@ -136,3 +136,7 @@ void GameHelper::drawPosition() {
     Vector2 pos = player->getPosition();
     DrawText(TextFormat("Player Position: (%d, %d)", (int)pos.x, (int)pos.y), 10, 10, 20, WHITE);
 }
+
+void GameHelper::handleGameTiming(float playTime) {
+    DrawText(TextFormat("Play Time: %.2f s", playTime), 10, 40, 20, WHITE);
+}
