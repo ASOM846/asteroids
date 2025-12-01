@@ -30,6 +30,7 @@ class Game
 	~Game();
 
 	void setGameState(GameState newState);
+	void runLevel(int levelNumber);
 
 private:
 	void initialize();

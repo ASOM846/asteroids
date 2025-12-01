@@ -37,6 +37,10 @@ void Game::setGameState(GameState newState) {
     }
 }
 
+void Game::runLevel(int levelNumber) {
+	levelManager.runLevel(levelNumber);
+}
+
 void Game::initialize() {
     InitWindow(screenWidth, screenHeight, "Asteroids Game");
     SetWindowState(FLAG_VSYNC_HINT);

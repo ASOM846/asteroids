@@ -1,5 +1,6 @@
 #include "menu.h"
 #include "game.h"
+#include <string>
 
 Menu::Menu(Game* game, Ui* ui, std::vector<LevelData>* levelData)
         : gamePtr(game),
@@ -9,7 +10,9 @@ Menu::Menu(Game* game, Ui* ui, std::vector<LevelData>* levelData)
             buttonsInitialized(false),
             cachedScreenWidth(0),
             cachedScreenHeight(0),
-            currentState(MenuState::Main) {}
+            currentState(MenuState::Main),
+            nextLevelClickAllowedTime(0.0),
+            levelClickDelaySeconds(0.2) {}
 
 void Menu::update() {
     lastMousePos = GetMousePosition();
@@ -101,6 +104,7 @@ void Menu::updateMainMenu() {
     else if (levelsButton.IsClicked())
     {
         currentState = MenuState::Levels;
+        nextLevelClickAllowedTime = GetTime() + levelClickDelaySeconds;
     }
     else if (settingsButton.IsClicked())
     {
@@ -129,9 +133,7 @@ void Menu::updateLevelsMenu() {
 
     // Implement level selection logic here
     // For now, just return to main menu on any button click
-    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-        currentState = MenuState::Main;
-    }
+
 }
 
 void Menu::renderLevelsMenu() {
@@ -140,8 +142,73 @@ void Menu::renderLevelsMenu() {
     int h = GetScreenHeight();
 
     DrawText("WYBOR POZIOMU", w / 2 - 200, h / 2 - 120, 50, WHITE);
-    DrawText("Kliknij, aby powrocic do menu", w / 2 - 220, h - 100, 20, GRAY);
-    // Implement level rendering logic here
+    renderLevelsGrid();
+}
+
+void Menu::renderLevelsGrid() {
+    if (levels == nullptr || levels->empty()) {
+        int w = GetScreenWidth();
+        int h = GetScreenHeight();
+        DrawText("Brak poziomow do wyswietlenia", w / 2 - 180, h / 2, 24, LIGHTGRAY);
+        return;
+    }
+
+    const int columns = 4;
+    const int tileWidth = 180;
+    const int tileHeight = 110;
+    const int spacing = 20;
+
+    int screenWidth = GetScreenWidth();
+    int screenHeight = GetScreenHeight();
+
+    int rows = (static_cast<int>(levels->size()) + columns - 1) / columns;
+    int gridWidth = columns * tileWidth + (columns - 1) * spacing;
+    int gridHeight = rows * tileHeight + (rows - 1) * spacing;
+
+    int startX = screenWidth / 2 - gridWidth / 2;
+    int startY = screenHeight / 2 - gridHeight / 2 + 20;
+
+    const bool isInputLocked = GetTime() < nextLevelClickAllowedTime;
+
+    for (size_t i = 0; i < levels->size(); ++i) {
+        const LevelData& level = levels->at(i);
+        int row = static_cast<int>(i) / columns;
+        int col = static_cast<int>(i) % columns;
+
+        float tileX = static_cast<float>(startX + col * (tileWidth + spacing));
+        float tileY = static_cast<float>(startY + row * (tileHeight + spacing));
+        Rectangle tileRect{tileX, tileY, static_cast<float>(tileWidth), static_cast<float>(tileHeight)};
+
+        Color fillColor = Fade(DARKBLUE, 0.6f);
+        Color borderColor = Fade(SKYBLUE, 0.9f);
+
+        if (CheckCollisionPointRec(lastMousePos, tileRect)) {
+            fillColor = Fade(SKYBLUE, 0.6f);
+            borderColor = WHITE;
+        }
+
+        if (!isInputLocked && CheckCollisionPointRec(lastMousePos, tileRect) 
+            && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+        {
+            fillColor = Fade(SKYBLUE, 0.6f);
+            borderColor = WHITE;
+            gamePtr->setGameState(GameState::Playing);
+            gamePtr->runLevel(level.levelNumber);
+        }
+
+        DrawRectangleRounded(tileRect, 0.1f, 4, fillColor);
+        DrawRectangleRoundedLines(tileRect, 0.1f, 4, borderColor);
+
+        int textX = static_cast<int>(tileX) + 12;
+        int textY = static_cast<int>(tileY) + 16;
+
+        std::string levelLabel = "Poziom " + std::to_string(level.levelNumber);
+        DrawText(levelLabel.c_str(), textX, textY, 20, WHITE);
+
+        DrawText(TextFormat("Trudnosc: %d", level.difficulty), textX, textY + 26, 18, LIGHTGRAY);
+        DrawText(TextFormat("Cel: %s", level.objective.c_str()), textX, textY + 46, 18, GRAY);
+        DrawText(TextFormat("Typ: %d", static_cast<int>(level.type)), textX, textY + 66, 16, SKYBLUE);
+    }
 }
 
 // Settings Menu

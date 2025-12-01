@@ -32,6 +32,7 @@ private:
 
     void updateLevelsMenu();
     void renderLevelsMenu();
+    void renderLevelsGrid();
 
     void updateSettingsMenu();
     void renderSettingsMenu();
@@ -47,6 +48,8 @@ private:
     int cachedScreenHeight;
 
     MenuState currentState;
+    double nextLevelClickAllowedTime;
+    const double levelClickDelaySeconds;
     //menu buttons
     Button quickStartButton;
     Button levelsButton;
