@@ -67,8 +67,6 @@ private:
 	Color BcgColour;
 	GameState gameState;
 	Camera2D camera;
-	float playTimeSeconds;
-	double playSessionStartTime;
 	std::vector<Laser> lasers;
 	std::vector<sAsteroid> asteroids;
 	std::vector<sDrop> drops;

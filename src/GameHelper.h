@@ -30,7 +30,7 @@ public:
     void setDropHelper(DropHelper* helper) { dropHelper = helper; }
     void setPlayer(Player* pPlayer) { player = pPlayer; }
     void setDrops(std::vector<sDrop>* d) { drops = d; }
-
+    void setPlayingTime(float arg) { playingTime = arg; }
 
     void setPointers(std::vector<sEnemy>* enemyList,
         std::vector<Laser>* laserList) {
@@ -38,8 +38,12 @@ public:
         lasers = laserList;
     }
 
+    void setCamera(Camera2D* camera);
+
+    float getPlayingTime() { return playingTime; }
+
     void drawPosition();
-    void handleGameTiming(float playTime);
+    void handleGameTiming();
 private:
     int* playerHealthPtr = nullptr;
     int* playerShieldPtr = nullptr;
@@ -52,4 +56,6 @@ private:
     float dropSpawnChance = 0.30f;
 
     void maybeSpawnDrop(float x, float y);
+
+    float playingTime;
 };

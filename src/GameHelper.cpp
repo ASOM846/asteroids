@@ -131,12 +131,24 @@ void GameHelper::setTextures(TextureManager& textureManager,
     player.setTexture(textureManager.get(TextureId::Player));
 }
 
+void GameHelper::setCamera(Camera2D* camera) {
+    if (!camera) throw std::runtime_error(std::string("FAILED TO SET CAMERA"));
+    if (!player) throw std::runtime_error(std::string("FAILED TO LOAD PLAYER"));
+
+    camera->target = player->getPosition();
+    camera->offset = Vector2{ GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f };
+    camera->rotation = 0.0f;
+    camera->zoom = 1.0f;
+}
+
 void GameHelper::drawPosition() {
     if (!player) return;
     Vector2 pos = player->getPosition();
     DrawText(TextFormat("Player Position: (%d, %d)", (int)pos.x, (int)pos.y), 10, 10, 20, WHITE);
 }
 
-void GameHelper::handleGameTiming(float playTime) {
-    DrawText(TextFormat("Play Time: %.2f s", playTime), 10, 40, 20, WHITE);
+void GameHelper::handleGameTiming() {
+    playingTime += GetFrameTime();
+
+    DrawText(TextFormat("Play Time: %d s", static_cast<int>(playingTime)), 10, 40, 20, WHITE);
 }

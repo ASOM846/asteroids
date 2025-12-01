@@ -27,23 +27,24 @@ void Game::initialize() {
     SetWindowState(FLAG_VSYNC_HINT);
     SetTargetFPS(60);
 
-    camera.target = player.getPosition();
-    camera.offset = (Vector2){ screenWidth / 2.0f, screenHeight / 2.0f };
-    camera.rotation = 0.0f;
-    camera.zoom = 1.0f;
+    textureManager.loadAll();
 
-    enemyManager.setPointers(&textureManager, &enemies, &lasers);
+    gameHelper.setPlayingTime(0.0f);
     gameHelper.setPlayer(&player);
     gameHelper.setPlayerHealthPtr(player.getHealthPtr());
     gameHelper.setPlayerShieldPtr(player.getShieldPtr());
-    textureManager.loadAll();
     gameHelper.setTextures(textureManager, player);
-    asteroidHelper.setTextureManager(textureManager);
-    dropHelper.setTextureManager(textureManager);
     gameHelper.setDropHelper(&dropHelper);
     gameHelper.setDrops(&drops);
     gameHelper.setDropChance(1.00f);
     gameHelper.setPointers(&enemies, &lasers);
+    gameHelper.setCamera(&camera);
+
+    enemyManager.setPointers(&textureManager, &enemies, &lasers);
+
+    asteroidHelper.setTextureManager(textureManager);
+
+    dropHelper.setTextureManager(textureManager);
 }
 
 void Game::shutdown() {
@@ -132,6 +133,7 @@ void Game::updatePlaying() {
     asteroidHelper.updateAsteroids(asteroids, player.getPosition());
     enemyManager.updateEnemies(player.getPosition());
 
+    gameHelper.handleGameTiming();
     gameHelper.handleCollision(lasers, asteroids, player.getRect());
     gameHelper.checkCollisionPlayerDrop(drops, player.getRect());
     gameHelper.checkCollisionLaserPlayerEnemy();

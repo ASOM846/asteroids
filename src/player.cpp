@@ -12,34 +12,7 @@ Player::~Player() {}
 void Player::update() {
     const float dt = GetFrameTime();
 
-    if (IsKeyDown(KEY_A)) rotation -= turnSpeed;
-    if (IsKeyDown(KEY_D)) rotation += turnSpeed;
-
-    const float rad = rotation * (std::numbers::pi_v<float> / 180.0f);
-    const float dirX = std::sin(rad);
-    const float dirY = -std::cos(rad);
-
-    if (IsKeyDown(KEY_W)) {
-        vx += dirX * thrust;
-        vy += dirY * thrust;
-    }
-    if (IsKeyDown(KEY_S)) {
-        vx -= dirX * thrust * 0.6f;
-        vy -= dirY * thrust * 0.6f;
-    }
-
-    vx *= friction;
-    vy *= friction;
-
-    const float speedMag = std::sqrt(vx * vx + vy * vy);
-    if (speedMag > maxSpeed) {
-        const float inv = 1.0f / speedMag;
-        vx *= maxSpeed * inv;
-        vy *= maxSpeed * inv;
-    }
-
-    x += vx;
-    y += vy;
+    move();
 
     const float half = size * 0.5f;
     const int screenW = GetScreenWidth();
@@ -69,11 +42,43 @@ void Player::render() {
     DrawTexturePro(playerTexture, src, dst, origin, texRotation, WHITE);
 }
 
+void Player::move()
+{
+    if (IsKeyDown(KEY_A)) rotation -= turnSpeed;
+    if (IsKeyDown(KEY_D)) rotation += turnSpeed;
+
+    const float rad = rotation * (std::numbers::pi_v<float> / 180.0f);
+    const float dirX = std::sin(rad);
+    const float dirY = -std::cos(rad);
+
+    if (IsKeyDown(KEY_W)) {
+        vx += dirX * thrust;
+        vy += dirY * thrust;
+    }
+    if (IsKeyDown(KEY_S)) {
+        vx -= dirX * thrust * 0.6f;
+        vy -= dirY * thrust * 0.6f;
+    }
+
+    vx *= friction;
+    vy *= friction;
+
+    const float speedMag = std::sqrt(vx * vx + vy * vy);
+    if (speedMag > maxSpeed) {
+        const float inv = 1.0f / speedMag;
+        vx *= maxSpeed * inv;
+        vy *= maxSpeed * inv;
+    }
+
+    x += vx;
+    y += vy;
+}
+
 void Player::tryShoot(std::vector<Laser>& lasers) {
     if (IsKeyDown(KEY_SPACE) && shootTimer <= 0.0f
-            && ammo > 0) {
+        && ammo > 0) {
         ammo--;
-        std::cout << ammo << std::endl;
+        const float dt = GetFrameTime();
         const float rad = rotation * (std::numbers::pi_v<float> / 180.0f);
         const float dirX = std::sin(rad);
         const float dirY = -std::cos(rad);
@@ -82,8 +87,12 @@ void Player::tryShoot(std::vector<Laser>& lasers) {
         const float spawnX = x + dirX * muzzleOffset;
         const float spawnY = y + dirY * muzzleOffset;
 
-        lasers.emplace_back(spawnX, spawnY, 
+        lasers.emplace_back(spawnX, spawnY,
             dirX, dirY, 12.0f, true);
+
+        lasers.back().vx += vx * dt;
+        lasers.back().vy += vy * dt;
+
         shootTimer = shootInterval;
     }
 }

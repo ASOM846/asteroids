@@ -18,6 +18,7 @@ public:
 
     void update();
     void render();
+    void move();
     void tryShoot(std::vector<Laser>& lasers);
 
     Rectangle getRect() const { return { x - size / 2.0f, y - size / 2.0f, size, size }; }
