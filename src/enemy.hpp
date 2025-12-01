@@ -35,8 +35,18 @@ struct sEnemy
     Vector2 getPosition() const { return position; }
     int getRadius() const { return radius; }
 
-    sEnemy(Vector2 pos, EnemyType pType, const Texture2D *tex = nullptr)
-        : position(pos), active(true), type(pType), texture(tex)
+    sEnemy(Vector2 pos, EnemyType pType, 
+        const Texture2D *tex = nullptr)
+        : position(pos),
+          active(true),
+          type(pType),
+          health(0),
+          radius(0),
+          speed(0.0f),
+          texture(tex),
+          rotation(0.0f),
+          shootInterval(0.0f),
+          shootTimer(0.0f)
     {
         struct Params
         {

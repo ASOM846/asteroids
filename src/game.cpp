@@ -1,9 +1,24 @@
 #include "game.h"
 
-Game::Game() : screenWidth(1280), screenHeight(720), player(),
-BcgColour(BLACK), gameHelper(), camera(),
-gameState(GameState::Menu),
-menu(this, &ui) {
+Game::Game()
+        : screenWidth(1280),
+            screenHeight(720),
+            player(),
+            laserHelper(),
+            asteroidHelper(),
+            gameHelper(),
+            textureManager(),
+            ui(),
+            menu(this, &ui, &levels),
+            dropHelper(),
+            enemyManager(),
+            BcgColour(BLACK),
+            gameState(GameState::Menu),
+            camera{},
+            lasers(),
+            asteroids(),
+            drops(),
+            enemies() {
     initialize();
     runLoop();
     shutdown();
@@ -45,6 +60,10 @@ void Game::initialize() {
     asteroidHelper.setTextureManager(textureManager);
 
     dropHelper.setTextureManager(textureManager);
+
+    levelManager.setPointers(&levels, &dropHelper, &player,
+        &asteroidHelper, &drops, &enemies);
+    levelManager.loadLevelsToMemory();
 }
 
 void Game::shutdown() {
@@ -64,6 +83,7 @@ void Game::startGame() {
     asteroids.clear();
     drops.clear();
     player = Player();
+    enemies.clear();
     gameHelper.setPlayerHealthPtr(player.getHealthPtr());
     gameHelper.setTextures(textureManager, player);
     gameState = GameState::Playing;
@@ -120,13 +140,9 @@ void Game::updatePlaying() {
         return;
     }
 
-    if(IsKeyPressed(KEY_H))
-        enemyManager.generateEnemyWave(5, EnemyType::Basic);
-    if(IsKeyPressed(KEY_J))
-        enemyManager.generateEnemyWave(5, EnemyType::Fast);
-    if(IsKeyPressed(KEY_K))
-        enemyManager.generateEnemyWave(5, EnemyType::Tank);
-        
+    if(IsKeyPressed(KEY_I))
+        levelManager.runLevel(1);
+    
     player.update();
     camera.target = player.getPosition();
     laserHelper.updateLasers(lasers, (int)player.getPosition().x, (int)player.getPosition().y);

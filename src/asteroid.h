@@ -3,6 +3,7 @@
 #include <numbers>
 #include <vector>
 #include <algorithm>
+#include <cstddef>
 #include <raylib.h>
 #include "textureManager.h"
 
@@ -28,7 +29,7 @@ struct sAsteroid
     sAsteroid(float px, float py, float dirX, float dirY, float speed, int pRadius,
         const Texture2D* pTexture = nullptr)
         : x(px), y(py), vx(dirX* speed), vy(dirY* speed), active(true),
-        radius(pRadius), health(pRadius),
+        health(pRadius), radius(pRadius),
         rotation(0.0f),
         rotationSpeed((float)GetRandomValue(-40, 40) / 10.0f),
         texture(pTexture)
@@ -51,8 +52,9 @@ struct sAsteroid
         if (!active) return;
         if (texture && texture->id != 0) {
             Rectangle src{ 0,0,(float)texture->width,(float)texture->height };
-            Rectangle dst{ x, y, radius * 2.0f, radius * 2.0f };
-            Vector2 origin{ radius, radius };
+            const float diameter = static_cast<float>(radius) * 2.0f;
+            Rectangle dst{ x, y, diameter, diameter };
+            Vector2 origin{ static_cast<float>(radius), static_cast<float>(radius) };
             DrawTexturePro(*texture, src, dst, origin, rotation, WHITE);
         }
         else {
@@ -67,7 +69,7 @@ struct sAsteroid
             splitAsteroid(asteroids);
     }
 
-    static const Texture2D* randomTextureForRadius(int r) {
+    static const Texture2D* randomTextureForRadius() {
         if (!sTexMgr) return nullptr;
         int pick = GetRandomValue(0, 7);
         TextureId tid =
@@ -111,7 +113,7 @@ struct sAsteroid
             const float rx = dirX * std::cos(rad) - dirY * std::sin(rad);
             const float ry = dirX * std::sin(rad) + dirY * std::cos(rad);
 
-            const Texture2D* childTex = randomTextureForRadius(childRadius);
+            const Texture2D* childTex = randomTextureForRadius();
 
             asteroids.emplace_back(x, y, rx, ry, baseSpeed * 1.1f, childRadius, childTex);
             };
@@ -154,7 +156,7 @@ public:
             [](const sAsteroid& l) { return !l.active; });
         asteroids.erase(it, asteroids.end());
 
-        if (asteroids.size() < asteroidCount)
+        if (asteroidCount > 0 && asteroids.size() < static_cast<std::size_t>(asteroidCount))
             generateAsteroid(asteroids, playerPos);
     }
 
@@ -226,7 +228,7 @@ public:
 
         float speed = (float)GetRandomValue(2, 5);
 
-        const Texture2D* texPtr = sAsteroid::randomTextureForRadius(radius);
+        const Texture2D* texPtr = sAsteroid::randomTextureForRadius();
 
         asteroids.emplace_back(px, py, dirX, dirY, speed, radius, texPtr);
     }

@@ -5,11 +5,11 @@ project(MyCppProject VERSION 1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Opcjonalnie: u¿yj submodu³u raylib w katalogu external/raylib
+# Opcjonalnie: uï¿½yj submoduï¿½u raylib w katalogu external/raylib
 option(RAYLIB_USE_SUBMODULE "Use external/raylib subdirectory if present" OFF)
 
-# Zbierz Ÿród³a
-file(GLOB_RECURSE SRC_FILES
+# Zbierz ï¿½rï¿½dï¿½a
+file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS
     "${CMAKE_SOURCE_DIR}/src/*.cpp"
     "${CMAKE_SOURCE_DIR}/src/*.c"
     "${CMAKE_SOURCE_DIR}/src/*.hpp"
@@ -18,10 +18,10 @@ file(GLOB_RECURSE SRC_FILES
 
 add_executable(MyCppProject ${SRC_FILES})
 
-# --- Znajdowanie raylib w ró¿nych œrodowiskach --------------------------------
+# --- Znajdowanie raylib w rï¿½nych ï¿½rodowiskach --------------------------------
 set(RAYLIB_TARGET "")
 
-# 1) Najpierw spróbuj znaleŸæ pakiet CMake (np. z vcpkg lub instalacji z config)
+# 1) Najpierw sprï¿½buj znaleï¿½ï¿½ pakiet CMake (np. z vcpkg lub instalacji z config)
 find_package(raylib CONFIG QUIET)
 if(raylib_FOUND)
     if(TARGET raylib)
@@ -31,7 +31,7 @@ if(raylib_FOUND)
     endif()
 endif()
 
-# 2) Jeœli nie znaleziono, na systemach UNIX spróbuj przez pkg-config
+# 2) Jeï¿½li nie znaleziono, na systemach UNIX sprï¿½buj przez pkg-config
 if(NOT RAYLIB_TARGET)
     find_package(PkgConfig QUIET)
     if(PkgConfig_FOUND)
@@ -46,7 +46,7 @@ if(NOT RAYLIB_TARGET)
     endif()
 endif()
 
-# 3) Je¿eli masz raylib jako submodule w external/raylib i w³¹czy³eœ opcjê, dodaj go
+# 3) Jeï¿½eli masz raylib jako submodule w external/raylib i wï¿½ï¿½czyï¿½eï¿½ opcjï¿½, dodaj go
 if(NOT RAYLIB_TARGET AND RAYLIB_USE_SUBMODULE)
     if(EXISTS "${CMAKE_SOURCE_DIR}/external/raylib/CMakeLists.txt")
         add_subdirectory(external/raylib)
@@ -58,7 +58,7 @@ if(NOT RAYLIB_TARGET AND RAYLIB_USE_SUBMODULE)
     endif()
 endif()
 
-# 4) Je¿eli dalej nie znaleziono — komunikat z instrukcjami
+# 4) Jeï¿½eli dalej nie znaleziono ï¿½ komunikat z instrukcjami
 if(NOT RAYLIB_TARGET)
     message(FATAL_ERROR
       "raylib not found.\n"
@@ -74,7 +74,7 @@ target_link_libraries(MyCppProject PRIVATE ${RAYLIB_TARGET})
 
 # Drobne ustawienia dla wygody deweloperskiej
 if(MSVC)
-    # na Windows wy³¹cz niepotrzebne warnings lub ustaw tryb wyjœcia konsoli jeœli potrzebne
+    # na Windows wyï¿½ï¿½cz niepotrzebne warnings lub ustaw tryb wyjï¿½cia konsoli jeï¿½li potrzebne
     target_compile_options(MyCppProject PRIVATE /W4)
 else()
     target_compile_options(MyCppProject PRIVATE -Wall -Wextra -Wpedantic)

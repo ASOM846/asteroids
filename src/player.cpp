@@ -1,10 +1,26 @@
 #include "player.h"
 
-Player::Player() : x(GetScreenWidth()/2), y(GetScreenHeight()/2), speed(5.0f), rotation(0.0f),
-turnSpeed(3.5f), health(100), shield(0), size(50), vPosition{ x,y },
-vx(0.0f), vy(0.0f), thrust(0.18f), friction(0.985f),
-maxSpeed(9.0f), shootInterval(0.18f), shootTimer(0.0f), ammo(300),
-maxAmmo(500),score(0) {
+Player::Player()
+        : size(50.0f),
+            x(GetScreenWidth() / 2.0f),
+            y(GetScreenHeight() / 2.0f),
+            speed(5.0f),
+            rotation(0.0f),
+            turnSpeed(3.5f),
+            health(100),
+            shield(0),
+            ammo(300),
+            maxAmmo(500),
+            score(0),
+            vx(0.0f),
+            vy(0.0f),
+            thrust(0.18f),
+            friction(0.985f),
+            maxSpeed(9.0f),
+            shootInterval(0.18f),
+            shootTimer(0.0f),
+            playerTexture{},
+            vPosition{ x, y } {
 }
 
 Player::~Player() {}

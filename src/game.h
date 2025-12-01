@@ -13,6 +13,8 @@
 #include "menu.h"
 #include "ui.h"
 #include "enemy.hpp"
+#include "button.hpp"
+#include "levelManager.hpp"
 
 enum class GameState {
 	Menu,
@@ -63,6 +65,7 @@ private:
 	Menu menu;
 	DropHelper dropHelper;
 	EnemyManager enemyManager;
+	LevelManager levelManager;
 
 	Color BcgColour;
 	GameState gameState;
@@ -71,4 +74,5 @@ private:
 	std::vector<sAsteroid> asteroids;
 	std::vector<sDrop> drops;
 	std::vector<sEnemy> enemies;
+	std::vector<LevelData> levels;
 };
