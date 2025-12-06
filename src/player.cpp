@@ -71,6 +71,7 @@ void Player::move()
         vx += dirX * thrust;
         vy += dirY * thrust;
     }
+    
     if (IsKeyDown(KEY_S)) {
         vx -= dirX * thrust * 0.6f;
         vy -= dirY * thrust * 0.6f;

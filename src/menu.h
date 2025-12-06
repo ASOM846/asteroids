@@ -21,6 +21,7 @@ public:
     void update();
     void render();
 
+    void setMenuState(MenuState newState);
 private:
     void renderStars();
     void initButtons(int screenWidth, int screenHeight);
@@ -55,4 +56,5 @@ private:
     Button levelsButton;
     Button settingsButton;
     Button exitButton;
+    Button backButton;
 };

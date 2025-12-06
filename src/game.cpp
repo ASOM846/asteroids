@@ -48,7 +48,6 @@ void Game::initialize() {
 
     textureManager.loadAll();
 
-    gameHelper.setPlayingTime(0.0f);
     gameHelper.setPlayer(&player);
     gameHelper.setPlayerHealthPtr(player.getHealthPtr());
     gameHelper.setPlayerShieldPtr(player.getShieldPtr());
@@ -68,6 +67,12 @@ void Game::initialize() {
     levelManager.setPointers(&levels, &dropHelper, &player,
         &asteroidHelper, &drops, &enemies);
     levelManager.loadLevelsToMemory();
+    levelManager.reset();
+
+    // powiadom Game, aby po zakończeniu poziomu wrócił do menu
+    levelManager.setOnLevelComplete([this]() {
+        this->setGameState(GameState::Menu);
+    });
 }
 
 void Game::shutdown() {
@@ -153,11 +158,12 @@ void Game::updatePlaying() {
     asteroidHelper.updateAsteroids(asteroids, player.getPosition());
     enemyManager.updateEnemies(player.getPosition());
 
-    gameHelper.handleGameTiming();
     gameHelper.handleCollision(lasers, asteroids, player.getRect());
     gameHelper.checkCollisionPlayerDrop(drops, player.getRect());
     gameHelper.checkCollisionLaserPlayerEnemy();
 
+    levelManager.updateCurrentLevel();
+    
     dropHelper.updateDrops(drops);
 
     player.tryShoot(lasers);
@@ -177,9 +183,11 @@ void Game::renderPlaying() {
 
     ui.draw(player.getHealth(), player.getShield(), 
             player.getAmmo(), player.getMaxAmmo(),
-        player.getScore());
+            player.getScore(), levelManager.getRemainingLevelTime());
 
     gameHelper.drawPosition();
+
+    levelManager.drawLevelEndOverlay(screenWidth, screenHeight);
 }
 
 void Game::updatePaused() {
@@ -201,7 +209,7 @@ void Game::renderPaused() {
 
     ui.draw(player.getHealth(), player.getShield(), 
             player.getAmmo(),player.getMaxAmmo(),
-            player.getScore());
+            player.getScore(), levelManager.getRemainingLevelTime());
 
     DrawRectangle(0, 0, screenWidth, screenHeight, Fade(BLACK, 0.6f));
     DrawText("PAUZA", screenWidth / 2 - 90, screenHeight / 2 - 40, 50, WHITE);

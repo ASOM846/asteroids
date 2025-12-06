@@ -10,7 +10,8 @@ public:
     ~Ui();
 
     void draw(int health, int shield, 
-            int ammo, int maxAmmo, int score);
+            int ammo, int maxAmmo, int score,
+            float remainingLevelTime);
 
     void drawStars(Vector2 playerPos);
 

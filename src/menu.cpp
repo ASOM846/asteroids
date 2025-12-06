@@ -45,6 +45,12 @@ void Menu::render() {
     }
 }
 
+void Menu::setMenuState(MenuState newState) {
+    if (currentState == newState)
+        return;
+    currentState = newState;
+}
+
 void Menu::renderStars() {
     uiPtr->drawStars(lastMousePos);
 }
@@ -75,10 +81,10 @@ void Menu::initButtons(int w, int h) {
     int startY = h / 2 - totalHeight / 2 + verticalOffset;
     int x = w / 2 - btnW / 2;
 
-    quickStartButton = Button(x, startY + (btnH + spacing) * 0, btnW, btnH, "Szybki Start");
-    levelsButton     = Button(x, startY + (btnH + spacing) * 1, btnW, btnH, "Wybor Poziomu");
-    settingsButton   = Button(x, startY + (btnH + spacing) * 2, btnW, btnH, "Ustawienia");
-    exitButton       = Button(x, startY + (btnH + spacing) * 3, btnW, btnH, "Wyjscie");
+    quickStartButton = Button(x, startY + (btnH + spacing) * 0, btnW, btnH, "Quick Start");
+    levelsButton     = Button(x, startY + (btnH + spacing) * 1, btnW, btnH, "Level Selection");
+    settingsButton   = Button(x, startY + (btnH + spacing) * 2, btnW, btnH, "Settings");
+    exitButton       = Button(x, startY + (btnH + spacing) * 3, btnW, btnH, "Exit");
 }
 
 void Menu::renderButtons() {
@@ -130,10 +136,6 @@ void Menu::renderMainMenu() {
 
 void Menu::updateLevelsMenu() {
     updateLayout();
-
-    // Implement level selection logic here
-    // For now, just return to main menu on any button click
-
 }
 
 void Menu::renderLevelsMenu() {
@@ -209,6 +211,12 @@ void Menu::renderLevelsGrid() {
         DrawText(TextFormat("Cel: %s", level.objective.c_str()), textX, textY + 46, 18, GRAY);
         DrawText(TextFormat("Typ: %d", static_cast<int>(level.type)), textX, textY + 66, 16, SKYBLUE);
     }
+
+    //back to menu button
+    Button backButton(screenWidth / 2 - 100, screenHeight - 80, 200, 50, "Menu");
+    backButton.Draw();
+    if (backButton.IsClicked()) 
+        currentState = MenuState::Main;
 }
 
 // Settings Menu
@@ -216,8 +224,6 @@ void Menu::renderLevelsGrid() {
 void Menu::updateSettingsMenu() {
     updateLayout();
 
-    // Implement settings adjustment logic here
-    // For now, just return to main menu on any button click
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
         currentState = MenuState::Main;
     }
@@ -230,5 +236,4 @@ void Menu::renderSettingsMenu() {
 
     DrawText("USTAWIENIA", w / 2 - 150, h / 2 - 120, 50, WHITE);
     DrawText("Kliknij, aby powrocic do menu", w / 2 - 220, h - 100, 20, GRAY);
-    // Implement settings rendering logic here
 }

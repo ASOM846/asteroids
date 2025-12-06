@@ -59,17 +59,37 @@ void Ui::initStarLayers(int screenW, int screenH) {
     }
 }
 
-void Ui::draw(int health, int shield, int ammo, int maxAmmo, int score) {
+void Ui::draw(int health, int shield, int ammo,
+         int maxAmmo, int score, float remainingLevelTime) {
     const int screenW = GetScreenWidth();
     const int screenH = GetScreenHeight();
 
     // Matrix-like greens
     Color matrixGlow = {80, 255, 120, 220};
+    // shadow color (używane przez rysowanie tekstów)
+    // przeniesione tutaj, aby nie używać przed deklaracją
     Color shadowCol  = {0, 0, 0, 160};
 
-    // Bottom band baseline
+    // Bottom band baseline (przeniesione wyżej, bo czas używa bandY)
     const int bandHeight = 140;
     const int bandY = screenH - bandHeight;
+
+    // RIGHT SIDE: remaining level time (format MM:SS)
+    int timeFont = 20;
+    int timeSec = std::max(0, (int)std::ceil(remainingLevelTime));
+    int minutes = timeSec / 60;
+    int seconds = timeSec % 60;
+    char timeBuf[16];
+    std::snprintf(timeBuf, sizeof(timeBuf), "%02d:%02d", minutes, seconds);
+    std::string timeStr(timeBuf);
+
+    int timeW = MeasureText(timeStr.c_str(), timeFont);
+    int timeX = screenW - 36 - timeW;
+    int timeY = bandY + 80;
+
+    DrawText("TIME", timeX - 20, timeY - 18, 12, matrixGlow);
+    DrawText(timeStr.c_str(), timeX + 2, timeY + 2, timeFont, shadowCol);
+    DrawText(timeStr.c_str(), timeX, timeY, timeFont, matrixGlow);
 
     // LEFT: vertical HP and Shield, placed on bottom-left, no frames
     const int leftX = 36;
