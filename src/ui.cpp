@@ -1,13 +1,15 @@
 #include "ui.h"
+#include "game.h"
 #include <string>
 #include <algorithm>
 #include <cmath>
 #include <random>
 
-Ui::Ui() : cachedWidth(0), cachedHeight(0), hasLastPlayerPos(false) {
+Ui::Ui() : cachedWidth(0), cachedHeight(0), hasLastPlayerPos(false){
     std::random_device rd;
     rng.seed(rd());
 }
+
 Ui::~Ui() {}
 
 void Ui::initStarLayers(int screenW, int screenH) {
@@ -242,4 +244,40 @@ void Ui::drawStars(Vector2 playerPos) {
             }
         }
     }
+}
+
+void Ui::setGame(Game* g) {
+    game = g;
+}
+
+void Ui::initButtons(int sW, int sH)
+{
+    const float btnW = 200.0f;
+    const float btnH = 50.0f;
+    const float x = sW / 2.0f - 90.0f;
+    const float resumeY = sH / 2.0f + 30.0f;
+    const float mainMenuY = sH / 2.0f + 100.0f;
+
+    resumeButton = Button(x, resumeY, btnW, btnH, std::string("WZNAWIAJ"));
+    mainMenuButton = Button(x, mainMenuY, btnW, btnH, std::string("MENU GLOWNE"));
+}
+
+void Ui::renderPauseOverlay(int sW, int sH)
+{
+    DrawRectangle(0, 0, sW, sH, Fade(BLACK, 0.6f));
+    DrawText("PAUZED", sW / 2 - 90, sH / 2 - 40, 50, WHITE);
+	resumeButton.Draw();
+	mainMenuButton.Draw();
+}
+
+void Ui::updatePauseOverlay(int sW, int sH)
+{
+	if (resumeButton.IsClicked())
+        {
+        game->togglePause();
+	}
+	else if (mainMenuButton.IsClicked())
+	{
+		game->setGameState(GameState::Menu);
+	}
 }

@@ -29,6 +29,11 @@ Game::~Game() {}
 void Game::setGameState(GameState newState) {
     if (gameState == newState) return;
     gameState = newState;
+    if (gameState == GameState::Menu) {
+        // ensure menu input is briefly locked when entering menu (avoid consuming
+        // a mouse press that triggered the transition)
+        menu.setMenuState(MenuState::Main);
+    }
     if (gameState == GameState::Playing) {
         startGame();
     }
@@ -68,6 +73,9 @@ void Game::initialize() {
         &asteroidHelper, &drops, &enemies);
     levelManager.loadLevelsToMemory();
     levelManager.reset();
+
+	ui.initButtons(screenWidth, screenHeight);
+	ui.setGame(this);
 
     // powiadom Game, aby po zakończeniu poziomu wrócił do menu
     levelManager.setOnLevelComplete([this]() {
@@ -194,6 +202,7 @@ void Game::updatePaused() {
     if (IsKeyPressed(KEY_ESCAPE) || IsKeyPressed(KEY_P)) {
         togglePause();
     }
+	ui.updatePauseOverlay(screenWidth, screenHeight);
 }
 
 void Game::renderPaused() {
@@ -211,9 +220,7 @@ void Game::renderPaused() {
             player.getAmmo(),player.getMaxAmmo(),
             player.getScore(), levelManager.getRemainingLevelTime());
 
-    DrawRectangle(0, 0, screenWidth, screenHeight, Fade(BLACK, 0.6f));
-    DrawText("PAUZA", screenWidth / 2 - 90, screenHeight / 2 - 40, 50, WHITE);
-    DrawText("ESC/P - Wznow", screenWidth / 2 - 150, screenHeight / 2 + 30, 30, GRAY);
+    ui.renderPauseOverlay(screenWidth, screenHeight);
 }
 
 void Game::updateGameOver() {

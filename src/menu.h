@@ -1,19 +1,20 @@
 #pragma once
 #include <raylib.h>
 #include <vector>
-#include "ui.h"
 #include "button.hpp"
 #include "levelManager.hpp"
 #include "GameHelper.h"
 
 enum class GameState;
 class Game;
+class Ui;
 
 enum class MenuState {
     Main,
     Levels,
     Settings
 };
+
 class Menu {
 public:
     explicit Menu(Game* game, Ui* ui, 
@@ -49,8 +50,9 @@ private:
     int cachedScreenHeight;
 
     MenuState currentState;
-    double nextLevelClickAllowedTime;
+    double nextInputAllowedTime;
     const double levelClickDelaySeconds;
+
     //menu buttons
     Button quickStartButton;
     Button levelsButton;

@@ -32,6 +32,7 @@ class Game
 	void setGameState(GameState newState);
 	void runLevel(int levelNumber);
 
+	void togglePause();
 private:
 	void initialize();
 	void shutdown();
@@ -51,8 +52,6 @@ private:
 	void renderPaused();
 	void updateGameOver();
 	void renderGameOver();
-
-	void togglePause();
 
 	int screenWidth;
 	int screenHeight;

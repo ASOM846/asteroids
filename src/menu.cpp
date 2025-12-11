@@ -1,4 +1,5 @@
 #include "menu.h"
+#include "ui.h"
 #include "game.h"
 #include <string>
 
@@ -11,7 +12,7 @@ Menu::Menu(Game* game, Ui* ui, std::vector<LevelData>* levelData)
             cachedScreenWidth(0),
             cachedScreenHeight(0),
             currentState(MenuState::Main),
-            nextLevelClickAllowedTime(0.0),
+            nextInputAllowedTime(0.0),
             levelClickDelaySeconds(0.2) {}
 
 void Menu::update() {
@@ -49,6 +50,7 @@ void Menu::setMenuState(MenuState newState) {
     if (currentState == newState)
         return;
     currentState = newState;
+    nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
 }
 
 void Menu::renderStars() {
@@ -85,6 +87,7 @@ void Menu::initButtons(int w, int h) {
     levelsButton     = Button(x, startY + (btnH + spacing) * 1, btnW, btnH, "Level Selection");
     settingsButton   = Button(x, startY + (btnH + spacing) * 2, btnW, btnH, "Settings");
     exitButton       = Button(x, startY + (btnH + spacing) * 3, btnW, btnH, "Exit");
+    backButton       = Button(w / 2 - btnW / 2, h - 80, btnW, btnH, "Menu");
 }
 
 void Menu::renderButtons() {
@@ -102,23 +105,29 @@ void Menu::renderButtons() {
 
 void Menu::updateMainMenu() {
     updateLayout();
+    const bool isInputLocked = GetTime() < nextInputAllowedTime;
+
+    if (isInputLocked) return;
 
     if (quickStartButton.IsClicked())
     {
         gamePtr->setGameState(GameState::Playing);
+        nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
     }
     else if (levelsButton.IsClicked())
     {
         currentState = MenuState::Levels;
-        nextLevelClickAllowedTime = GetTime() + levelClickDelaySeconds;
+        nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
     }
     else if (settingsButton.IsClicked())
     {
         currentState = MenuState::Settings;
+        nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
     }
     else if (exitButton.IsClicked())
     {
         CloseWindow();
+        nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
     }
 }
 
@@ -170,7 +179,7 @@ void Menu::renderLevelsGrid() {
     int startX = screenWidth / 2 - gridWidth / 2;
     int startY = screenHeight / 2 - gridHeight / 2 + 20;
 
-    const bool isInputLocked = GetTime() < nextLevelClickAllowedTime;
+    const bool isInputLocked = GetTime() < nextInputAllowedTime;
 
     for (size_t i = 0; i < levels->size(); ++i) {
         const LevelData& level = levels->at(i);
@@ -196,6 +205,7 @@ void Menu::renderLevelsGrid() {
             borderColor = WHITE;
             gamePtr->setGameState(GameState::Playing);
             gamePtr->runLevel(level.levelNumber);
+            nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
         }
 
         DrawRectangleRounded(tileRect, 0.1f, 4, fillColor);
@@ -213,10 +223,12 @@ void Menu::renderLevelsGrid() {
     }
 
     //back to menu button
-    Button backButton(screenWidth / 2 - 100, screenHeight - 80, 200, 50, "Menu");
+    backButton.SetPosition(screenWidth / 2 - static_cast<int>(backButton.GetWidth() / 2), screenHeight - 80);
     backButton.Draw();
-    if (backButton.IsClicked()) 
+    if (!isInputLocked && backButton.IsClicked()) {
         currentState = MenuState::Main;
+        nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
+    }
 }
 
 // Settings Menu
