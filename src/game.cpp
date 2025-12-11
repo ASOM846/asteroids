@@ -30,8 +30,6 @@ void Game::setGameState(GameState newState) {
     if (gameState == newState) return;
     gameState = newState;
     if (gameState == GameState::Menu) {
-        // ensure menu input is briefly locked when entering menu (avoid consuming
-        // a mouse press that triggered the transition)
         menu.setMenuState(MenuState::Main);
     }
     if (gameState == GameState::Playing) {
