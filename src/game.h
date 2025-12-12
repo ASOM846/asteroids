@@ -31,12 +31,9 @@ class Game
 	~Game();
 
 	void setGameState(GameState newState);
-	void runLevel(int levelNumber);
 
-	void togglePause();
 private:
-	void initialize();
-	void shutdown();
+
 	void runLoop();
 
 	void startGame();
@@ -56,33 +53,16 @@ private:
 
 	int screenWidth;
 	int screenHeight;
-	
-	Player player;
-	LaserHelper laserHelper;
-	AsteroidHelper asteroidHelper;
-	GameHelper gameHelper;
-	TextureManager textureManager;
-	Ui ui;
+
 	Menu menu;
-	DropHelper dropHelper;
-	EnemyManager enemyManager;
-	LevelManager levelManager;
-	CustomShipManager customShipManager;
+
 
 	Color BcgColour;
 	GameState gameState;
-	Camera2D camera;
-	std::vector<Laser> lasers;
-	std::vector<sAsteroid> asteroids;
-	std::vector<sDrop> drops;
-	std::vector<sEnemy> enemies;
-	std::vector<LevelData> levels;
-	std::vector<CustomShip> customShips;
 
 	/*
 	* GameState gameState;
 	friend class GameHelper;
-
 	*/
 
 };
