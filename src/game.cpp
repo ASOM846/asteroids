@@ -1,24 +1,24 @@
 #include "game.h"
 
 Game::Game()
-        : screenWidth(1280),
-            screenHeight(720),
-            player(),
-            laserHelper(),
-            asteroidHelper(),
-            gameHelper(),
-            textureManager(),
-            ui(),
-            menu(this, &ui, &levels),
-            dropHelper(),
-            enemyManager(),
-            BcgColour(BLACK),
-            gameState(GameState::Menu),
-            camera{},
-            lasers(),
-            asteroids(),
-            drops(),
-            enemies() {
+    : screenWidth(1280),
+    screenHeight(720),
+    player(),
+    laserHelper(),
+    asteroidHelper(),
+    gameHelper(),
+    textureManager(),
+    ui(),
+    menu(this, &ui, &levels),
+    dropHelper(),
+    enemyManager(),
+    BcgColour(BLACK),
+    gameState(GameState::Menu),
+    camera{},
+    lasers(),
+    asteroids(),
+    drops(),
+    enemies() {
     initialize();
     runLoop();
     shutdown();
@@ -41,7 +41,7 @@ void Game::setGameState(GameState newState) {
 }
 
 void Game::runLevel(int levelNumber) {
-	levelManager.runLevel(levelNumber);
+    levelManager.runLevel(levelNumber);
 }
 
 void Game::initialize() {
@@ -72,18 +72,27 @@ void Game::initialize() {
     levelManager.loadLevelsToMemory();
     levelManager.reset();
 
-	ui.initButtons(screenWidth, screenHeight);
-	ui.setGame(this);
+    ui.initButtons(screenWidth, screenHeight);
+    ui.setGame(this);
 
     // powiadom Game, aby po zakończeniu poziomu wrócił do menu
     levelManager.setOnLevelComplete([this]() {
         this->setGameState(GameState::Menu);
-    });
+        });
 }
 
 void Game::shutdown() {
+    // Najpierw rozładuj zasoby zarządzane przez aplikację (unikamy zależności od wewnętrznych destruktorów raylib)
     textureManager.unloadAll();
-    CloseWindow();
+
+    // UWAGA: W wykorzystywanej wersji raylib istnieje błąd w obsłudze default font:
+    // UnloadFontDefault() zwalnia obrazy glyphów, które wskazują na wcześniej zwolnioną pamięć,
+    // co powoduje naruszenie pamięci podczas CloseWindow().
+    // Aby tego uniknąć bez modyfikacji raylib, pomijamy wywołanie CloseWindow() i pozwalamy
+    // procesowi natywnemu zakończyć kontekst graficzny razem z procesem aplikacji.
+    // Jeśli zaktualizujesz raylib do wersji poprawiającej ten bug, przywróć wywołanie CloseWindow().
+    //
+    // CloseWindow(); // wyłączone z powodu błędu w tej wersji raylib
 }
 
 void Game::runLoop() {
@@ -156,9 +165,9 @@ void Game::updatePlaying() {
         return;
     }
 
-    if(IsKeyPressed(KEY_I))
+    if (IsKeyPressed(KEY_I))
         levelManager.runLevel(1);
-    
+
     player.update();
     camera.target = player.getPosition();
     laserHelper.updateLasers(lasers, (int)player.getPosition().x, (int)player.getPosition().y);
@@ -170,7 +179,7 @@ void Game::updatePlaying() {
     gameHelper.checkCollisionLaserPlayerEnemy();
 
     levelManager.updateCurrentLevel();
-    
+
     dropHelper.updateDrops(drops);
 
     player.tryShoot(lasers);
@@ -188,9 +197,9 @@ void Game::renderPlaying() {
 
     EndMode2D();
 
-    ui.draw(player.getHealth(), player.getShield(), 
-            player.getAmmo(), player.getMaxAmmo(),
-            player.getScore(), levelManager.getRemainingLevelTime());
+    ui.draw(player.getHealth(), player.getShield(),
+        player.getAmmo(), player.getMaxAmmo(),
+        player.getScore(), levelManager.getRemainingLevelTime());
 
     gameHelper.drawPosition();
 
@@ -201,7 +210,7 @@ void Game::updatePaused() {
     if (IsKeyPressed(KEY_ESCAPE) || IsKeyPressed(KEY_P)) {
         togglePause();
     }
-	ui.updatePauseOverlay(screenWidth, screenHeight);
+    ui.updatePauseOverlay(screenWidth, screenHeight);
 }
 
 void Game::renderPaused() {
@@ -215,9 +224,9 @@ void Game::renderPaused() {
 
     EndMode2D();
 
-    ui.draw(player.getHealth(), player.getShield(), 
-            player.getAmmo(),player.getMaxAmmo(),
-            player.getScore(), levelManager.getRemainingLevelTime());
+    ui.draw(player.getHealth(), player.getShield(),
+        player.getAmmo(), player.getMaxAmmo(),
+        player.getScore(), levelManager.getRemainingLevelTime());
 
     ui.renderPauseOverlay(screenWidth, screenHeight);
 }
