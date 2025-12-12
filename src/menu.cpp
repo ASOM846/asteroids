@@ -152,7 +152,7 @@ void Menu::renderLevelsMenu() {
     int w = GetScreenWidth();
     int h = GetScreenHeight();
 
-    DrawText("WYBOR POZIOMU", w / 2 - 200, h / 2 - 120, 50, WHITE);
+    DrawText("LEVEL SELECTION", w / 2 - 250, h / 2 - 200, 50, WHITE);
     renderLevelsGrid();
 }
 
@@ -217,9 +217,9 @@ void Menu::renderLevelsGrid() {
         std::string levelLabel = "Poziom " + std::to_string(level.levelNumber);
         DrawText(levelLabel.c_str(), textX, textY, 20, WHITE);
 
-        DrawText(TextFormat("Trudnosc: %d", level.difficulty), textX, textY + 26, 18, LIGHTGRAY);
-        DrawText(TextFormat("Cel: %s", level.objective.c_str()), textX, textY + 46, 18, GRAY);
-        DrawText(TextFormat("Typ: %d", static_cast<int>(level.type)), textX, textY + 66, 16, SKYBLUE);
+        DrawText(TextFormat("Difficulty: %d", level.difficulty), textX, textY + 26, 18, LIGHTGRAY);
+        DrawText(TextFormat("%s", level.objective.c_str()), textX, textY + 50, 15, GRAY);
+        //DrawText(TextFormat("Type: %d", static_cast<int>(level.type)), textX, textY + 66, 16, SKYBLUE);
     }
 
     //back to menu button

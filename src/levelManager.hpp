@@ -7,8 +7,8 @@
 #include "enemy.hpp"
 #include "player.h"
 #include <iostream>
-#include <functional> // <-- added
-#include <string>     // <-- optional, useful for drawing text
+#include <functional>
+#include <string>
 
 enum class LevelType {
     SurviveAsteroidField,
@@ -54,12 +54,14 @@ public:
         DropHelper* dh,
         Player* p,
         AsteroidHelper* ah,
+        EnemyManager* em,
         std::vector<sDrop>* dropVec,
         std::vector<sEnemy>* enemyVec) {
         levels = levelVec;
         dropHelper = dh;
         player = p;
         asteroidHelper = ah;
+        enemyManager = em;
         drops = dropVec;
         enemies = enemyVec;
     }
@@ -73,6 +75,7 @@ private:
     DropHelper *dropHelper = nullptr;
     Player *player = nullptr;
     AsteroidHelper *asteroidHelper = nullptr;
+	EnemyManager* enemyManager = nullptr;
     std::vector<sDrop> *drops = nullptr;
     std::vector<sEnemy> *enemies = nullptr;
 
@@ -86,6 +89,8 @@ private:
     void updateAsteroidFieldLevel();
 
 	void initEnemyInvasionLevel(const LevelData &level);
+	void updateEnemyInvasionLevel();
+
 
     std::function<void()> onLevelComplete;
     bool levelEnding = false;

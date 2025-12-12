@@ -6,6 +6,7 @@
 #include <vector>
 #include <algorithm>
 #include <raylib.h>
+#include <iostream>
 #include "textureManager.h"
 #include "laser.h"
 
@@ -137,7 +138,9 @@ struct sEnemy
 
 class EnemyManager {
 public:
-    EnemyManager() {}
+    EnemyManager()
+        : killedEnemies(0), activeCounts{{0,0,0}}, desiredCounts{{0,0,0}},
+          texManager(nullptr), enemies(nullptr), lasers(nullptr) {}
     ~EnemyManager() {}
 
 
@@ -147,19 +150,31 @@ public:
         texManager = tm;
         enemies = enemyList;
         lasers = laserList;
+        // compute initial active counts for the provided enemy list
+        recomputeActiveCounts();
     }
 
     void updateEnemies(const Vector2 &playerPos)
     {
         if (!enemies) return;
+
+        // First, update all active enemies
         for (auto &e : *enemies) {
             if (e.active) e.update(playerPos, *lasers);
-            if (!e.active) {
-                enemies->erase(std::remove_if(enemies->begin(), enemies->end(),
-                    [](const sEnemy &en) { return !en.active; }), enemies->end());
-                break;
-            }
         }
+
+        const size_t before = enemies->size();
+        auto it = std::remove_if(enemies->begin(), enemies->end(),
+            [](const sEnemy &en) { return !en.active; });
+        const size_t removed = static_cast<size_t>(std::distance(it, enemies->end()));
+        if (removed > 0) {
+            // increase killedEnemies by number removed
+            killedEnemies += static_cast<int>(removed);
+            enemies->erase(it, enemies->end());
+        }
+
+        recomputeActiveCounts();
+        ensureDesiredCounts();
     }
 
     void renderEnemies()
@@ -169,6 +184,41 @@ public:
             e.render();
         }
     }
+
+    void resetEnemies(void) {
+        if (enemies) enemies->clear();
+        killedEnemies = 0;
+        activeCounts.fill(0);
+	}
+
+    // Return number of active enemies for given type
+    int getActiveCount(EnemyType type) const {
+        const auto idx = static_cast<size_t>(type);
+        if (idx >= activeCounts.size()) return 0;
+        return activeCounts[idx];
+    }
+
+    // Return array with active counts for all enemy types
+    std::array<int, 3> getActiveCounts() const { return activeCounts; }
+
+    void setDesiredCount(EnemyType type, int count) {
+        if (count < 0) count = 0;
+        desiredCounts[static_cast<size_t>(type)] = count;
+    }
+
+    void setDesiredCounts(const std::array<int, 3>& counts) {
+        for (size_t i = 0; i < desiredCounts.size(); ++i) {
+            desiredCounts[i] = counts[i] < 0 ? 0 : counts[i];
+        }
+    }
+
+    int getDesiredCount(EnemyType type) const {
+        return desiredCounts[static_cast<size_t>(type)];
+    }
+
+	int getKilledEnemies() const { return killedEnemies; }
+
+    std::array<int, 3> getDesiredCounts() const { return desiredCounts; }
 
     void generateEnemy(EnemyType type)  {
         if (!enemies || !texManager) return;
@@ -195,6 +245,10 @@ public:
         }
 
         enemies->emplace_back(enemy);
+        // Update active counts after adding a new enemy
+        recomputeActiveCounts();
+        std::cout << "Generated enemy of type " << static_cast<int>(type) << " at (" 
+			<< pos.x << ", " << pos.y << ")\n";
     }
 
     void generateEnemyWave(int count, EnemyType type)
@@ -217,7 +271,39 @@ public:
     }
     
 private:
+    int killedEnemies;
+    std::array<int, 3> activeCounts{{0,0,0}};
+    std::array<int, 3> desiredCounts{{0,0,0}};
+
     TextureManager* texManager = nullptr;
     std::vector<sEnemy>* enemies = nullptr;
     std::vector<Laser>* lasers = nullptr;
+
+    void recomputeActiveCounts()
+    {
+        activeCounts.fill(0);
+        if (!enemies) return;
+        for (const auto &e : *enemies) {
+            if (e.active) {
+                const auto idx = static_cast<size_t>(e.type);
+                if (idx < activeCounts.size()) ++activeCounts[idx];
+            }
+        }
+    }
+
+    // Spawn enemies to reach desired counts (will use generateEnemy)
+    void ensureDesiredCounts()
+    {
+        if (!enemies || !texManager) return;
+        // recompute first to ensure up-to-date
+        recomputeActiveCounts();
+        for (size_t i = 0; i < desiredCounts.size(); ++i) {
+            int desired = desiredCounts[i];
+            int current = activeCounts[i];
+            while (current < desired) {
+                generateEnemy(static_cast<EnemyType>(i));
+                ++current;
+            }
+        }
+    }
 };

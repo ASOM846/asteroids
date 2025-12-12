@@ -23,8 +23,8 @@ void LevelManager::runLevel(int levelNumber) {
                 std::cout << "Starting Asteroid Field Level " << level.levelNumber << "\n";
                 break;
             case LevelType::EnemyInvasion:
-				//initEnemyInvasionLevel(level); 
-
+				initEnemyInvasionLevel(level);
+                std::cout << "Starting Enemy Invasion Level " << level.levelNumber << "\n";
                 break;
             case LevelType::ShipEscort:
                 //initShipEscortLevel(level); --- IGNORE ---
@@ -76,7 +76,7 @@ void LevelManager::updateCurrentLevel()
         updateAsteroidFieldLevel();
         break;
     case LevelType::EnemyInvasion:
-        // updateEnemyInvasionLevel(); --- IGNORE ---
+        updateEnemyInvasionLevel();
         break;
     case LevelType::ShipEscort:
         // updateShipEscortLevel(); --- IGNORE ---
@@ -125,9 +125,45 @@ void LevelManager::loadLevelsToMemory() {
     level2.difficulty = 1;
     level2.type = LevelType::EnemyInvasion;
     level2.duration = 60.0f;
+	level2.objective = "Defeat 5 enemies";
+	level2.objectiveCount = 5;
+
+    LevelData level3;
+	level3.levelNumber = 3;
+	level3.difficulty = 2;
+	level3.type = LevelType::DestroyAsteroids;
+	level3.duration = 60.0f;
+	level3.objective = "Destroy 10 Asteroids";
+	level3.objectiveCount = 10;
+
+    LevelData level4;
+	level4.levelNumber = 4;
+	level4.difficulty = 2;
+	level3.type = LevelType::ShipEscort;
+	level4.duration = 90.0f;
+	level4.objective = "Escort the ship safely";
+
+	LevelData level5;
+	level5.levelNumber = 5;
+	level5.difficulty = 3;
+	level5.type = LevelType::BossFight;
+	level5.duration = 120.0f;
+	level5.objective = "Defeat the Boss";
+
+    LevelData level6;
+	level6.levelNumber = 6;
+	level6.difficulty = 3;
+	level6.type = LevelType::EnemyInvasion;
+	level6.duration = 90.0f;
+	level6.objective = "Defeat 15 enemies";
+	level6.objectiveCount = 15;
 
     levels->push_back(level1);
     levels->push_back(level2);
+	levels->push_back(level3);
+	levels->push_back(level4);
+	levels->push_back(level5);
+	levels->push_back(level6);
 }
 
 void LevelManager::drawLevelEndOverlay(int screenWidth, int screenHeight)
@@ -150,7 +186,7 @@ void LevelManager::drawLevelEndOverlay(int screenWidth, int screenHeight)
 
     // Dodatkowa informacja (np. wynik gracza)
     std::string info = "Powrot do menu...";
-    if (player)
+    if (player && currentLevel.type == LevelType::SurviveAsteroidField)
     {
         info = "Wynik: " + std::to_string(player->getScore()); // wymaga, by Player miał getScore()
     }
@@ -190,3 +226,52 @@ void LevelManager::updateAsteroidFieldLevel()
     std::cout << "Asteroid Field Level running. Time: " << static_cast<int>(currentLevelTime) << " / " << currentLevel.duration << "\n";
 
 }
+
+void LevelManager::initEnemyInvasionLevel(const LevelData &level)
+{
+    if (currentLevel.type != LevelType::EnemyInvasion)
+        return;
+
+    std::array<int, 3> desiredCounts{ {0,0,0} };
+
+	switch (level.difficulty) {
+	case 1:
+		desiredCounts = { {2, 0, 0} };
+		asteroidHelper->setAsteroidCount(2);
+		break;
+	case 2:
+		desiredCounts = { {3, 1, 0} };
+		asteroidHelper->setAsteroidCount(3);
+		break;
+	case 3:
+		desiredCounts = { {4, 2, 1} };
+		asteroidHelper->setAsteroidCount(4);
+		break;
+	default:
+		desiredCounts = { {2, 0, 0} };
+		asteroidHelper->setAsteroidCount(6);
+		break;
+	}
+
+    enemyManager->setDesiredCounts(desiredCounts);
+}
+
+void LevelManager::updateEnemyInvasionLevel()
+{
+    if (currentLevel.type != LevelType::EnemyInvasion)
+        return;
+
+	if (enemyManager->getKilledEnemies() >= currentLevel.objectiveCount)
+    {
+		std::cout << "Killed required enemies for level completion!\n";
+		levelEnding = true;
+        return;
+    }
+
+    if (enemyManager->getKilledEnemies() > currentLevel.currentCount) {
+        currentLevel.currentCount++;
+		std::cout << "Current killed enemies: " << enemyManager->getKilledEnemies() << " / " << currentLevel.objectiveCount << "\n";
+    }
+    std::cout << "Enemy Invasion Level running. Time: " << static_cast<int>(currentLevelTime) << " / " << currentLevel.duration << "\n";
+}
+

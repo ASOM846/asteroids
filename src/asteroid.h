@@ -241,6 +241,11 @@ public:
         }
     }
 
+    void resetAsteroids(std::vector<sAsteroid>& asteroids) {
+        asteroids.clear();
+		asteroidCount = 0; 
+	}
+
 private:
     int asteroidCount;
     const TextureManager* texManager = nullptr;

@@ -68,21 +68,19 @@ void Game::initialize() {
     dropHelper.setTextureManager(textureManager);
 
     levelManager.setPointers(&levels, &dropHelper, &player,
-        &asteroidHelper, &drops, &enemies);
+        &asteroidHelper, &enemyManager, &drops, &enemies);
     levelManager.loadLevelsToMemory();
     levelManager.reset();
 
     ui.initButtons(screenWidth, screenHeight);
     ui.setGame(this);
 
-    // powiadom Game, aby po zakończeniu poziomu wrócił do menu
     levelManager.setOnLevelComplete([this]() {
         this->setGameState(GameState::Menu);
         });
 }
 
 void Game::shutdown() {
-    // Najpierw rozładuj zasoby zarządzane przez aplikację (unikamy zależności od wewnętrznych destruktorów raylib)
     textureManager.unloadAll();
 
     // UWAGA: W wykorzystywanej wersji raylib istnieje błąd w obsłudze default font:
@@ -105,10 +103,10 @@ void Game::runLoop() {
 
 void Game::startGame() {
     lasers.clear();
-    asteroids.clear();
+    asteroidHelper.resetAsteroids(asteroids);
     drops.clear();
     player = Player();
-    enemies.clear();
+	enemyManager.resetEnemies();
     gameHelper.setPlayerHealthPtr(player.getHealthPtr());
     gameHelper.setTextures(textureManager, player);
     gameState = GameState::Playing;
