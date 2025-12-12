@@ -85,6 +85,8 @@ private:
     void initAsteroidFieldLevel(const LevelData &level);
     void updateAsteroidFieldLevel();
 
+	void initEnemyInvasionLevel(const LevelData &level);
+
     std::function<void()> onLevelComplete;
     bool levelEnding = false;
     float endTimer = 0.0f;

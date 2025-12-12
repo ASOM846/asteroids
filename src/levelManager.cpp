@@ -23,7 +23,8 @@ void LevelManager::runLevel(int levelNumber) {
                 std::cout << "Starting Asteroid Field Level " << level.levelNumber << "\n";
                 break;
             case LevelType::EnemyInvasion:
-                //initEnemyInvasionLevel(level); --- IGNORE ---
+				//initEnemyInvasionLevel(level); 
+
                 break;
             case LevelType::ShipEscort:
                 //initShipEscortLevel(level); --- IGNORE ---

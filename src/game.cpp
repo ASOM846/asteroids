@@ -89,7 +89,7 @@ void Game::shutdown() {
 void Game::runLoop() {
     while (!WindowShouldClose()) {
         update();
-        if (WindowShouldClose()) break; // zapobiega renderowaniu po zamknięciu okna
+        if (WindowShouldClose()) break;
         render();
     }
 }
