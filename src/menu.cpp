@@ -160,7 +160,7 @@ void Menu::renderLevelsGrid() {
     if (levels == nullptr || levels->empty()) {
         int w = GetScreenWidth();
         int h = GetScreenHeight();
-        DrawText("Brak poziomow do wyswietlenia", w / 2 - 180, h / 2, 24, LIGHTGRAY);
+        DrawText("No levels to display", w / 2 - 180, h / 2, 24, LIGHTGRAY);
         return;
     }
 
@@ -246,6 +246,6 @@ void Menu::renderSettingsMenu() {
     int w = GetScreenWidth();
     int h = GetScreenHeight();
 
-    DrawText("USTAWIENIA", w / 2 - 150, h / 2 - 120, 50, WHITE);
-    DrawText("Kliknij, aby powrocic do menu", w / 2 - 220, h - 100, 20, GRAY);
+    DrawText("SETTINGS", w / 2 - 150, h / 2 - 120, 50, WHITE);
+    DrawText("Click to return to menu", w / 2 - 220, h - 100, 20, GRAY);
 }

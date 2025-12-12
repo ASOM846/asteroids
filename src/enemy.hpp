@@ -27,7 +27,7 @@ struct sEnemy
     int radius;
 
     float speed;
-    const Texture2D *texture = nullptr;
+    const Texture2D* texture = nullptr;
     float rotation;
 
     float shootInterval;
@@ -36,18 +36,18 @@ struct sEnemy
     Vector2 getPosition() const { return position; }
     int getRadius() const { return radius; }
 
-    sEnemy(Vector2 pos, EnemyType pType, 
-        const Texture2D *tex = nullptr)
+    sEnemy(Vector2 pos, EnemyType pType,
+        const Texture2D* tex = nullptr)
         : position(pos),
-          active(true),
-          type(pType),
-          health(0),
-          radius(0),
-          speed(0.0f),
-          texture(tex),
-          rotation(0.0f),
-          shootInterval(0.0f),
-          shootTimer(0.0f)
+        active(true),
+        type(pType),
+        health(0),
+        radius(0),
+        speed(0.0f),
+        texture(tex),
+        rotation(0.0f),
+        shootInterval(0.0f),
+        shootTimer(0.0f)
     {
         struct Params
         {
@@ -55,16 +55,16 @@ struct sEnemy
             int radius;
             float speed;
             float shootInterval;
-            const Texture2D *tex;
+            const Texture2D* tex;
         };
 
         static constexpr Params table[] = {
             /* Basic */ {30, 20, 2.0f, 1.5f, nullptr},
             /* Fast  */ {40, 15, 4.0f, 0.8f, nullptr},
-            /* Tank  */ {100, 30, 2.0f, 2.5f, nullptr}};
+            /* Tank  */ {100, 30, 2.0f, 2.5f, nullptr} };
 
         const auto idx = static_cast<size_t>(type);
-        const auto &p = table[idx];
+        const auto& p = table[idx];
         health = p.health;
         radius = p.radius;
         speed = p.speed;
@@ -75,7 +75,7 @@ struct sEnemy
         shootTimer = 0.0f;
     }
 
-    void update(const Vector2 &playerPos, std::vector<Laser>& lasers)
+    void update(const Vector2& playerPos, std::vector<Laser>& lasers)
     {
         // odliczaj czas do następnego strzału
         if (shootTimer > 0.0f) {
@@ -85,7 +85,7 @@ struct sEnemy
 
         // proste AI: podążaj w kierunku gracza
         Vector2 dir = { playerPos.x - position.x, playerPos.y - position.y };
-        float len = sqrtf(dir.x*dir.x + dir.y*dir.y);
+        float len = sqrtf(dir.x * dir.x + dir.y * dir.y);
         if (len > 0.0001f) {
             dir.x /= len; dir.y /= len;
             position.x += dir.x * speed;
@@ -125,7 +125,7 @@ struct sEnemy
         if (shootTimer > 0.0f) return;
 
         Vector2 dir = { targetPos.x - position.x, targetPos.y - position.y };
-        float len = sqrtf(dir.x*dir.x + dir.y*dir.y);
+        float len = sqrtf(dir.x * dir.x + dir.y * dir.y);
         if (len > 0.0001f) {
             dir.x /= len; dir.y /= len;
 
@@ -139,8 +139,9 @@ struct sEnemy
 class EnemyManager {
 public:
     EnemyManager()
-        : killedEnemies(0), activeCounts{{0,0,0}}, desiredCounts{{0,0,0}},
-          texManager(nullptr), enemies(nullptr), lasers(nullptr) {}
+        : killedEnemies(0), activeCounts{ {0,0,0} }, desiredCounts{ {0,0,0} },
+        texManager(nullptr), enemies(nullptr), lasers(nullptr) {
+    }
     ~EnemyManager() {}
 
 
@@ -154,18 +155,18 @@ public:
         recomputeActiveCounts();
     }
 
-    void updateEnemies(const Vector2 &playerPos)
+    void updateEnemies(const Vector2& playerPos)
     {
         if (!enemies) return;
 
         // First, update all active enemies
-        for (auto &e : *enemies) {
+        for (auto& e : *enemies) {
             if (e.active) e.update(playerPos, *lasers);
         }
 
         const size_t before = enemies->size();
         auto it = std::remove_if(enemies->begin(), enemies->end(),
-            [](const sEnemy &en) { return !en.active; });
+            [](const sEnemy& en) { return !en.active; });
         const size_t removed = static_cast<size_t>(std::distance(it, enemies->end()));
         if (removed > 0) {
             // increase killedEnemies by number removed
@@ -180,7 +181,7 @@ public:
     void renderEnemies()
     {
         if (!enemies) return;
-        for (const auto &e : *enemies) {
+        for (const auto& e : *enemies) {
             e.render();
         }
     }
@@ -189,7 +190,7 @@ public:
         if (enemies) enemies->clear();
         killedEnemies = 0;
         activeCounts.fill(0);
-	}
+    }
 
     // Return number of active enemies for given type
     int getActiveCount(EnemyType type) const {
@@ -216,11 +217,11 @@ public:
         return desiredCounts[static_cast<size_t>(type)];
     }
 
-	int getKilledEnemies() const { return killedEnemies; }
+    int getKilledEnemies() const { return killedEnemies; }
 
     std::array<int, 3> getDesiredCounts() const { return desiredCounts; }
 
-    void generateEnemy(EnemyType type)  {
+    void generateEnemy(EnemyType type) {
         if (!enemies || !texManager) return;
 
         const int screenW = GetScreenWidth();
@@ -247,33 +248,33 @@ public:
         enemies->emplace_back(enemy);
         // Update active counts after adding a new enemy
         recomputeActiveCounts();
-        std::cout << "Generated enemy of type " << static_cast<int>(type) << " at (" 
-			<< pos.x << ", " << pos.y << ")\n";
+        std::cout << "Generated enemy of type " << static_cast<int>(type) << " at ("
+            << pos.x << ", " << pos.y << ")\n";
     }
 
     void generateEnemyWave(int count, EnemyType type)
     {
-        switch(type){
-            case EnemyType::Basic: 
-                for(int i=0; i<count; ++i)
-                    generateEnemy(EnemyType::Basic);
-                break;
-            case EnemyType::Fast:
-                for(int i=0; i<count; ++i)
-                    generateEnemy(EnemyType::Fast);
-                break;
-            case EnemyType::Tank:
-                for(int i=0; i<count; ++i)
-                    generateEnemy(EnemyType::Tank);
-                break;
+        switch (type) {
+        case EnemyType::Basic:
+            for (int i = 0; i < count; ++i)
+                generateEnemy(EnemyType::Basic);
+            break;
+        case EnemyType::Fast:
+            for (int i = 0; i < count; ++i)
+                generateEnemy(EnemyType::Fast);
+            break;
+        case EnemyType::Tank:
+            for (int i = 0; i < count; ++i)
+                generateEnemy(EnemyType::Tank);
+            break;
 
         }
     }
-    
+
 private:
     int killedEnemies;
-    std::array<int, 3> activeCounts{{0,0,0}};
-    std::array<int, 3> desiredCounts{{0,0,0}};
+    std::array<int, 3> activeCounts{ {0,0,0} };
+    std::array<int, 3> desiredCounts{ {0,0,0} };
 
     TextureManager* texManager = nullptr;
     std::vector<sEnemy>* enemies = nullptr;
@@ -283,7 +284,7 @@ private:
     {
         activeCounts.fill(0);
         if (!enemies) return;
-        for (const auto &e : *enemies) {
+        for (const auto& e : *enemies) {
             if (e.active) {
                 const auto idx = static_cast<size_t>(e.type);
                 if (idx < activeCounts.size()) ++activeCounts[idx];

@@ -15,7 +15,8 @@ enum class LevelType {
     DestroyAsteroids,
     EnemyInvasion,
     ShipEscort,
-    BossFight
+    BossFight,
+    ProtectBase
 };
 
 struct LevelData {
