@@ -15,6 +15,7 @@
 #include "enemy.hpp"
 #include "button.hpp"
 #include "levelManager.hpp"
+#include "customShip.hpp"
 
 enum class GameState {
 	Menu,
@@ -66,6 +67,7 @@ private:
 	DropHelper dropHelper;
 	EnemyManager enemyManager;
 	LevelManager levelManager;
+	CustomShipManager customShipManager;
 
 	Color BcgColour;
 	GameState gameState;
@@ -75,4 +77,12 @@ private:
 	std::vector<sDrop> drops;
 	std::vector<sEnemy> enemies;
 	std::vector<LevelData> levels;
+	std::vector<CustomShip> customShips;
+
+	/*
+	* GameState gameState;
+	friend class GameHelper;
+
+	*/
+
 };

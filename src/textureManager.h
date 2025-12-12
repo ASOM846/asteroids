@@ -40,7 +40,7 @@ public:
         load(TextureId::UpAmmo, "assets/ammo.png");
         load(TextureId::Enemy1, "assets/enemy1.png");
         load(TextureId::Enemy2, "assets/enemy2.png");
-        
+
     }
 
     const Texture2D& get(TextureId id) const {

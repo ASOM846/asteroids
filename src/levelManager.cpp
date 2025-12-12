@@ -27,7 +27,7 @@ void LevelManager::runLevel(int levelNumber) {
                 std::cout << "Starting Enemy Invasion Level " << level.levelNumber << "\n";
                 break;
             case LevelType::ShipEscort:
-                //initShipEscortLevel(level); --- IGNORE ---
+                initShipEscortLevel(level);
                 break;
             case LevelType::BossFight:
                 //initBossFightLevel(level); --- IGNORE ---
@@ -79,7 +79,7 @@ void LevelManager::updateCurrentLevel()
         updateEnemyInvasionLevel();
         break;
     case LevelType::ShipEscort:
-        // updateShipEscortLevel(); --- IGNORE ---
+        //updateShipEscortLevel();
         break;
     case LevelType::BossFight:
         // updateBossFightLevel(); --- IGNORE ---
@@ -139,7 +139,7 @@ void LevelManager::loadLevelsToMemory() {
     LevelData level4;
 	level4.levelNumber = 4;
 	level4.difficulty = 2;
-	level3.type = LevelType::ShipEscort;
+	level4.type = LevelType::ShipEscort;
 	level4.duration = 90.0f;
 	level4.objective = "Escort the ship safely";
 
@@ -223,8 +223,8 @@ void LevelManager::updateAsteroidFieldLevel()
 {
     if (currentLevel.type != LevelType::SurviveAsteroidField)
         return;
-    std::cout << "Asteroid Field Level running. Time: " << static_cast<int>(currentLevelTime) << " / " << currentLevel.duration << "\n";
-
+    std::cout << "Asteroid Field Level running. Time: " 
+        << static_cast<int>(currentLevelTime) << " / " << currentLevel.duration << "\n";
 }
 
 void LevelManager::initEnemyInvasionLevel(const LevelData &level)
@@ -273,5 +273,16 @@ void LevelManager::updateEnemyInvasionLevel()
 		std::cout << "Current killed enemies: " << enemyManager->getKilledEnemies() << " / " << currentLevel.objectiveCount << "\n";
     }
     std::cout << "Enemy Invasion Level running. Time: " << static_cast<int>(currentLevelTime) << " / " << currentLevel.duration << "\n";
+}
+
+void LevelManager::initShipEscortLevel(const LevelData& level)
+{
+    if (currentLevel.type != LevelType::ShipEscort)
+        return;
+
+    if (!customShipManager) throw std::runtime_error(std::string("customShipManagerNotLoaded"));
+
+    customShipManager->addShip({ -100.0f, GetScreenHeight() / 2.0f },
+		{ GetScreenWidth() + 100.0f, GetScreenHeight() / 2.0f });
 }
 

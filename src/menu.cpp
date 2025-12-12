@@ -74,20 +74,33 @@ void Menu::updateLayout() {
 }
 
 void Menu::initButtons(int w, int h) {
-    const int btnW = 200;
-    const int btnH = 50;
-    const int spacing = 20;
-    const int count = 4;
-    int totalHeight = count * btnH + (count - 1) * spacing;
-    const int verticalOffset = 80;
-    int startY = h / 2 - totalHeight / 2 + verticalOffset;
-    int x = w / 2 - btnW / 2;
+    const int mainBtnW = 220;
+    const int mainBtnH = 60;
+    const int spacing = 24;
+    const int mainBtnCount = 3;
+    const int verticalOffset = 60;
 
-    quickStartButton = Button(x, startY + (btnH + spacing) * 0, btnW, btnH, "Quick Start");
-    levelsButton     = Button(x, startY + (btnH + spacing) * 1, btnW, btnH, "Level Selection");
-    settingsButton   = Button(x, startY + (btnH + spacing) * 2, btnW, btnH, "Settings");
-    exitButton       = Button(x, startY + (btnH + spacing) * 3, btnW, btnH, "Exit");
-    backButton       = Button(w / 2 - btnW / 2, h - 80, btnW, btnH, "Menu");
+    const int columnHeight = mainBtnCount * mainBtnH + (mainBtnCount - 1) * spacing;
+    const int startY = h / 2 - columnHeight / 2 + verticalOffset;
+    const int x = w / 2 - mainBtnW / 2;
+
+    quickStartButton = Button(x, startY + (mainBtnH + spacing) * 0, mainBtnW, mainBtnH, "Quick Start");
+    arcadeModeButton = Button(x, startY + (mainBtnH + spacing) * 1, mainBtnW, mainBtnH, "Arcade Mode");
+    levelsButton = Button(x, startY + (mainBtnH + spacing) * 2, mainBtnW, mainBtnH, "Level Selection");
+
+    const int smallBtnW = 140;
+    const int smallBtnH = 40;
+    const int margin = 24;
+    const int bottomGap = 16;
+
+    const int exitX = w - smallBtnW - margin;
+    const int exitY = h - smallBtnH - margin;
+    const int settingsX = exitX - bottomGap - smallBtnW;
+
+    settingsButton = Button(settingsX, exitY, smallBtnW, smallBtnH, "Settings");
+    exitButton = Button(exitX, exitY, smallBtnW, smallBtnH, "Exit");
+
+    backButton = Button(w / 2 - mainBtnW / 2, h - 80, mainBtnW, mainBtnH, "Menu");
 }
 
 void Menu::renderButtons() {
@@ -95,10 +108,11 @@ void Menu::renderButtons() {
         return;
     }
 
-    for (const auto& button : {quickStartButton,
-        levelsButton, settingsButton, exitButton}) {
-        button.Draw();
-    }
+    quickStartButton.Draw();
+    arcadeModeButton.Draw();
+    levelsButton.Draw();
+    settingsButton.Draw();
+    exitButton.Draw();
 }
 
 //menu state 
@@ -107,25 +121,27 @@ void Menu::updateMainMenu() {
     updateLayout();
     const bool isInputLocked = GetTime() < nextInputAllowedTime;
 
-    if (isInputLocked) return;
+    if (isInputLocked) {
+        return;
+    }
 
-    if (quickStartButton.IsClicked())
-    {
+    if (quickStartButton.IsClicked()) {
         gamePtr->setGameState(GameState::Playing);
         nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
     }
-    else if (levelsButton.IsClicked())
-    {
+    else if (arcadeModeButton.IsClicked()) {
+        gamePtr->setGameState(GameState::Playing);
+        nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
+    }
+    else if (levelsButton.IsClicked()) {
         currentState = MenuState::Levels;
         nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
     }
-    else if (settingsButton.IsClicked())
-    {
+    else if (settingsButton.IsClicked()) {
         currentState = MenuState::Settings;
         nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
     }
-    else if (exitButton.IsClicked())
-    {
+    else if (exitButton.IsClicked()) {
         CloseWindow();
         nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
     }

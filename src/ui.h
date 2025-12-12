@@ -16,9 +16,13 @@ public:
     void initButtons(int sW, int sH);
     void setGame(Game* g);
 
-    void draw(int health, int shield,
-        int ammo, int maxAmmo, int score,
-        float remainingLevelTime);
+	void draw(int health, int shield,
+		int ammo, int maxAmmo, int score,
+		float remainingLevelTime,
+		Vector2 playerWorldPos,
+		const Vector2* friendlyShipPos = nullptr);
+
+    void drawArrowAngled(float angle);
 
     void drawStars(Vector2 playerPos);
 

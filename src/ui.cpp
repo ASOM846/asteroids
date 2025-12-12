@@ -4,8 +4,9 @@
 #include <algorithm>
 #include <cmath>
 #include <random>
+#include <raymath.h>
 
-Ui::Ui() : cachedWidth(0), cachedHeight(0), hasLastPlayerPos(false){
+Ui::Ui() : cachedWidth(0), cachedHeight(0), hasLastPlayerPos(false) {
     std::random_device rd;
     rng.seed(rd());
 }
@@ -62,15 +63,16 @@ void Ui::initStarLayers(int screenW, int screenH) {
 }
 
 void Ui::draw(int health, int shield, int ammo,
-         int maxAmmo, int score, float remainingLevelTime) {
+    int maxAmmo, int score, float remainingLevelTime,
+    Vector2 playerWorldPos, const Vector2* friendlyShipPos) {
     const int screenW = GetScreenWidth();
     const int screenH = GetScreenHeight();
 
     // Matrix-like greens
-    Color matrixGlow = {80, 255, 120, 220};
+    Color matrixGlow = { 80, 255, 120, 220 };
     // shadow color (używane przez rysowanie tekstów)
     // przeniesione tutaj, aby nie używać przed deklaracją
-    Color shadowCol  = {0, 0, 0, 160};
+    Color shadowCol = { 0, 0, 0, 160 };
 
     // Bottom band baseline (przeniesione wyżej, bo czas używa bandY)
     const int bandHeight = 140;
@@ -115,7 +117,7 @@ void Ui::draw(int health, int shield, int ammo,
     int barH = 12;
     int hpFillW = (int)(hpPct * barW + 0.5f);
     // subtle background (very dim) for readability, not a frame
-    DrawRectangle(leftX, y, barW, barH, {0,0,0,80});
+    DrawRectangle(leftX, y, barW, barH, { 0,0,0,80 });
     DrawRectangle(leftX, y, hpFillW, barH, matrixGlow);
     y += barH + 14;
 
@@ -126,13 +128,13 @@ void Ui::draw(int health, int shield, int ammo,
 
     DrawText("SHIELD", leftX, y, lblFont, matrixGlow);
     std::string shVal = std::to_string(clampedSh);
-    int shValW = MeasureText(shVal.c_str(), valFont-6);
-    DrawText(shVal.c_str(), leftX + 240 - shValW, y - 4, valFont-6, matrixGlow);
+    int shValW = MeasureText(shVal.c_str(), valFont - 6);
+    DrawText(shVal.c_str(), leftX + 240 - shValW, y - 4, valFont - 6, matrixGlow);
     y += lblFont + 8;
 
     int shBarH = 10;
     int shFillW = (int)(shPct * barW + 0.5f);
-    DrawRectangle(leftX, y, barW, shBarH, {0,0,0,80});
+    DrawRectangle(leftX, y, barW, shBarH, { 0,0,0,80 });
     DrawRectangle(leftX, y, shFillW, shBarH, matrixGlow);
 
     // CENTER: big ammo number centered on bottom
@@ -150,7 +152,7 @@ void Ui::draw(int health, int shield, int ammo,
 
     // small max ammo beside it (dim)
     std::string ammoMaxStr = "/" + std::to_string(safeMaxAmmo);
-    DrawText(ammoMaxStr.c_str(), ammoX + ammoW + 10, ammoY + (ammoFontBig/2) - 14, 20, matrixGlow);
+    DrawText(ammoMaxStr.c_str(), ammoX + ammoW + 10, ammoY + (ammoFontBig / 2) - 14, 20, matrixGlow);
 
     // Score moved to RIGHT: slightly smaller and still visible
     std::string scoreNum = std::to_string(score);
@@ -173,8 +175,48 @@ void Ui::draw(int health, int shield, int ammo,
     DrawText(scoreLabel.c_str(), scoreLabelX, scoreNumY - scoreLabelFont - 6, scoreLabelFont, matrixGlow);
 
     // Optional tiny HUD accents: thin separators in matrix color, very subtle
-    DrawLine(20, bandY + 2, screenW - 20, bandY + 2, {0,50,20,100});
-    DrawLine(20, screenH - 2, screenW - 20, screenH - 2, {0,50,20,100});
+    DrawLine(20, bandY + 2, screenW - 20, bandY + 2, { 0,50,20,100 });
+    DrawLine(20, screenH - 2, screenW - 20, screenH - 2, { 0,50,20,100 });
+
+    if (friendlyShipPos) {
+        Vector2 toFriend = Vector2Subtract(*friendlyShipPos, playerWorldPos);
+        const float dist = Vector2Length(toFriend);
+        if (dist > 1.0f) {
+            Vector2 dir = Vector2Scale(toFriend, 1.0f / dist);
+            Vector2 perp{ -dir.y, dir.x };
+            const Vector2 center{ screenW / 2.0f, bandY + bandHeight - 38.0f };
+            const float arrowLength = 44.0f;
+            const float baseOffset = 18.0f;
+            const float baseHalfWidth = 12.0f;
+            const Vector2 tip = Vector2Add(center, Vector2Scale(dir, arrowLength));
+            const Vector2 baseCenter = Vector2Add(center, Vector2Scale(dir, -baseOffset));
+            const Vector2 baseLeft = Vector2Add(baseCenter, Vector2Scale(perp, baseHalfWidth));
+            const Vector2 baseRight = Vector2Add(baseCenter, Vector2Scale(perp, -baseHalfWidth));
+            Color arrowCol{ 120, 210, 255, 230 };
+            DrawTriangle(baseLeft, baseRight, tip, arrowCol);
+            DrawTriangleLines(baseLeft, baseRight, tip, WHITE);
+            DrawText("FRIEND", (int)(center.x - 32), (int)(center.y + 14), 14, arrowCol);
+        }
+    }
+}
+
+void Ui::drawArrowAngled(float angle)
+{
+    const int screenW = GetScreenWidth();
+    const int screenH = GetScreenHeight();
+    const Vector2 center{ screenW / 2.0f, screenH - 70.0f };
+    const float arrowLength = 44.0f;
+    const float baseOffset = 18.0f;
+    const float baseHalfWidth = 12.0f;
+    Vector2 dir{ std::cos(angle), std::sin(angle) };
+    Vector2 perp{ -dir.y, dir.x };
+    const Vector2 tip = Vector2Add(center, Vector2Scale(dir, arrowLength));
+    const Vector2 baseCenter = Vector2Add(center, Vector2Scale(dir, -baseOffset));
+    const Vector2 baseLeft = Vector2Add(baseCenter, Vector2Scale(perp, baseHalfWidth));
+    const Vector2 baseRight = Vector2Add(baseCenter, Vector2Scale(perp, -baseHalfWidth));
+    Color arrowCol{ 255, 100, 100, 230 };
+    DrawTriangle(baseLeft, baseRight, tip, arrowCol);
+	DrawTriangleLines(baseLeft, baseRight, tip, WHITE);
 }
 
 void Ui::drawStars(Vector2 playerPos) {
@@ -188,7 +230,7 @@ void Ui::drawStars(Vector2 playerPos) {
         initStarLayers(screenW, screenH);
     }
 
-    Vector2 delta = {0.0f, 0.0f};
+    Vector2 delta = { 0.0f, 0.0f };
     if (hasLastPlayerPos) {
         delta.x = playerPos.x - lastPlayerPos.x;
         delta.y = playerPos.y - lastPlayerPos.y;
@@ -203,7 +245,7 @@ void Ui::drawStars(Vector2 playerPos) {
     auto randRange = [this](float minVal, float maxVal) {
         std::uniform_real_distribution<float> dist(minVal, maxVal);
         return dist(rng);
-    };
+        };
 
     for (auto& layer : starLayers) {
         const float moveX = delta.x * layer.parallax;
@@ -266,18 +308,18 @@ void Ui::renderPauseOverlay(int sW, int sH)
 {
     DrawRectangle(0, 0, sW, sH, Fade(BLACK, 0.6f));
     DrawText("PAUZED", sW / 2 - 90, sH / 2 - 40, 50, WHITE);
-	resumeButton.Draw();
-	mainMenuButton.Draw();
+    resumeButton.Draw();
+    mainMenuButton.Draw();
 }
 
 void Ui::updatePauseOverlay(int sW, int sH)
 {
-	if (resumeButton.IsClicked())
-        {
+    if (resumeButton.IsClicked())
+    {
         game->togglePause();
-	}
-	else if (mainMenuButton.IsClicked())
-	{
-		game->setGameState(GameState::Menu);
-	}
+    }
+    else if (mainMenuButton.IsClicked())
+    {
+        game->setGameState(GameState::Menu);
+    }
 }

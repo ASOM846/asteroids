@@ -60,6 +60,8 @@ void Game::initialize() {
     gameHelper.setDropChance(1.00f);
     gameHelper.setPointers(&enemies, &lasers);
     gameHelper.setCamera(&camera);
+    gameHelper.setUi(&ui);
+    gameHelper.setCustomShipManager(&customShipManager);
 
     enemyManager.setPointers(&textureManager, &enemies, &lasers);
 
@@ -68,9 +70,11 @@ void Game::initialize() {
     dropHelper.setTextureManager(textureManager);
 
     levelManager.setPointers(&levels, &dropHelper, &player,
-        &asteroidHelper, &enemyManager, &drops, &enemies);
+        &asteroidHelper, &customShipManager, &enemyManager, &drops, &enemies);
     levelManager.loadLevelsToMemory();
     levelManager.reset();
+
+	customShipManager.setPointers(&customShips);
 
     ui.initButtons(screenWidth, screenHeight);
     ui.setGame(this);
@@ -107,6 +111,7 @@ void Game::startGame() {
     drops.clear();
     player = Player();
 	enemyManager.resetEnemies();
+    customShipManager.reset();
     gameHelper.setPlayerHealthPtr(player.getHealthPtr());
     gameHelper.setTextures(textureManager, player);
     gameState = GameState::Playing;
@@ -171,6 +176,7 @@ void Game::updatePlaying() {
     laserHelper.updateLasers(lasers, (int)player.getPosition().x, (int)player.getPosition().y);
     asteroidHelper.updateAsteroids(asteroids, player.getPosition());
     enemyManager.updateEnemies(player.getPosition());
+    customShipManager.updateShips();
 
     gameHelper.handleCollision(lasers, asteroids, player.getRect());
     gameHelper.checkCollisionPlayerDrop(drops, player.getRect());
@@ -184,20 +190,26 @@ void Game::updatePlaying() {
 }
 
 void Game::renderPlaying() {
-    ui.drawStars(player.getPosition());
+    const Vector2 playerWorldPos = player.getPosition();
+    ui.drawStars(playerWorldPos);
     BeginMode2D(camera);
 
     laserHelper.renderLasers(lasers);
     asteroidHelper.renderAsteroids(asteroids);
     dropHelper.renderDrops(drops);
     enemyManager.renderEnemies();
+	customShipManager.renderShips();
     player.render();
 
     EndMode2D();
 
+    const Vector2* friendlyShipPos = customShips.empty() ? nullptr : &customShips.front().position;
     ui.draw(player.getHealth(), player.getShield(),
         player.getAmmo(), player.getMaxAmmo(),
-        player.getScore(), levelManager.getRemainingLevelTime());
+        player.getScore(), levelManager.getRemainingLevelTime(),
+        playerWorldPos, friendlyShipPos);
+
+    ui.drawArrowAngled(gameHelper.getAngleBetweenPlayerAndFriendlyShip());
 
     gameHelper.drawPosition();
 
@@ -212,19 +224,26 @@ void Game::updatePaused() {
 }
 
 void Game::renderPaused() {
-    ui.drawStars(player.getPosition());
+    const Vector2 playerWorldPos = player.getPosition();
+    ui.drawStars(playerWorldPos);
     BeginMode2D(camera);
 
     laserHelper.renderLasers(lasers);
     asteroidHelper.renderAsteroids(asteroids);
     dropHelper.renderDrops(drops);
+	enemyManager.renderEnemies();
     player.render();
+
 
     EndMode2D();
 
+    const Vector2* friendlyShipPos = customShips.empty() ? nullptr : &customShips.front().position;
     ui.draw(player.getHealth(), player.getShield(),
         player.getAmmo(), player.getMaxAmmo(),
-        player.getScore(), levelManager.getRemainingLevelTime());
+        player.getScore(), levelManager.getRemainingLevelTime(),
+        playerWorldPos, friendlyShipPos);
+
+    ui.drawArrowAngled(gameHelper.getAngleBetweenPlayerAndFriendlyShip());
 
     ui.renderPauseOverlay(screenWidth, screenHeight);
 }

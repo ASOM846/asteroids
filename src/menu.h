@@ -59,4 +59,5 @@ private:
     Button settingsButton;
     Button exitButton;
     Button backButton;
+	Button arcadeModeButton;
 };

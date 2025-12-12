@@ -146,3 +146,17 @@ void GameHelper::drawPosition() {
     Vector2 pos = player->getPosition();
     DrawText(TextFormat("Player Position: (%d, %d)", (int)pos.x, (int)pos.y), 10, 10, 20, WHITE);
 }
+
+float GameHelper::getAngleBetween(const Vector2& from, const Vector2& to) const {
+    Vector2 delta{ to.x - from.x, to.y - from.y };
+    return std::atan2(delta.y, delta.x);
+}
+
+float GameHelper::getAngleBetweenPlayerAndFriendlyShip() const {
+    if (!player || !ui) return 0.0f;
+
+    Vector2 cachedPlayerPos = player->getPosition();
+    Vector2 cachedFriendlyShipPos = customShipManager->getShipPosition(1);
+
+    return getAngleBetween(cachedPlayerPos, cachedFriendlyShipPos);
+}

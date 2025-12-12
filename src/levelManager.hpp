@@ -6,6 +6,7 @@
 #include "drop.h"
 #include "enemy.hpp"
 #include "player.h"
+#include "customShip.hpp"
 #include <iostream>
 #include <functional>
 #include <string>
@@ -55,6 +56,7 @@ public:
         DropHelper* dh,
         Player* p,
         AsteroidHelper* ah,
+		CustomShipManager* csm,
         EnemyManager* em,
         std::vector<sDrop>* dropVec,
         std::vector<sEnemy>* enemyVec) {
@@ -62,6 +64,7 @@ public:
         dropHelper = dh;
         player = p;
         asteroidHelper = ah;
+		customShipManager = csm;
         enemyManager = em;
         drops = dropVec;
         enemies = enemyVec;
@@ -76,6 +79,7 @@ private:
     DropHelper *dropHelper = nullptr;
     Player *player = nullptr;
     AsteroidHelper *asteroidHelper = nullptr;
+	CustomShipManager* customShipManager = nullptr;
 	EnemyManager* enemyManager = nullptr;
     std::vector<sDrop> *drops = nullptr;
     std::vector<sEnemy> *enemies = nullptr;
@@ -91,6 +95,9 @@ private:
 
 	void initEnemyInvasionLevel(const LevelData &level);
 	void updateEnemyInvasionLevel();
+
+	void initShipEscortLevel(const LevelData& level);
+	void updateShipEscortLevel();
 
 
     std::function<void()> onLevelComplete;
