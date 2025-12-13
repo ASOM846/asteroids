@@ -17,6 +17,8 @@
 #include "levelManager.hpp"
 #include "customShip.hpp"
 
+#include "game.hpp"
+
 enum class eWindowState {
 	Menu,
 	Playing,
@@ -33,7 +35,6 @@ class WindowManager
 	void setWindowState(eWindowState newState);
 	void runLevel(int levelNumber);
 
-	void togglePause();
 private:
 	void initialize();
 	void shutdown();
@@ -47,37 +48,18 @@ private:
 
 	void updateMenu();
 	void renderMenu();
-	void updatePlaying();
-	void renderPlaying();
-	void updatePaused();
-	void renderPaused();
+
 	void updateGameOver();
 	void renderGameOver();
 
 	int screenWidth;
 	int screenHeight;
 	
-	Player player;
-	LaserHelper laserHelper;
-	AsteroidHelper asteroidHelper;
-	GameHelper gameHelper;
-	TextureManager textureManager;
-	Ui ui;
+	Game game;
 	Menu menu;
-	DropHelper dropHelper;
-	EnemyManager enemyManager;
-	LevelManager levelManager;
-	CustomShipManager customShipManager;
 
 	Color BcgColour;
 	eWindowState windowState;
-	Camera2D camera;
-	std::vector<Laser> lasers;
-	std::vector<sAsteroid> asteroids;
-	std::vector<sDrop> drops;
-	std::vector<sEnemy> enemies;
-	std::vector<LevelData> levels;
-	std::vector<CustomShip> customShips;
 
 	/*
 	* GameState gameState;
