@@ -13,7 +13,6 @@ Game::Game()
     customShipManager(),
     gameState(eGameState::Playing),
     camera{} {
-    initialize();
 }
 
 Game::~Game() {

@@ -288,7 +288,7 @@ void Ui::drawStars(Vector2 playerPos) {
     }
 }
 
-void Ui::setGame(WindowManager* g) {
+void Ui::setGame(Game* g) {
     game = g;
 }
 
@@ -320,6 +320,6 @@ void Ui::updatePauseOverlay(int sW, int sH)
     }
     else if (mainMenuButton.IsClicked())
     {
-        game->setWindowState(eWindowState::Menu);
+        game->returnToMenuCallback();
     }
 }

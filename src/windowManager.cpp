@@ -20,7 +20,7 @@ void WindowManager::setWindowState(eWindowState newState) {
         menu.setMenuState(MenuState::Main);
     }
     if (windowState == eWindowState::Playing) {
-        startGame();
+        game.startGame();
     }
 }
 
@@ -42,7 +42,6 @@ void WindowManager::initialize() {
 }
 
 void WindowManager::shutdown() {
-    game.shutdown();
     // UWAGA: W wykorzystywanej wersji raylib istnieje błąd w obsłudze default font:
     // UnloadFontDefault() zwalnia obrazy glyphów, które wskazują na wcześniej zwolnioną pamięć,
     // co powoduje naruszenie pamięci podczas CloseWindow().
@@ -85,7 +84,7 @@ void WindowManager::render() {
 void WindowManager::updateMenu() {
     menu.update();
     if (windowState == eWindowState::Playing) {
-        startGame();
+        game.startGame();
     }
 }
 
