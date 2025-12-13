@@ -130,11 +130,11 @@ void Menu::updateMainMenu() {
     }
 
     if (quickStartButton.IsClicked()) {
-        gamePtr->setWindowState(eWindowState::Playing);
+        gamePtr->setWindowState(eWindowState::Gameplay);
         nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
     }
     else if (arcadeModeButton.IsClicked()) {
-        gamePtr->setWindowState(eWindowState::Playing);
+        gamePtr->setWindowState(eWindowState::Gameplay);
         nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
     }
     else if (levelsButton.IsClicked()) {
@@ -223,7 +223,7 @@ void Menu::renderLevelsGrid() {
         {
             fillColor = Fade(SKYBLUE, 0.6f);
             borderColor = WHITE;
-            gamePtr->setWindowState(eWindowState::Playing);
+            gamePtr->setWindowState(eWindowState::Gameplay);
             gamePtr->runLevel(level.levelNumber);
             nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
         }

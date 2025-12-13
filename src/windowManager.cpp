@@ -19,7 +19,7 @@ void WindowManager::setWindowState(eWindowState newState) {
     if (windowState == eWindowState::Menu) {
         menu.setMenuState(MenuState::Main);
     }
-    if (windowState == eWindowState::Playing) {
+    if (windowState == eWindowState::Gameplay) {
         game.startGame();
     }
 }
@@ -34,21 +34,14 @@ void WindowManager::initialize() {
     SetTargetFPS(60);
 
     game.initialize();
-    menu.setPointers(this, &game.ui, &game.levels);
-
     game.setReturnToMenuCallback([this]() {
         this->setWindowState(eWindowState::Menu);
-        });
+    });
+
+    menu.setPointers(this, &game.ui, &game.levels);
 }
 
 void WindowManager::shutdown() {
-    // UWAGA: W wykorzystywanej wersji raylib istnieje błąd w obsłudze default font:
-    // UnloadFontDefault() zwalnia obrazy glyphów, które wskazują na wcześniej zwolnioną pamięć,
-    // co powoduje naruszenie pamięci podczas CloseWindow().
-    // Aby tego uniknąć bez modyfikacji raylib, pomijamy wywołanie CloseWindow() i pozwalamy
-    // procesowi natywnemu zakończyć kontekst graficzny razem z procesem aplikacji.
-    // Jeśli zaktualizujesz raylib do wersji poprawiającej ten bug, przywróć wywołanie CloseWindow().
-    //
     // CloseWindow(); // wyłączone z powodu błędu w tej wersji raylib
 }
 
@@ -65,7 +58,7 @@ void WindowManager::update() {
 
     switch (windowState) {
     case eWindowState::Menu:     updateMenu(); break;
-    case eWindowState::Playing:  game.update(); break;
+    case eWindowState::Gameplay:  game.update(); break;
     }
 }
 
@@ -75,7 +68,7 @@ void WindowManager::render() {
 
     switch (windowState) {
     case eWindowState::Menu:     renderMenu(); break;
-    case eWindowState::Playing:  game.render(); break;
+    case eWindowState::Gameplay:  game.render(); break;
     }
 
     EndDrawing();
@@ -83,7 +76,7 @@ void WindowManager::render() {
 
 void WindowManager::updateMenu() {
     menu.update();
-    if (windowState == eWindowState::Playing) {
+    if (windowState == eWindowState::Gameplay) {
         game.startGame();
     }
 }

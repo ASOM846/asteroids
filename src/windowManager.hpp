@@ -21,7 +21,7 @@
 
 enum class eWindowState {
 	Menu,
-	Playing
+	Gameplay
 };
 
 class WindowManager
