@@ -4,8 +4,6 @@ WindowManager::WindowManager()
     : screenWidth(1280),
     screenHeight(720),
 
-    menu(this, &ui, &levels),
-
     BcgColour(BLACK),
     windowState(eWindowState::Menu) {
     initialize();
@@ -24,9 +22,6 @@ void WindowManager::setWindowState(eWindowState newState) {
     if (windowState == eWindowState::Playing) {
         startGame();
     }
-    else if (windowState == eWindowState::GameOver) {
-        endGame();
-    }
 }
 
 void WindowManager::runLevel(int levelNumber) {
@@ -39,8 +34,9 @@ void WindowManager::initialize() {
     SetTargetFPS(60);
 
     game.initialize();
+    menu.setPointers(this, &game.ui, &game.levels);
 
-    levelManager.setOnLevelComplete([this]() {
+    game.setReturnToMenuCallback([this]() {
         this->setWindowState(eWindowState::Menu);
         });
 }
@@ -71,8 +67,6 @@ void WindowManager::update() {
     switch (windowState) {
     case eWindowState::Menu:     updateMenu(); break;
     case eWindowState::Playing:  game.update(); break;
-    case eWindowState::Paused:   updatePaused(); break;
-    case eWindowState::GameOver: updateGameOver(); break;
     }
 }
 
@@ -83,8 +77,6 @@ void WindowManager::render() {
     switch (windowState) {
     case eWindowState::Menu:     renderMenu(); break;
     case eWindowState::Playing:  game.render(); break;
-    case eWindowState::Paused:   renderPaused(); break;
-    case eWindowState::GameOver: renderGameOver(); break;
     }
 
     EndDrawing();

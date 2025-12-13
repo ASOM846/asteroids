@@ -171,8 +171,8 @@ void Game::initialize() {
     ui.initButtons(GetScreenWidth(), GetScreenHeight());
     ui.setGame(this);
 
-    levelManager.setOnLevelComplete([this]()
-                                    { this->setWindowState(eWindowState::Menu); });
+    levelManager.setReturnToMenuCallback([this]()
+                                    { this->returnToMenuCallback(); });
 }
 
 void Game::shutdown() {

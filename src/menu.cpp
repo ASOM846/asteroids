@@ -3,11 +3,8 @@
 #include "windowManager.hpp"
 #include <string>
 
-Menu::Menu(WindowManager* game, Ui* ui, std::vector<LevelData>* levelData)
-        : gamePtr(game),
-            uiPtr(ui),
-            lastMousePos{0.0f, 0.0f},
-            levels(levelData),
+Menu::Menu()
+        :  lastMousePos{0.0f, 0.0f},
             buttonsInitialized(false),
             cachedScreenWidth(0),
             cachedScreenHeight(0),
@@ -51,6 +48,13 @@ void Menu::setMenuState(MenuState newState) {
         return;
     currentState = newState;
     nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
+}
+
+void Menu::setPointers(WindowManager* game, Ui* ui,
+    std::vector<LevelData>* levelData) {
+    gamePtr = game;
+    uiPtr = ui;
+    levels = levelData;
 }
 
 void Menu::renderStars() {

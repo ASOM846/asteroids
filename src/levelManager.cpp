@@ -49,8 +49,8 @@ void LevelManager::updateCurrentLevel()
         if (endTimer >= endDuration)
         {
             // animacja zakończona -> powiadomienie i reset
-            if (onLevelComplete)
-                onLevelComplete();
+            if (returnToMenuCallback)
+                returnToMenuCallback();
             reset();
             levelEnding = false;
         }

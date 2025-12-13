@@ -17,12 +17,14 @@ enum class MenuState {
 
 class Menu {
 public:
-    explicit Menu(WindowManager* game, Ui* ui, 
-        std::vector<LevelData>* levelData);
+    explicit Menu();
     void update();
     void render();
 
     void setMenuState(MenuState newState);
+
+    void setPointers(WindowManager* game, Ui* ui,
+        std::vector<LevelData>* levelData);
 private:
     void renderStars();
     void initButtons(int screenWidth, int screenHeight);
@@ -39,8 +41,8 @@ private:
     void updateSettingsMenu();
     void renderSettingsMenu();
 
-    WindowManager* gamePtr;
-    Ui* uiPtr;
+    WindowManager* gamePtr = nullptr;
+    Ui* uiPtr = nullptr;
 
 
     Vector2 lastMousePos;

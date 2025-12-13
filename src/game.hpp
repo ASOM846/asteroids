@@ -46,11 +46,16 @@ private:
     void renderGameOver();
 
     void initialize();
+    
+    void setReturnToMenuCallback(std::function<void()> cb) {
+        returnToMenuCallback = cb;
+    }
+
     void shutdown();
 
     void startGame();
     void endGame();
-
+    
     void togglePause();
 
     void updateCached();
@@ -79,7 +84,6 @@ private:
     std::vector<LevelData> levels;
     std::vector<CustomShip> customShips;
 
-    std::function<void()> onLevelCompleteCallback;
     std::function<void()> returnToMenuCallback;
 
     friend class WindowManager;

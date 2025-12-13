@@ -46,7 +46,8 @@ public:
     float getRemainingLevelTime() const;
     bool isLevelRunning() const;
 
-    void setOnLevelComplete(std::function<void()> cb) { onLevelComplete = cb; }
+    void setReturnToMenuCallback(std::function<void()> cb) 
+    { returnToMenuCallback = cb; }
 
     void drawLevelEndOverlay(int screenWidth, int screenHeight);
 
@@ -100,7 +101,7 @@ private:
 	void updateShipEscortLevel();
 
 
-    std::function<void()> onLevelComplete;
+    std::function<void()> returnToMenuCallback;
     bool levelEnding = false;
     float endTimer = 0.0f;
     float endDuration = 2.0f;
