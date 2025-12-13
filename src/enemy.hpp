@@ -190,6 +190,7 @@ public:
         if (enemies) enemies->clear();
         killedEnemies = 0;
         activeCounts.fill(0);
+        desiredCounts.fill(0);
     }
 
     // Return number of active enemies for given type
@@ -250,25 +251,6 @@ public:
         recomputeActiveCounts();
         std::cout << "Generated enemy of type " << static_cast<int>(type) << " at ("
             << pos.x << ", " << pos.y << ")\n";
-    }
-
-    void generateEnemyWave(int count, EnemyType type)
-    {
-        switch (type) {
-        case EnemyType::Basic:
-            for (int i = 0; i < count; ++i)
-                generateEnemy(EnemyType::Basic);
-            break;
-        case EnemyType::Fast:
-            for (int i = 0; i < count; ++i)
-                generateEnemy(EnemyType::Fast);
-            break;
-        case EnemyType::Tank:
-            for (int i = 0; i < count; ++i)
-                generateEnemy(EnemyType::Tank);
-            break;
-
-        }
     }
 
 private:

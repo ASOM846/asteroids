@@ -53,14 +53,10 @@ private:
 
     void shutdown();
 
-    void startGame();
+    void startNewGame();
     void endGame();
     
     void togglePause();
-
-    void updateCached();
-    int cacheScreenWidth;
-    int cacheScreenHeight;
 
     Player player;
     LaserHelper laserHelper;

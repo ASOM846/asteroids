@@ -20,8 +20,6 @@ Game::~Game() {
 }
 
 void Game::update() {
-    updateCached();
-
     switch (gameState) {
     case eGameState::Playing:
         updatePlaying();
@@ -34,6 +32,7 @@ void Game::update() {
         break;
     }
 }
+
 void Game::render() {
     switch (gameState) {
     case eGameState::Playing:
@@ -54,9 +53,6 @@ void Game::updatePlaying() {
         togglePause();
         return;
     }
-
-    if (IsKeyPressed(KEY_I))
-        levelManager.runLevel(1);
 
     player.update();
     camera.target = player.getPosition();
@@ -136,6 +132,7 @@ void Game::renderPaused() {
 }
 
 void Game::runLevel(int levelNumber) {
+    startNewGame();
     levelManager.runLevel(levelNumber);
 }
 
@@ -178,7 +175,7 @@ void Game::shutdown() {
     textureManager.unloadAll();
 }
 
-void Game::startGame() {
+void Game::startNewGame() {
     lasers.clear();
     asteroidHelper.resetAsteroids(asteroids);
     drops.clear();
@@ -187,6 +184,7 @@ void Game::startGame() {
     customShipManager.reset();
     gameHelper.setPlayerHealthPtr(player.getHealthPtr());
     gameHelper.setTextures(textureManager, player);
+    gameState = eGameState::Playing;
 }
 
 void Game::endGame() {
@@ -196,7 +194,7 @@ void Game::endGame() {
 void Game::updateGameOver()
 {
     if (IsKeyPressed(KEY_R)){
-        startGame();
+        startNewGame();
     }
     else if (IsKeyPressed(KEY_M))   {
         returnToMenuCallback();
@@ -210,7 +208,7 @@ void Game::renderGameOver()
     DrawText("R - Restart", GetScreenWidth() / 2 - 120, GetScreenHeight() / 2 + 10, 30, GRAY);
     DrawText("M - Menu", GetScreenWidth() / 2 - 100, GetScreenHeight() / 2 + 50, 30, GRAY);
 }
-
+    
 void Game::togglePause() {
     if (gameState == eGameState::Playing) {
         gameState = eGameState::Paused;
@@ -219,8 +217,3 @@ void Game::togglePause() {
         gameState = eGameState::Playing;
     }
 }
-
-void Game::updateCached() {
-    // Implementation of logic to update cached screen dimensions
-}
-

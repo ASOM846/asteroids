@@ -19,10 +19,7 @@ void WindowManager::setWindowState(eWindowState newState) {
     if (windowState == eWindowState::Menu) {
         menu.setMenuState(MenuState::Main);
     }
-    if (windowState == eWindowState::Gameplay) {
-        game.startGame();
-    }
-}
+ }
 
 void WindowManager::runLevel(int levelNumber) {
     game.runLevel(levelNumber);
@@ -76,9 +73,6 @@ void WindowManager::render() {
 
 void WindowManager::updateMenu() {
     menu.update();
-    if (windowState == eWindowState::Gameplay) {
-        game.startGame();
-    }
 }
 
 void WindowManager::renderMenu() {
