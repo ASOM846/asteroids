@@ -5,8 +5,8 @@
 #include "levelManager.hpp"
 #include "GameHelper.h"
 
-enum class GameState;
-class Game;
+enum class eWindowState;
+class WindowManager;
 class Ui;
 
 enum class MenuState {
@@ -17,7 +17,7 @@ enum class MenuState {
 
 class Menu {
 public:
-    explicit Menu(Game* game, Ui* ui, 
+    explicit Menu(WindowManager* game, Ui* ui, 
         std::vector<LevelData>* levelData);
     void update();
     void render();
@@ -39,7 +39,7 @@ private:
     void updateSettingsMenu();
     void renderSettingsMenu();
 
-    Game* gamePtr;
+    WindowManager* gamePtr;
     Ui* uiPtr;
 
 

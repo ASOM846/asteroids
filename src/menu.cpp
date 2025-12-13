@@ -1,9 +1,9 @@
 #include "menu.h"
 #include "ui.h"
-#include "game.h"
+#include "windowManager.hpp"
 #include <string>
 
-Menu::Menu(Game* game, Ui* ui, std::vector<LevelData>* levelData)
+Menu::Menu(WindowManager* game, Ui* ui, std::vector<LevelData>* levelData)
         : gamePtr(game),
             uiPtr(ui),
             lastMousePos{0.0f, 0.0f},
@@ -126,11 +126,11 @@ void Menu::updateMainMenu() {
     }
 
     if (quickStartButton.IsClicked()) {
-        gamePtr->setGameState(GameState::Playing);
+        gamePtr->setWindowState(eWindowState::Playing);
         nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
     }
     else if (arcadeModeButton.IsClicked()) {
-        gamePtr->setGameState(GameState::Playing);
+        gamePtr->setWindowState(eWindowState::Playing);
         nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
     }
     else if (levelsButton.IsClicked()) {
@@ -219,7 +219,7 @@ void Menu::renderLevelsGrid() {
         {
             fillColor = Fade(SKYBLUE, 0.6f);
             borderColor = WHITE;
-            gamePtr->setGameState(GameState::Playing);
+            gamePtr->setWindowState(eWindowState::Playing);
             gamePtr->runLevel(level.levelNumber);
             nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
         }

@@ -6,7 +6,7 @@
 
 #include "button.hpp"
 
-class Game;
+class WindowManager;
 
 class Ui {
 public:
@@ -14,7 +14,7 @@ public:
     ~Ui();
 
     void initButtons(int sW, int sH);
-    void setGame(Game* g);
+    void setGame(WindowManager* g);
 
 	void draw(int health, int shield,
 		int ammo, int maxAmmo, int score,
@@ -43,7 +43,7 @@ private:
         Color color;
     };
 
-    Game* game;
+    WindowManager* game;
 
     std::vector<StarLayer> starLayers;
     std::mt19937 rng;

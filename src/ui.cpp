@@ -1,5 +1,5 @@
 #include "ui.h"
-#include "game.h"
+#include "windowManager.hpp"
 #include <string>
 #include <algorithm>
 #include <cmath>
@@ -288,7 +288,7 @@ void Ui::drawStars(Vector2 playerPos) {
     }
 }
 
-void Ui::setGame(Game* g) {
+void Ui::setGame(WindowManager* g) {
     game = g;
 }
 
@@ -320,6 +320,6 @@ void Ui::updatePauseOverlay(int sW, int sH)
     }
     else if (mainMenuButton.IsClicked())
     {
-        game->setGameState(GameState::Menu);
+        game->setWindowState(eWindowState::Menu);
     }
 }

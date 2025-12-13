@@ -1,10 +1,10 @@
 ﻿#include <iostream>
 #include <raylib.h>
 
-#include "game.h"
+#include "windowManager.hpp"
 int main()
 {
-	Game game;
+	WindowManager windowManager;
 
     return 0;
 }
