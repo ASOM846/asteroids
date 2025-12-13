@@ -33,6 +33,8 @@ public:
 
 
     void takeDamage(int amount);
+    void heal(int amount);
+    void healShield(int amount);
     void increaseAmmo(int amount);
     void increaseScore(int aomunt);
     void setTexture(Texture2D texture) {
@@ -50,6 +52,9 @@ private:
     int health;
     int shield;
 
+    int maxHealth;
+    int maxShield;
+    
     int ammo;
     int maxAmmo;
 

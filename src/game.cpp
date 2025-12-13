@@ -54,16 +54,13 @@ void Game::updatePlaying() {
         return;
     }
 
+    collisionSystem.handleCollision();
     player.update();
     camera.target = player.getPosition();
     laserHelper.updateLasers(lasers, (int)player.getPosition().x, (int)player.getPosition().y);
     asteroidHelper.updateAsteroids(asteroids, player.getPosition());
     enemyManager.updateEnemies(player.getPosition());
     customShipManager.updateShips();
-
-    gameHelper.handleCollision(lasers, asteroids, player.getRect());
-    gameHelper.checkCollisionPlayerDrop(drops, player.getRect());
-    gameHelper.checkCollisionLaserPlayerEnemy();
 
     levelManager.updateCurrentLevel();
 
@@ -145,7 +142,6 @@ void Game::initialize() {
     gameHelper.setTextures(textureManager, player);
     gameHelper.setDropHelper(&dropHelper);
     gameHelper.setDrops(&drops);
-    gameHelper.setDropChance(1.00f);
     gameHelper.setPointers(&enemies, &lasers);
     gameHelper.setCamera(&camera);
     gameHelper.setUi(&ui);
@@ -169,6 +165,9 @@ void Game::initialize() {
 
     levelManager.setReturnToMenuCallback([this]()
                                     { this->returnToMenuCallback(); });
+
+    collisionSystem.setPointers(&lasers, &asteroids, &drops, 
+        &enemies, &customShips, &player, &dropHelper);
 }
 
 void Game::shutdown() {

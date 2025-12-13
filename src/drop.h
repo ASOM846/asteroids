@@ -76,11 +76,15 @@ struct sDrop {
 
 class DropHelper {
 public:
-    DropHelper() {}
+    DropHelper() : dropSpawnChance(0.3f) {}
 
     void setTextureManager(TextureManager& tm) {
         texManager = &tm;
         sDrop::setTextureManager(texManager);
+    }
+
+    void setDrops(std::vector<sDrop>* d) {
+        drops = d;
     }
 
     void spawnDrop(std::vector<sDrop>& drops, float x, float y, DropType type) {
@@ -104,6 +108,16 @@ public:
         for (const auto& d : drops) d.render();
     }
 
+    void maybeSpawnDrop(float x, float y) {
+    if (!drops) return;
+    if (GetRandomValue(0, 99) < (int)(dropSpawnChance * 100.0f)) {
+        spawnRandomDrop(*drops, x, y);
+    }
+}
+
 private:
+    float dropSpawnChance;
+
+    std::vector<sDrop>* drops = nullptr;
     const TextureManager* texManager = nullptr;
 };

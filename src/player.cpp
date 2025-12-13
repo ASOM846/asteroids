@@ -9,6 +9,8 @@ Player::Player()
             turnSpeed(3.5f),
             health(100),
             shield(0),
+            maxHealth(100),
+            maxShield(100),
             ammo(300),
             maxAmmo(500),
             score(0),
@@ -140,3 +142,16 @@ void Player::takeDamage(int amount) {
     }
 }
 
+void Player::heal(int amount)
+{
+    if (amount <= 0) return;
+    health += amount;
+    if (health > maxHealth) health = maxHealth;
+}
+
+void Player::healShield(int amount)
+{
+    if (amount <= 0) return;
+    shield += amount;
+    if (shield > maxShield) shield = maxShield;
+}

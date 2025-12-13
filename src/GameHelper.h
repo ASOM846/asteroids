@@ -17,7 +17,6 @@ public:
     ~GameHelper();
 
     void checkForFullScreen();
-    void setDropChance(float c) { dropSpawnChance = c; }
 
     void handleCollision(std::vector<Laser>& lasers,
         std::vector<sAsteroid>& asteroids,
@@ -61,8 +60,4 @@ private:
     std::vector<sDrop>* drops = nullptr;
     std::vector<sEnemy>* enemies = nullptr;
     std::vector<Laser>* lasers = nullptr;
-
-    float dropSpawnChance = 0.30f;
-
-    void maybeSpawnDrop(float x, float y);
 };

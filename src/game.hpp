@@ -17,6 +17,7 @@
 #include "button.hpp"
 #include "levelManager.hpp"
 #include "customShip.hpp"
+#include "collisionSystem.hpp"
 
 enum class eGameState {
     Playing,
@@ -68,6 +69,7 @@ private:
     EnemyManager enemyManager;
     LevelManager levelManager;
     CustomShipManager customShipManager;
+    CollisionSystem collisionSystem;
 
     eGameState gameState;
 
