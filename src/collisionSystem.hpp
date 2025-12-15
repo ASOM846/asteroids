@@ -41,59 +41,38 @@ public:
 
         Rectangle playerRect = player->getRect();
 
-        for(auto a : *asteroids) {
-            if(!a.active) continue;
-
-            // Collision between asteroids and lasers
-            for(auto& l : *lasers) {
-                if(!l.active) continue;
-
-                if(CheckCollisionCircles(Vector2{l.x, l.y}, (float)l.radius,
-                    Vector2{a.x, a.y}, (float)a.radius)) {
-
+        for (auto& a : *asteroids) {
+            if (!a.active) continue;
+            for (auto& l : *lasers) {
+                if (!l.active) continue;
+                if (CheckCollisionCircles(Vector2{ l.x, l.y }, (float)l.radius,
+                                          Vector2{ a.x, a.y }, (float)a.radius)) {
                     a.applyDamage(l.getDamage(), *asteroids);
-
-                    float lvx = l.vx;
-                    float lvy = l.vy;
+                    float lvx = l.vx, lvy = l.vy;
                     float len = std::sqrt(lvx * lvx + lvy * lvy);
-                    if(len > 0.0001f) {
-                        lvx /= len;
-                        lvy /= len;
-                    }
-
+                    if (len > 0.0001f) { lvx /= len; lvy /= len; }
                     float impulse = (float)l.getDamage() / (float)a.radius * 2.0f;
                     a.applyImpulse(lvx * impulse, lvy * impulse);
                     l.active = false;
-
-                    if(!a.active) {
+                    if (!a.active) {
                         dropHelper->maybeSpawnDrop(a.x, a.y);
                         player->increaseScore(a.radius);
                     }
                     break;
                 }
             }
-
-            // Collision between asteroids and player
-            if(CheckCollisionCircleRec(Vector2{a.x, a.y},
-                (float)a.radius, playerRect)) {
+            if (CheckCollisionCircleRec(Vector2{ a.x, a.y }, (float)a.radius, playerRect)) {
                 player->takeDamage(a.radius);
                 a.active = false;
             }
         }
 
-        for (auto d : *drops) {
+        for (auto& d : *drops) {
             if (!d.active) continue;
             if (CheckCollisionRecs(playerRect, d.getRect())) {
-                if (d.getType() == DropType::Health) {
-                    player->heal(20);
-                }
-                if (d.getType() == DropType::Shield) {
-                    player->healShield(20);
-                }
-                if(d.getType() == DropType::Ammo)   {
-                    player->increaseAmmo(50);
-                }
-
+                if (d.getType() == DropType::Health) player->heal(20);
+                if (d.getType() == DropType::Shield) player->healShield(20);
+                if (d.getType() == DropType::Ammo) player->increaseAmmo(50);
                 d.active = false;
             }
         }

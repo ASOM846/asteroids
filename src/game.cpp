@@ -152,6 +152,7 @@ void Game::initialize() {
     asteroidHelper.setTextureManager(textureManager);
 
     dropHelper.setTextureManager(textureManager);
+    dropHelper.setDrops(&drops);
 
     levelManager.setPointers(&levels, &dropHelper, &player,
                              &asteroidHelper, &customShipManager, &enemyManager, &drops, &enemies);
