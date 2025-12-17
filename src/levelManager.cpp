@@ -283,6 +283,5 @@ void LevelManager::initShipEscortLevel(const LevelData& level)
     if (!customShipManager) throw std::runtime_error(std::string("customShipManagerNotLoaded"));
 
     customShipManager->addShip({ -100.0f, GetScreenHeight() / 2.0f },
-		{ GetScreenWidth() + 100.0f, GetScreenHeight() / 2.0f });
+		{ GetScreenWidth() + 100000.0f, 100000.0f });
 }
-

@@ -159,7 +159,7 @@ void Game::initialize() {
     levelManager.loadLevelsToMemory();
     levelManager.reset();
 
-    customShipManager.setPointers(&customShips);
+    customShipManager.setPointers(&customShips, &textureManager);
 
     ui.initButtons(GetScreenWidth(), GetScreenHeight());
     ui.setGame(this);

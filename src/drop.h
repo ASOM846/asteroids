@@ -1,6 +1,7 @@
 #pragma once
 #include <raylib.h>
 #include <algorithm>
+#include <cmath>
 #include "textureManager.h"
 
 enum class DropType {
@@ -15,6 +16,8 @@ struct sDrop {
     bool active;
     DropType type;
     const Texture2D* texture;
+    float rotation;
+    float rotationSpeed;
 
 
     inline static const TextureManager* sTexMgr = nullptr;
@@ -22,7 +25,9 @@ struct sDrop {
 
     sDrop(float px, float py, DropType pType, const Texture2D* pTexture = nullptr)
         : x(px), y(py), active(true), type(pType),
-        texture(pTexture ? pTexture : textureForType(pType)) {
+        texture(pTexture ? pTexture : textureForType(pType)),
+        rotation(0.0f),
+        rotationSpeed((float)GetRandomValue(-90, 90)) {
     }
 
     ~sDrop() {
@@ -46,6 +51,10 @@ struct sDrop {
     }
 
     void update() {
+        // Spin the drop to make it visually stand out
+        rotation += rotationSpeed * GetFrameTime();
+        if (rotation > 360.0f || rotation < -360.0f)
+            rotation = std::fmod(rotation, 360.0f);
     }
 
     void render() const {
@@ -54,7 +63,7 @@ struct sDrop {
             Rectangle src{ 0,0,(float)texture->width,(float)texture->height };
             Rectangle dst{ x, y, (float)texture->width, (float)texture->height };
             Vector2 origin{ (float)texture->width / 2.0f, (float)texture->height / 2.0f };
-            DrawTexturePro(*texture, src, dst, origin, 0.0f, WHITE);
+            DrawTexturePro(*texture, src, dst, origin, rotation, WHITE);
         }
         else {
             Color c =

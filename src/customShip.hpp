@@ -3,18 +3,19 @@
 #include <raymath.h>
 #include <vector>
 #include <iostream>
+#include "textureManager.h"
 
 struct CustomShip {
-	CustomShip(Vector2 initialPosition,
+	CustomShip(Texture2D texture, Vector2 initialPosition,
 		Vector2 destinationTarget)
-		: position{ initialPosition },
-		velocity{ 0.0f, 0.0f },
+		: velocity{ 0.0f, 0.0f },
+		position{ initialPosition },
 		destination{ destinationTarget },
 		rotation(0.0f),
-		size(60.0f),
+		size(50.0f),
 		health(100),
 		shield(50),
-		texture{} {
+		texture{ texture }{
 	}
 
 	void update() {
@@ -24,6 +25,7 @@ struct CustomShip {
 			constexpr float speed = 5.0f;
 			const Vector2 direction = Vector2Scale(Vector2Normalize(toDestination), speed);
 			velocity = direction;
+			rotation = atan2f(velocity.y, velocity.x) * RAD2DEG + 90.0f; // align texture with velocity; tweak offset if ship graphic points another way
 			position.x += velocity.x;
 			position.y += velocity.y;
 		}
@@ -64,15 +66,17 @@ public:
 	CustomShipManager() = default;
 	~CustomShipManager() = default;
 
-	void setPointers(std::vector<CustomShip>* cs) {
+	void setPointers(std::vector<CustomShip>* cs, TextureManager* tm) {
 		ships = cs;
+		textureManager = tm;
 	}
 
 	void addShip(const Vector2& initialPosition, const Vector2& destinationTarget) {
 		if (ships == nullptr) {
 			return;
 		}
-		ships->emplace_back(initialPosition, destinationTarget);
+		Texture2D shipTexture = textureManager->get(TextureId::FriendlyShip1);
+		ships->emplace_back(shipTexture, initialPosition, destinationTarget);
 	}
 
 	void updateShips() {
@@ -111,4 +115,5 @@ public:
 
 private:
 	std::vector<CustomShip>* ships = nullptr;
+	TextureManager* textureManager = nullptr;
 };
