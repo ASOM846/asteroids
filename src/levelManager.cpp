@@ -1,4 +1,5 @@
 #include "levelManager.hpp"
+#include <raymath.h>
 
 LevelManager::LevelManager() {}
 
@@ -8,6 +9,9 @@ void LevelManager::reset() {
     currentLevel = LevelData{};
     levelRunning = false;
     currentLevelTime = 0.0f;
+    if (ui) {
+        ui->resetAll();
+    }
 }
 
 void LevelManager::runLevel(int levelNumber) {
@@ -79,7 +83,7 @@ void LevelManager::updateCurrentLevel()
         updateEnemyInvasionLevel();
         break;
     case LevelType::ShipEscort:
-        //updateShipEscortLevel();
+        updateShipEscortLevel();
         break;
     case LevelType::BossFight:
         // updateBossFightLevel(); --- IGNORE ---
@@ -166,8 +170,7 @@ void LevelManager::loadLevelsToMemory() {
 	levels->push_back(level6);
 }
 
-void LevelManager::drawLevelEndOverlay(int screenWidth, int screenHeight)
-{
+void LevelManager::drawLevelEndOverlay(int screenWidth, int screenHeight) {
     if (!levelEnding)
         return;
 
@@ -260,7 +263,7 @@ void LevelManager::updateEnemyInvasionLevel()
 {
     if (currentLevel.type != LevelType::EnemyInvasion)
         return;
-
+    
 	if (enemyManager->getKilledEnemies() >= currentLevel.objectiveCount)
     {
 		std::cout << "Killed required enemies for level completion!\n";
@@ -281,7 +284,28 @@ void LevelManager::initShipEscortLevel(const LevelData& level)
         return;
 
     if (!customShipManager) throw std::runtime_error(std::string("customShipManagerNotLoaded"));
+    if (!ui ) throw std::runtime_error(std::string("uiNotLoaded"));
 
     customShipManager->addShip({ -100.0f, GetScreenHeight() / 2.0f },
 		{ GetScreenWidth() + 100000.0f, 100000.0f });
+
+    ui->setArrowDestination(customShipManager->getShipPosition(0));    
+}
+
+void LevelManager::updateShipEscortLevel(){
+    if(currentLevel.type != LevelType::ShipEscort)
+        return;
+
+    if (!customShipManager || !ui) {
+        return;
+    }
+
+    const Vector2 escortPos = customShipManager->getShipPosition(0);
+
+    // When there is an escort ship, keep the HUD arrow locked to it.
+    if (!Vector2Equals(escortPos, Vector2{0.0f, 0.0f})) {
+        ui->setArrowDestination(escortPos);
+    } else {
+        ui->clearArrowDestination();
+    }
 }

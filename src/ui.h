@@ -24,10 +24,15 @@ public:
 
     void drawArrowAngled(float angle);
 
+    void resetAll();
+
     void drawStars(Vector2 playerPos);
 
     void renderPauseOverlay(int sW, int sH);
     void updatePauseOverlay(int sW, int sH);
+
+    void setArrowDestination(const Vector2& dest);
+    void clearArrowDestination();
 
 private:
     struct Star {
@@ -52,10 +57,12 @@ private:
     bool hasLastPlayerPos;
     Vector2 lastPlayerPos;
 
+    bool drawArrow;
+    Vector2 arrowDestination;
+
     //paused state overlay buttons
     Button resumeButton;
     Button mainMenuButton;
-
 
     void initStarLayers(int screenW, int screenH);
 };

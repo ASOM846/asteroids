@@ -7,6 +7,7 @@
 #include "enemy.hpp"
 #include "player.h"
 #include "customShip.hpp"
+#include "ui.h"
 #include <iostream>
 #include <functional>
 #include <string>
@@ -59,6 +60,7 @@ public:
         AsteroidHelper* ah,
 		CustomShipManager* csm,
         EnemyManager* em,
+        Ui* pUi,
         std::vector<sDrop>* dropVec,
         std::vector<sEnemy>* enemyVec) {
         levels = levelVec;
@@ -67,6 +69,7 @@ public:
         asteroidHelper = ah;
 		customShipManager = csm;
         enemyManager = em;
+        ui = pUi;
         drops = dropVec;
         enemies = enemyVec;
     }
@@ -82,6 +85,7 @@ private:
     AsteroidHelper *asteroidHelper = nullptr;
 	CustomShipManager* customShipManager = nullptr;
 	EnemyManager* enemyManager = nullptr;
+    Ui *ui = nullptr;
     std::vector<sDrop> *drops = nullptr;
     std::vector<sEnemy> *enemies = nullptr;
 

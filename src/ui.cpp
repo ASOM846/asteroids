@@ -6,7 +6,7 @@
 #include <random>
 #include <raymath.h>
 
-Ui::Ui() : cachedWidth(0), cachedHeight(0), hasLastPlayerPos(false) {
+Ui::Ui() : cachedWidth(0), cachedHeight(0), hasLastPlayerPos(false), drawArrow(false), arrowDestination{0.0f, 0.0f} {
     std::random_device rd;
     rng.seed(rd());
 }
@@ -178,8 +178,8 @@ void Ui::draw(int health, int shield, int ammo,
     DrawLine(20, bandY + 2, screenW - 20, bandY + 2, { 0,50,20,100 });
     DrawLine(20, screenH - 2, screenW - 20, screenH - 2, { 0,50,20,100 });
 
-    if (friendlyShipPos) {
-        Vector2 toFriend = Vector2Subtract(*friendlyShipPos, playerWorldPos);
+    if (drawArrow) {
+        Vector2 toFriend = Vector2Subtract(arrowDestination, playerWorldPos);
         const float dist = Vector2Length(toFriend);
         if (dist > 1.0f) {
             Vector2 dir = Vector2Scale(toFriend, 1.0f / dist);
@@ -217,6 +217,10 @@ void Ui::drawArrowAngled(float angle)
     Color arrowCol{ 255, 100, 100, 230 };
     DrawTriangle(baseLeft, baseRight, tip, arrowCol);
 	DrawTriangleLines(baseLeft, baseRight, tip, WHITE);
+}
+
+void Ui::resetAll() {
+    clearArrowDestination();
 }
 
 void Ui::drawStars(Vector2 playerPos) {
@@ -322,4 +326,15 @@ void Ui::updatePauseOverlay(int sW, int sH)
     {
         game->returnToMenuCallback();
     }
+}
+
+void Ui::setArrowDestination(const Vector2 &dest)
+{
+    arrowDestination = dest;
+    drawArrow = true;
+}
+
+void Ui::clearArrowDestination()
+{
+    drawArrow = false;
 }
