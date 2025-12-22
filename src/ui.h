@@ -7,6 +7,8 @@
 #include "button.hpp"
 
 class Game;
+enum class LevelType;
+struct LevelData;
 
 class Ui {
 public:
@@ -20,7 +22,8 @@ public:
 		int ammo, int maxAmmo, int score,
 		float remainingLevelTime,
 		Vector2 playerWorldPos,
-		const Vector2* friendlyShipPos = nullptr);
+		const Vector2* friendlyShipPos = nullptr,
+        const LevelData* levelData = nullptr);
 
     void drawArrowAngled(float angle);
 

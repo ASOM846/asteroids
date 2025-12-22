@@ -164,7 +164,6 @@ public:
             if (e.active) e.update(playerPos, *lasers);
         }
 
-        const size_t before = enemies->size();
         auto it = std::remove_if(enemies->begin(), enemies->end(),
             [](const sEnemy& en) { return !en.active; });
         const size_t removed = static_cast<size_t>(std::distance(it, enemies->end()));

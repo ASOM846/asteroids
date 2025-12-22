@@ -1,4 +1,5 @@
 #include "levelManager.hpp"
+#include "ui.h"
 #include <raymath.h>
 
 LevelManager::LevelManager() {}
@@ -45,10 +46,8 @@ void LevelManager::runLevel(int levelNumber) {
     }
 }
 
-void LevelManager::updateCurrentLevel()
-{
-    if (levelEnding)
-    {
+void LevelManager::updateCurrentLevel() {
+    if (levelEnding)    {
         endTimer += GetFrameTime();
         if (endTimer >= endDuration)
         {
@@ -64,8 +63,7 @@ void LevelManager::updateCurrentLevel()
     if (!levelRunning)
         return;
 
-    if (currentLevelTime >= currentLevel.duration)
-    {
+    if (currentLevelTime >= currentLevel.duration)  {
         std::cout << "Level " << currentLevel.levelNumber << " completed! Starting end animation...\n";
         levelEnding = true;
         endTimer = 0.0f;
@@ -94,8 +92,12 @@ void LevelManager::updateCurrentLevel()
     }
 }
 
-LevelData LevelManager::getCurrentLevelData() {
-    return currentLevel;
+const LevelData* LevelManager::getCurrentLevelData() const {
+    // Only expose data when a level is active or finishing to keep UI optional path sane
+    if (!levelRunning && !levelEnding) {
+        return nullptr;
+    }
+    return &currentLevel;
 }
 
 int LevelManager::getCurrentLevelNumber() const {
@@ -122,6 +124,7 @@ void LevelManager::loadLevelsToMemory() {
     level1.levelNumber = 1;
     level1.difficulty = 1;
     level1.type = LevelType::SurviveAsteroidField;
+    level1.objective = "Survive 60 seconds";
     level1.duration = 60.0f;
 
     LevelData level2;
@@ -178,16 +181,13 @@ void LevelManager::drawLevelEndOverlay(int screenWidth, int screenHeight) {
     if (t > 1.0f)
         t = 1.0f;
 
-    // ciemny fade
     DrawRectangle(0, 0, screenWidth, screenHeight, Fade(BLACK, t * 0.85f));
 
-    // Główny napis
     const char *mainMsg = "POZIOM UKONCZONY";
     int mainSize = 56;
     int mainW = MeasureText(mainMsg, mainSize);
     DrawText(mainMsg, screenWidth / 2 - mainW / 2, screenHeight / 2 - 40, mainSize, GOLD);
 
-    // Dodatkowa informacja (np. wynik gracza)
     std::string info = "Powrot do menu...";
     if (player && currentLevel.type == LevelType::SurviveAsteroidField)
     {
@@ -197,7 +197,6 @@ void LevelManager::drawLevelEndOverlay(int screenWidth, int screenHeight) {
     int infoW = MeasureText(info.c_str(), infoSize);
     DrawText(info.c_str(), screenWidth / 2 - infoW / 2, screenHeight / 2 + 30, infoSize, WHITE);
 
-    // opcjonalny pasek postępu pokazujący "czas do powrotu"
     int barW = 400;
     int barH = 18;
     int bx = screenWidth / 2 - barW / 2;
@@ -261,9 +260,10 @@ void LevelManager::initEnemyInvasionLevel(const LevelData &level)
 
 void LevelManager::updateEnemyInvasionLevel()
 {
-    if (currentLevel.type != LevelType::EnemyInvasion)
+    if (currentLevel.type != LevelType::EnemyInvasion) {
         return;
-    
+    }
+
 	if (enemyManager->getKilledEnemies() >= currentLevel.objectiveCount)
     {
 		std::cout << "Killed required enemies for level completion!\n";
@@ -283,6 +283,8 @@ void LevelManager::initShipEscortLevel(const LevelData& level)
     if (currentLevel.type != LevelType::ShipEscort)
         return;
 
+    (void)level;
+
     if (!customShipManager) throw std::runtime_error(std::string("customShipManagerNotLoaded"));
     if (!ui ) throw std::runtime_error(std::string("uiNotLoaded"));
 
@@ -292,7 +294,7 @@ void LevelManager::initShipEscortLevel(const LevelData& level)
     ui->setArrowDestination(customShipManager->getShipPosition(0));    
 }
 
-void LevelManager::updateShipEscortLevel(){
+void LevelManager::updateShipEscortLevel()  {
     if(currentLevel.type != LevelType::ShipEscort)
         return;
 
@@ -302,7 +304,6 @@ void LevelManager::updateShipEscortLevel(){
 
     const Vector2 escortPos = customShipManager->getShipPosition(0);
 
-    // When there is an escort ship, keep the HUD arrow locked to it.
     if (!Vector2Equals(escortPos, Vector2{0.0f, 0.0f})) {
         ui->setArrowDestination(escortPos);
     } else {

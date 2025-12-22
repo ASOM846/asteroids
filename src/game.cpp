@@ -88,7 +88,8 @@ void Game::renderPlaying() {
     ui.draw(player.getHealth(), player.getShield(),
             player.getAmmo(), player.getMaxAmmo(),
             player.getScore(), levelManager.getRemainingLevelTime(),
-            playerWorldPos, friendlyShipPos);
+            playerWorldPos, friendlyShipPos,
+            levelManager.getCurrentLevelData());
 
     gameHelper.drawPosition();
 
@@ -121,7 +122,8 @@ void Game::renderPaused() {
     ui.draw(player.getHealth(), player.getShield(),
             player.getAmmo(), player.getMaxAmmo(),
             player.getScore(), levelManager.getRemainingLevelTime(),
-            playerWorldPos, friendlyShipPos);
+            playerWorldPos, friendlyShipPos, 
+            levelManager.getCurrentLevelData());
 
     ui.renderPauseOverlay(GetScreenWidth(), GetScreenHeight());
 }
@@ -190,8 +192,7 @@ void Game::endGame() {
     // Implementation of logic to end the game
 }
 
-void Game::updateGameOver()
-{
+void Game::updateGameOver() {
     if (IsKeyPressed(KEY_R)){
         startNewGame();
     }
@@ -200,8 +201,7 @@ void Game::updateGameOver()
     }
 }
 
-void Game::renderGameOver()
-{
+void Game::renderGameOver() {
     ui.drawStars(player.getPosition());
     DrawText("GAME OVER", GetScreenWidth() / 2 - 190, GetScreenHeight() / 2 - 80, 60, RED);
     DrawText("R - Restart", GetScreenWidth() / 2 - 120, GetScreenHeight() / 2 + 10, 30, GRAY);

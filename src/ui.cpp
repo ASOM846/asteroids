@@ -1,5 +1,6 @@
 #include "ui.h"
 #include "windowManager.hpp"
+#include "levelManager.hpp"
 #include <string>
 #include <algorithm>
 #include <cmath>
@@ -64,7 +65,10 @@ void Ui::initStarLayers(int screenW, int screenH) {
 
 void Ui::draw(int health, int shield, int ammo,
     int maxAmmo, int score, float remainingLevelTime,
-    Vector2 playerWorldPos, const Vector2* friendlyShipPos) {
+    Vector2 playerWorldPos, const Vector2* friendlyShipPos,
+    const LevelData* levelData) {
+    (void)friendlyShipPos;
+
     const int screenW = GetScreenWidth();
     const int screenH = GetScreenHeight();
 
@@ -173,6 +177,26 @@ void Ui::draw(int health, int shield, int ammo,
     int scoreLabelX = scoreNumX + (scoreNumW - scoreLabelW) / 2;
     DrawText(scoreLabel.c_str(), scoreLabelX + 1, scoreNumY - scoreLabelFont - 6 + 1, scoreLabelFont, shadowCol);
     DrawText(scoreLabel.c_str(), scoreLabelX, scoreNumY - scoreLabelFont - 6, scoreLabelFont, matrixGlow);
+
+    // level objective (if available)
+    if (levelData) {
+        std::string objectiveStr = "OBJECTIVE: " + levelData->objective;
+        int objFont = 14;
+        int objW = MeasureText(objectiveStr.c_str(), objFont);
+        int objX = (screenW - objW) / 2;
+        int objY = bandY + 8;
+        DrawText(objectiveStr.c_str(), objX + 1, objY + 1, objFont, shadowCol);
+        DrawText(objectiveStr.c_str(), objX, objY, objFont, matrixGlow);
+    }
+    else {
+        std::string objectiveStr = "OBJECTIVE: N/A";
+        int objFont = 14;
+        int objW = MeasureText(objectiveStr.c_str(), objFont);
+        int objX = (screenW - objW) / 2;
+        int objY = bandY + 8;
+        DrawText(objectiveStr.c_str(), objX + 1, objY + 1, objFont, shadowCol);
+        DrawText(objectiveStr.c_str(), objX, objY, objFont, matrixGlow);
+    }
 
     // Optional tiny HUD accents: thin separators in matrix color, very subtle
     DrawLine(20, bandY + 2, screenW - 20, bandY + 2, { 0,50,20,100 });
@@ -318,6 +342,9 @@ void Ui::renderPauseOverlay(int sW, int sH)
 
 void Ui::updatePauseOverlay(int sW, int sH)
 {
+    (void)sW;
+    (void)sH;
+
     if (resumeButton.IsClicked())
     {
         game->togglePause();

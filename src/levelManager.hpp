@@ -7,7 +7,6 @@
 #include "enemy.hpp"
 #include "player.h"
 #include "customShip.hpp"
-#include "ui.h"
 #include <iostream>
 #include <functional>
 #include <string>
@@ -32,16 +31,19 @@ struct LevelData {
     Vector2 waypoint;
 };
 
+class Ui;
+
 class LevelManager {
 public:
     LevelManager();
     ~LevelManager();
 
+
     void reset();
 
     void runLevel(int levelNumber);
     void updateCurrentLevel();
-    LevelData getCurrentLevelData();
+    const LevelData* getCurrentLevelData() const;
     int getCurrentLevelNumber() const;
     float getCurrentLevelTime() const;
     float getRemainingLevelTime() const;
