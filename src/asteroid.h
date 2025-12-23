@@ -256,6 +256,7 @@ public:
     void resetAsteroids(std::vector<sAsteroid>& asteroids) {
         asteroids.clear();
 		asteroidCount = 0;
+
         destroyedCounter = 0;
 	}
 

@@ -144,7 +144,7 @@ void Game::initialize() {
     gameHelper.setCamera(&camera);
     gameHelper.setCustomShipManager(&customShipManager);
 
-    enemyManager.setPointers(&textureManager, &enemies, &lasers);
+    enemyManager.setPointers(&textureManager, &enemies, &lasers, &player);
 
     asteroidHelper.setTextureManager(textureManager);
 
