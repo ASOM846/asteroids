@@ -256,6 +256,7 @@ void Ui::drawArrowAngled(float angle)
 
 void Ui::resetAll() {
     clearArrowDestination();
+    starLayers.clear();
 }
 
 void Ui::drawStars(Vector2 playerPos) {

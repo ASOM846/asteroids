@@ -18,6 +18,7 @@ struct sDrop {
     const Texture2D* texture;
     float rotation;
     float rotationSpeed;
+    float lifeTime;
 
 
     inline static const TextureManager* sTexMgr = nullptr;
@@ -27,11 +28,11 @@ struct sDrop {
         : x(px), y(py), active(true), type(pType),
         texture(pTexture ? pTexture : textureForType(pType)),
         rotation(0.0f),
-        rotationSpeed((float)GetRandomValue(-90, 90)) {
+        rotationSpeed((float)GetRandomValue(-90, 90)),
+        lifeTime(20.0f) {
     }
 
     ~sDrop() {
-
     }
 
     static const Texture2D* textureForType(DropType dt) {
@@ -51,7 +52,11 @@ struct sDrop {
     }
 
     void update() {
-        // Spin the drop to make it visually stand out
+        lifeTime -= GetFrameTime();
+        if (lifeTime <= 0.0f) {
+            active = false;
+            return;
+        }
         rotation += rotationSpeed * GetFrameTime();
         if (rotation > 360.0f || rotation < -360.0f)
             rotation = std::fmod(rotation, 360.0f);
