@@ -27,6 +27,10 @@ void LevelManager::runLevel(int levelNumber) {
                 initAsteroidFieldLevel(level);
                 std::cout << "Starting Asteroid Field Level " << level.levelNumber << "\n";
                 break;
+            case LevelType::DestroyAsteroids:
+                initDestroyAsteroidsLevel(level);    
+                std::cout << "Starting Destroy Asteroids Level " << level.levelNumber << "\n";
+                break;
             case LevelType::EnemyInvasion:
 				initEnemyInvasionLevel(level);
                 std::cout << "Starting Enemy Invasion Level " << level.levelNumber << "\n";
@@ -76,6 +80,9 @@ void LevelManager::updateCurrentLevel() {
     {
     case LevelType::SurviveAsteroidField:
         updateAsteroidFieldLevel();
+        break;
+    case LevelType::DestroyAsteroids:
+        updateDestroyAsteroidsLevel();
         break;
     case LevelType::EnemyInvasion:
         updateEnemyInvasionLevel();
@@ -196,7 +203,7 @@ void LevelManager::drawLevelEndOverlay(int screenWidth, int screenHeight) {
     std::string info = "Powrot do menu...";
     if (player && currentLevel.type == LevelType::SurviveAsteroidField)
     {
-        info = "Wynik: " + std::to_string(player->getScore()); // wymaga, by Player miał getScore()
+        info = "Wynik: " + std::to_string(player->getScore());
     }
     int infoSize = 26;
     int infoW = MeasureText(info.c_str(), infoSize);
@@ -231,6 +238,37 @@ void LevelManager::updateAsteroidFieldLevel()
     if (currentLevel.type != LevelType::SurviveAsteroidField)
         return;
     std::cout << "Asteroid Field Level running. Time: " 
+        << static_cast<int>(currentLevelTime) << " / " << currentLevel.duration << "\n";
+}
+
+void LevelManager::initDestroyAsteroidsLevel(const LevelData &level)
+{
+    if (currentLevel.type != LevelType::DestroyAsteroids)
+        return;
+
+    if (asteroidHelper)
+    {
+        asteroidHelper->setAsteroidCount(level.objectiveCount + 5);
+        std::printf("Initialized Destroy Asteroids Level with %d asteroids.\n",
+            static_cast<int>(level.objectiveCount * 1.1));
+    }
+}
+
+void LevelManager::updateDestroyAsteroidsLevel()
+{
+    if (currentLevel.type != LevelType::DestroyAsteroids)
+        return;
+
+    progressAccumulator = asteroidHelper->getDestroyedAsteroidCount();
+
+    if (progressAccumulator >= currentLevel.objectiveCount)
+    {
+        std::cout << "Destroyed required asteroids for level completion!\n";
+        levelEnding = true;
+        return;
+    }
+
+    std::cout << "Destroy Asteroids Level running. Time: "
         << static_cast<int>(currentLevelTime) << " / " << currentLevel.duration << "\n";
 }
 

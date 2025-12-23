@@ -26,6 +26,12 @@ struct sAsteroid
     inline static const TextureManager* sTexMgr = nullptr;
     static void setTextureManager(const TextureManager* tm) { sTexMgr = tm; }
 
+    // destroyed asteroids counter (incremented when an asteroid is destroyed)
+    inline static int sDestroyedCounter = 0;
+    static void incrementDestroyed() { ++sDestroyedCounter; }
+    static int getDestroyedCount() { return sDestroyedCounter; }
+    static void resetDestroyedCount() { sDestroyedCounter = 0; }
+
     sAsteroid(float px, float py, float dirX, float dirY, float speed, int pRadius,
         const Texture2D* pTexture = nullptr)
         : x(px), y(py), vx(dirX* speed), vy(dirY* speed), active(true),
@@ -88,6 +94,8 @@ struct sAsteroid
 
     void splitAsteroid(std::vector<sAsteroid>& asteroids) {
         active = false;
+        // mark as destroyed (split or fully destroyed)
+        incrementDestroyed();
         if (radius <= 20) return;
 
         const int childRadius = radius / 2;
@@ -144,6 +152,7 @@ public:
 
     void setAsteroidCount(int count) { asteroidCount = count; }
     int getAsteroidCount() const { return asteroidCount; }
+    int getDestroyedAsteroidCount() const { return destroyedCounter; }
     void setTextureManager(TextureManager& tm) {
         texManager = &tm;
         sAsteroid::setTextureManager(texManager);
@@ -155,6 +164,9 @@ public:
         auto it = std::remove_if(asteroids.begin(), asteroids.end(),
             [](const sAsteroid& l) { return !l.active; });
         asteroids.erase(it, asteroids.end());
+
+        // Update destroyed counter from sAsteroid's static counter
+        destroyedCounter = sAsteroid::getDestroyedCount();
 
         if (asteroidCount > 0 && asteroids.size() < static_cast<std::size_t>(asteroidCount))
             generateAsteroid(asteroids, playerPos);
@@ -243,10 +255,12 @@ public:
 
     void resetAsteroids(std::vector<sAsteroid>& asteroids) {
         asteroids.clear();
-		asteroidCount = 0; 
+		asteroidCount = 0;
+        destroyedCounter = 0;
 	}
 
 private:
     int asteroidCount;
+    int destroyedCounter = 0;
     const TextureManager* texManager = nullptr;
 };

@@ -101,6 +101,9 @@ private:
     void initAsteroidFieldLevel(const LevelData &level);
     void updateAsteroidFieldLevel();
 
+    void initDestroyAsteroidsLevel(const LevelData &level);
+    void updateDestroyAsteroidsLevel();
+
 	void initEnemyInvasionLevel(const LevelData &level);
 	void updateEnemyInvasionLevel();
 
