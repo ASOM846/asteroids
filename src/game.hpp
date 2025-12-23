@@ -18,6 +18,7 @@
 #include "levelManager.hpp"
 #include "customShip.hpp"
 #include "collisionSystem.hpp"
+#include "cameraManager.hpp"
 
 enum class eGameState {
     Playing,
@@ -70,10 +71,9 @@ private:
     LevelManager levelManager;
     CustomShipManager customShipManager;
     CollisionSystem collisionSystem;
+    CameraManager camera;
 
     eGameState gameState;
-
-    Camera2D camera;
 
     std::vector<Laser> lasers;
     std::vector<sAsteroid> asteroids;

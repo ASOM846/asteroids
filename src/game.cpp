@@ -2,17 +2,18 @@
 
 Game::Game()
     : player(),
-    laserHelper(),
-    asteroidHelper(),
-    gameHelper(),
-    textureManager(),
-    ui(),
-    dropHelper(),
-    enemyManager(),
-    levelManager(),
-    customShipManager(),
-    gameState(eGameState::Playing),
-    camera{} {
+      laserHelper(),
+      asteroidHelper(),
+      gameHelper(),
+      textureManager(),
+      ui(),
+      dropHelper(),
+      enemyManager(),
+      levelManager(),
+      customShipManager(),
+      collisionSystem(),
+      camera(),
+      gameState(eGameState::Playing){
 }
 
 Game::~Game() {
@@ -56,8 +57,7 @@ void Game::updatePlaying() {
 
     collisionSystem.handleCollision();
     player.update();
-    camera.target = player.getPosition();
-    gameHelper.updateShake(GetFrameTime());
+    camera.updateCamera();
     laserHelper.updateLasers(lasers, (int)player.getPosition().x, (int)player.getPosition().y);
     asteroidHelper.updateAsteroids(asteroids, player.getPosition());
     enemyManager.updateEnemies(player.getPosition());
@@ -73,7 +73,7 @@ void Game::updatePlaying() {
 void Game::renderPlaying() {
     const Vector2 playerWorldPos = player.getPosition();
     ui.drawStars(playerWorldPos);
-    BeginMode2D(camera);
+    BeginMode2D(camera.getCamera());
 
     laserHelper.renderLasers(lasers);
     asteroidHelper.renderAsteroids(asteroids);
@@ -108,7 +108,7 @@ void Game::updatePaused() {
 void Game::renderPaused() {
     const Vector2 playerWorldPos = player.getPosition();
     ui.drawStars(playerWorldPos);
-    BeginMode2D(camera);
+    BeginMode2D(camera.getCamera());
 
     laserHelper.renderLasers(lasers);
     asteroidHelper.renderAsteroids(asteroids);
@@ -141,7 +141,6 @@ void Game::initialize() {
     gameHelper.setPlayer(&player);
 
     gameHelper.setTextures(textureManager, player);
-    gameHelper.setCamera(&camera);
     gameHelper.setCustomShipManager(&customShipManager);
 
     enemyManager.setPointers(&textureManager, &enemies, &lasers, &player);
@@ -166,7 +165,9 @@ void Game::initialize() {
                                     { this->returnToMenuCallback(); });
 
     collisionSystem.setPointers(&lasers, &asteroids, &drops,
-        &enemies, &customShips, &player, &dropHelper, &gameHelper);
+        &enemies, &customShips, &player, &dropHelper, &gameHelper, &camera);
+
+    camera.initialize(&player);
 }
 
 void Game::shutdown() {

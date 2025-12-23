@@ -12,6 +12,7 @@
 #include "player.h"
 #include "drop.h"
 #include "game.hpp"
+#include "cameraManager.hpp"
 
 class Player;
 
@@ -27,7 +28,8 @@ public:
                      std::vector<CustomShip>* pCustomShips,
                      Player* pPlayer,
                      DropHelper* pDropHelper,
-                     GameHelper* pGameHelper) {
+                     GameHelper* pGameHelper,
+                     CameraManager* pCameraManager) {
         lasers = pLasers;
         asteroids = pAsteroids;
         drops = pDrops;
@@ -36,6 +38,7 @@ public:
         player = pPlayer;
         dropHelper = pDropHelper;
         gameHelper = pGameHelper;
+        cameraManager = pCameraManager;
     }
 
     void handleCollision() {
@@ -66,7 +69,7 @@ public:
             }
             if (CheckCollisionCircleRec(Vector2{ a.x, a.y }, (float)a.radius, playerRect)) {
                 player->takeDamage(a.radius);
-                gameHelper->triggerShake();
+                cameraManager->triggerShake();
                 a.active = false;
             }
         }
@@ -140,4 +143,5 @@ private:
     DropHelper* dropHelper = nullptr;
     Game* game = nullptr;
     GameHelper* gameHelper = nullptr;
+    CameraManager* cameraManager = nullptr;
 };
