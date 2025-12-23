@@ -7,6 +7,7 @@
 #include "drop.h"
 #include "enemy.hpp"
 #include "ui.h"
+#include "GameHelper.h"
 #include "customShip.hpp"
 #include "player.h"
 #include "drop.h"
@@ -25,7 +26,8 @@ public:
                      std::vector<sEnemy>* pEnemies,
                      std::vector<CustomShip>* pCustomShips,
                      Player* pPlayer,
-                     DropHelper* pDropHelper) {
+                     DropHelper* pDropHelper,
+                     GameHelper* pGameHelper) {
         lasers = pLasers;
         asteroids = pAsteroids;
         drops = pDrops;
@@ -33,6 +35,7 @@ public:
         customShips = pCustomShips;
         player = pPlayer;
         dropHelper = pDropHelper;
+        gameHelper = pGameHelper;
     }
 
     void handleCollision() {
@@ -63,6 +66,7 @@ public:
             }
             if (CheckCollisionCircleRec(Vector2{ a.x, a.y }, (float)a.radius, playerRect)) {
                 player->takeDamage(a.radius);
+                gameHelper->triggerShake();
                 a.active = false;
             }
         }
@@ -135,4 +139,5 @@ private:
     Player* player = nullptr;
     DropHelper* dropHelper = nullptr;
     Game* game = nullptr;
+    GameHelper* gameHelper = nullptr;
 };

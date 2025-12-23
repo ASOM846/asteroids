@@ -24,6 +24,7 @@ void GameHelper::setTextures(TextureManager& textureManager,
 }
 
 void GameHelper::setCamera(Camera2D* camera) {
+    this->camera = camera;
     if (!camera) throw std::runtime_error(std::string("FAILED TO SET CAMERA"));
     if (!player) throw std::runtime_error(std::string("FAILED TO LOAD PLAYER"));
 
@@ -51,4 +52,23 @@ float GameHelper::getAngleBetweenPlayerAndFriendlyShip() const {
     Vector2 cachedFriendlyShipPos = customShipManager->getShipPosition(1);
 
     return getAngleBetween(cachedPlayerPos, cachedFriendlyShipPos);
+}
+
+void GameHelper::triggerShake(float intensity, float duration)
+{
+    screenShake.trigger(intensity, duration);
+}
+
+void GameHelper::triggerShake()
+{
+    screenShake.trigger(5.0f, 0.3f);
+}
+
+void GameHelper::updateShake(float dt)
+{
+    if (!camera)
+        return;
+    screenShake.update(dt);
+    camera->target.x += screenShake.offset.x;
+    camera->target.y += screenShake.offset.y;
 }

@@ -32,10 +32,6 @@ void Player::update() {
 
     move();
 
-    const float half = size * 0.5f;
-    const int screenW = GetScreenWidth();
-    const int screenH = GetScreenHeight();
-
     vPosition = { x, y };
 
     if (shootTimer > 0.0f) shootTimer -= dt;

@@ -7,9 +7,11 @@
 #include "enemy.hpp"
 #include "ui.h"
 #include "customShip.hpp"
+#include "shakeScreen.hpp"
 
 class TextureManager;
 class Player;
+struct ShakeScreen;
 
 class GameHelper {
 public:
@@ -41,13 +43,13 @@ public:
     }
 
     void setCamera(Camera2D* camera);
-
+    void triggerShake(float intensity, float duration);
+    void triggerShake();
+    void updateShake(float dt);
     void drawPosition();
 
-	//returns angle in radians between two positions
 	float getAngleBetween(const Vector2& from, const Vector2& to) const;
     
-	//returns angle in radians between player and friendly ship with ID 1
 	float getAngleBetweenPlayerAndFriendlyShip() const;
 
 private:
@@ -56,8 +58,11 @@ private:
     DropHelper* dropHelper = nullptr;
     Player* player = nullptr;
 	Ui* ui = nullptr;
+    Camera2D* camera = nullptr;
 	CustomShipManager* customShipManager = nullptr;
     std::vector<sDrop>* drops = nullptr;
     std::vector<sEnemy>* enemies = nullptr;
     std::vector<Laser>* lasers = nullptr;
+
+    ScreenShake screenShake;
 };
