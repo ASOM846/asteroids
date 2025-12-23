@@ -66,7 +66,7 @@ void Ui::initStarLayers(int screenW, int screenH) {
 void Ui::draw(int health, int shield, int ammo,
     int maxAmmo, int score, float remainingLevelTime,
     Vector2 playerWorldPos, const Vector2* friendlyShipPos,
-    const LevelData* levelData) {
+    const LevelData* levelData, int progressAccumulator) {
     (void)friendlyShipPos;
 
     const int screenW = GetScreenWidth();
@@ -221,6 +221,17 @@ void Ui::draw(int health, int shield, int ammo,
             DrawTriangleLines(baseLeft, baseRight, tip, WHITE);
             DrawText("FRIEND", (int)(center.x - 32), (int)(center.y + 14), 14, arrowCol);
         }
+    }
+
+    // optional draw accumulator for progress (if applicable)
+    if (levelData && levelData->objectiveCount > 0) {
+        std::string progressStr = "PROGRESS: " + std::to_string(progressAccumulator) + " / " + std::to_string(levelData->objectiveCount);
+        int progFont = 14;
+        int progW = MeasureText(progressStr.c_str(), progFont);
+        int progX = (screenW - progW) / 2;
+        int progY = bandY + 30;
+        DrawText(progressStr.c_str(), progX + 1, progY + 1, progFont, shadowCol);
+        DrawText(progressStr.c_str(), progX, progY, progFont, matrixGlow);
     }
 }
 

@@ -45,6 +45,7 @@ public:
     void updateCurrentLevel();
     const LevelData* getCurrentLevelData() const;
     int getCurrentLevelNumber() const;
+    int getProgressAccumulator() const;
     float getCurrentLevelTime() const;
     float getRemainingLevelTime() const;
     bool isLevelRunning() const;
@@ -111,4 +112,5 @@ private:
     bool levelEnding = false;
     float endTimer = 0.0f;
     float endDuration = 2.0f;
+    int progressAccumulator = 0;
 };

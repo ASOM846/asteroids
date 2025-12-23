@@ -23,7 +23,8 @@ public:
 		float remainingLevelTime,
 		Vector2 playerWorldPos,
 		const Vector2* friendlyShipPos = nullptr,
-        const LevelData* levelData = nullptr);
+        const LevelData* levelData = nullptr,
+        int progressAccumulator = 0);
 
     void drawArrowAngled(float angle);
 

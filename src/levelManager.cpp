@@ -104,6 +104,11 @@ int LevelManager::getCurrentLevelNumber() const {
     return currentLevel.levelNumber;
 }
 
+int LevelManager::getProgressAccumulator() const
+{
+    return progressAccumulator;
+}
+
 float LevelManager::getCurrentLevelTime() const
 {
     return currentLevelTime;
@@ -229,8 +234,7 @@ void LevelManager::updateAsteroidFieldLevel()
         << static_cast<int>(currentLevelTime) << " / " << currentLevel.duration << "\n";
 }
 
-void LevelManager::initEnemyInvasionLevel(const LevelData &level)
-{
+void LevelManager::initEnemyInvasionLevel(const LevelData &level)   {
     if (currentLevel.type != LevelType::EnemyInvasion)
         return;
 
@@ -264,7 +268,9 @@ void LevelManager::updateEnemyInvasionLevel()
         return;
     }
 
-	if (enemyManager->getKilledEnemies() >= currentLevel.objectiveCount)
+    progressAccumulator = enemyManager->getKilledEnemies();
+
+	if (progressAccumulator >= currentLevel.objectiveCount)
     {
 		std::cout << "Killed required enemies for level completion!\n";
 		levelEnding = true;

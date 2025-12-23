@@ -89,7 +89,8 @@ void Game::renderPlaying() {
             player.getAmmo(), player.getMaxAmmo(),
             player.getScore(), levelManager.getRemainingLevelTime(),
             playerWorldPos, friendlyShipPos,
-            levelManager.getCurrentLevelData());
+            levelManager.getCurrentLevelData(),
+            levelManager.getProgressAccumulator());
 
     gameHelper.drawPosition();
 
@@ -123,7 +124,8 @@ void Game::renderPaused() {
             player.getAmmo(), player.getMaxAmmo(),
             player.getScore(), levelManager.getRemainingLevelTime(),
             playerWorldPos, friendlyShipPos, 
-            levelManager.getCurrentLevelData());
+            levelManager.getCurrentLevelData(),
+            levelManager.getProgressAccumulator());
 
     ui.renderPauseOverlay(GetScreenWidth(), GetScreenHeight());
 }
