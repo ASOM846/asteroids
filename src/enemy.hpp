@@ -75,16 +75,14 @@ struct sEnemy
         shootTimer = 0.0f;
     }
 
-    void update(const Vector2& playerPos, std::vector<Laser>& lasers)
+    void update(const Vector2& targetPos, std::vector<Laser>& lasers)
     {
-        // odliczaj czas do następnego strzału
         if (shootTimer > 0.0f) {
             shootTimer -= GetFrameTime();
             if (shootTimer < 0.0f) shootTimer = 0.0f;
         }
 
-        // proste AI: podążaj w kierunku gracza
-        Vector2 dir = { playerPos.x - position.x, playerPos.y - position.y };
+        Vector2 dir = { targetPos.x - position.x, targetPos.y - position.y };
         float len = sqrtf(dir.x * dir.x + dir.y * dir.y);
         if (len > 0.0001f) {
             dir.x /= len; dir.y /= len;
@@ -95,7 +93,7 @@ struct sEnemy
             rotation = angleRad * (180.0f / std::numbers::pi_v<float>);
         }
 
-        shoot(playerPos, lasers);
+        shoot(targetPos, lasers);
     }
 
     void render() const
@@ -159,7 +157,6 @@ public:
     {
         if (!enemies) return;
 
-        // First, update all active enemies
         for (auto& e : *enemies) {
             if (e.active) e.update(playerPos, *lasers);
         }
@@ -168,7 +165,6 @@ public:
             [](const sEnemy& en) { return !en.active; });
         const size_t removed = static_cast<size_t>(std::distance(it, enemies->end()));
         if (removed > 0) {
-            // increase killedEnemies by number removed
             killedEnemies += static_cast<int>(removed);
             enemies->erase(it, enemies->end());
         }

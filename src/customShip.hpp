@@ -33,8 +33,10 @@ struct CustomShip {
 			position = destination;
 			velocity = { 0.0f, 0.0f };
 		}
-		std::cout << "CustomShip Position: (" << static_cast<int>(position.x) 
-			<< ", " << static_cast<int>(position.y) << ")\n";
+		// std::cout << "CustomShip Position: (" << static_cast<int>(position.x) 
+		// 	<< ", " << static_cast<int>(position.y) << ")\n";
+
+		std::printf("CustomShip HP: %d, Shield: %d\n", health, shield);
 	}
 
 
@@ -50,9 +52,20 @@ struct CustomShip {
 		}
 	}
 
+	Rectangle getRect() const {
+		return Rectangle{
+			position.x - size / 2.0f,
+			position.y - size / 2.0f,
+			size,
+			size
+		};
+	}
+
 	Vector2 velocity;
 	Vector2 position;
 	Vector2 destination;
+
+	Rectangle rect;
 
 	float rotation;
 	float size;

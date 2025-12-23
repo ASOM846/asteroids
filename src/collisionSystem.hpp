@@ -77,14 +77,14 @@ public:
             }
         }
 
-        for (auto& e : *enemies) {
-            if (!e.active) continue;
+        // Handle laser collisions in a single pass so checks run regardless of enemy count
+        for (auto& l : *lasers) {
+            if (!l.active) continue;
 
-            for (auto& l : *lasers) {
-                if (!l.active) continue;
-
-                if (l.getIsPlayerOwned()) {
-                    // player's laser -> check collision with enemy
+            if (l.getIsPlayerOwned()) {
+                // Player lasers: check enemies first
+                for (auto& e : *enemies) {
+                    if (!e.active) continue;
                     if (CheckCollisionCircles(Vector2{ l.x, l.y }, (float)l.radius,
                         e.getPosition(), (float)e.getRadius())) {
                         e.takeDamage(l.getDamage());
@@ -92,14 +92,33 @@ public:
                         break;
                     }
                 }
-                else {
-                    // enemy laser -> check collision with player
-                    if (CheckCollisionCircleRec(Vector2{ l.x, l.y }, (float)l.radius,
-                        playerRect)) {
-                        player->takeDamage(l.getDamage());
-                        l.active = false;
-                        break;
+                if (!l.active) continue;
+
+                // Then check friendly/custom ships
+                if (customShips) {
+                    for (size_t i = 0; i < customShips->size(); ++i) {
+                        auto& cs = (*customShips)[i];
+                        if (cs.texture.id == 0) continue;
+                        if (CheckCollisionCircleRec(Vector2{ l.x, l.y }, (float)l.radius,
+                            cs.getRect())) {
+                            cs.health -= l.getDamage();
+                            l.active = false;
+                            // remove ship if destroyed
+                            if (cs.health <= 0) {
+                                customShips->erase(customShips->begin() + i);
+                                --i;
+                            }
+                            break;
+                        }
                     }
+                }
+            }
+            else {
+                // Enemy/projectile not owned by player -> can hit player
+                if (CheckCollisionCircleRec(Vector2{ l.x, l.y }, (float)l.radius,
+                    playerRect)) {
+                    player->takeDamage(l.getDamage());
+                    l.active = false;
                 }
             }
         }

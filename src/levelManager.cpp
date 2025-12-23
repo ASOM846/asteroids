@@ -319,6 +319,7 @@ void LevelManager::updateEnemyInvasionLevel()
         currentLevel.currentCount++;
 		std::cout << "Current killed enemies: " << enemyManager->getKilledEnemies() << " / " << currentLevel.objectiveCount << "\n";
     }
+
     std::cout << "Enemy Invasion Level running. Time: " << static_cast<int>(currentLevelTime) << " / " << currentLevel.duration << "\n";
 }
 
@@ -335,7 +336,10 @@ void LevelManager::initShipEscortLevel(const LevelData& level)
     customShipManager->addShip({ -100.0f, GetScreenHeight() / 2.0f },
 		{ GetScreenWidth() + 100000.0f, 100000.0f });
 
+    asteroidHelper->setAsteroidCount(2);
     ui->setArrowDestination(customShipManager->getShipPosition(0));    
+
+    progressAccumulator = 0;
 }
 
 void LevelManager::updateShipEscortLevel()  {
