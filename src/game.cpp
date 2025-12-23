@@ -93,7 +93,6 @@ void Game::renderPlaying() {
             levelManager.getCurrentLevelData(),
             levelManager.getProgressAccumulator());
 
-    gameHelper.drawPosition();
 
     levelManager.drawLevelEndOverlay(GetScreenWidth(), GetScreenHeight());
 }
@@ -140,14 +139,9 @@ void Game::initialize() {
     textureManager.loadAll();
 
     gameHelper.setPlayer(&player);
-    gameHelper.setPlayerHealthPtr(player.getHealthPtr());
-    gameHelper.setPlayerShieldPtr(player.getShieldPtr());
+
     gameHelper.setTextures(textureManager, player);
-    gameHelper.setDropHelper(&dropHelper);
-    gameHelper.setDrops(&drops);
-    gameHelper.setPointers(&enemies, &lasers);
     gameHelper.setCamera(&camera);
-    gameHelper.setUi(&ui);
     gameHelper.setCustomShipManager(&customShipManager);
 
     enemyManager.setPointers(&textureManager, &enemies, &lasers);
@@ -186,7 +180,6 @@ void Game::startNewGame() {
     player = Player();
     enemyManager.resetEnemies();
     customShipManager.reset();
-    gameHelper.setPlayerHealthPtr(player.getHealthPtr());
     gameHelper.setTextures(textureManager, player);
     gameState = eGameState::Playing;
 }
