@@ -336,7 +336,7 @@ void LevelManager::initShipEscortLevel(const LevelData& level)
     customShipManager->addShip({ -100.0f, GetScreenHeight() / 2.0f },
 		{ GetScreenWidth() + 100000.0f, 100000.0f });
 
-    asteroidHelper->setAsteroidCount(2);
+    asteroidHelper->setAsteroidCount(10);
     ui->setArrowDestination(customShipManager->getShipPosition(0));    
 
     progressAccumulator = 0;

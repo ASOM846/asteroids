@@ -15,6 +15,7 @@ struct CustomShip {
 		size(50.0f),
 		health(100),
 		shield(50),
+		bAlive(true),
 		texture{ texture }{
 	}
 
@@ -33,6 +34,11 @@ struct CustomShip {
 			position = destination;
 			velocity = { 0.0f, 0.0f };
 		}
+
+		if(health == 0)	{
+			bAlive = false;
+		}
+
 		// std::cout << "CustomShip Position: (" << static_cast<int>(position.x) 
 		// 	<< ", " << static_cast<int>(position.y) << ")\n";
 
@@ -61,6 +67,23 @@ struct CustomShip {
 		};
 	}
 
+	void takeDamage(int amount)	{
+		if (amount <= 0)
+			return;
+
+		if (shield > 0)	{
+			const int absorbed = std::min(shield, amount);
+			shield -= absorbed;
+			amount -= absorbed;
+		}
+
+		if (amount > 0)	{
+			health -= amount;
+			if (health < 0)
+				health = 0;
+		}
+	}
+
 	Vector2 velocity;
 	Vector2 position;
 	Vector2 destination;
@@ -71,6 +94,7 @@ struct CustomShip {
 	float size;
 	int health;
 	int shield;
+	bool bAlive;
 	Texture2D texture{};
 };
 
@@ -96,8 +120,15 @@ public:
 		if (ships == nullptr) {
 			return;
 		}
-		for (auto& ship : *ships) {
-			ship.update();
+		for (size_t i = 0; i < ships->size(); ) {
+			(*ships)[i].update();
+
+			if (!(*ships)[i].bAlive) {
+				ships->erase(ships->begin() + i);
+			}
+			else {
+				++i;
+			}
 		}
 	}
 
