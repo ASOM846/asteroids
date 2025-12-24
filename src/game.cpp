@@ -1,5 +1,16 @@
 #include "game.hpp"
 
+/*TO-DO
+-add minimap showing player and enemies positions
+-implement power-ups that temporarily enhance player abilities
+-implement different enemy behaviors and attack patterns and state machines
+-implement different game modes like free play, survival with permanent upgrades and upgrade trees, arcade, 
+
+*ideas:
+-add levels with upgrades like in vamipre survivors, collecting scrap from destroyed ships and asteroids
+    and buying upgrades when the bar of scrap is full
+    
+*/
 Game::Game()
     : player(),
       laserHelper(),
