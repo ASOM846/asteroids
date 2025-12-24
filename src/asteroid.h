@@ -256,8 +256,9 @@ public:
     void resetAsteroids(std::vector<sAsteroid>& asteroids) {
         asteroids.clear();
 		asteroidCount = 0;
-
+        // Reset instance counter and the static counter used by sAsteroid
         destroyedCounter = 0;
+        sAsteroid::resetDestroyedCount();
 	}
 
 private:

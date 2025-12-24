@@ -194,6 +194,7 @@ void Game::startNewGame() {
     customShipManager.reset();
     gameHelper.setTextures(textureManager, player);
     gameState = eGameState::Playing;
+    levelManager.reset();
 }
 
 void Game::endGame() {

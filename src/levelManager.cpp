@@ -9,7 +9,8 @@ LevelManager::~LevelManager() {}
 void LevelManager::reset() {
     currentLevel = LevelData{};
     levelRunning = false;
-    currentLevelTime = 0.0f;
+    progressAccumulator = 0;
+    resetCurrentLevelTime();
     if (ui) {
         ui->resetAll();
     }
@@ -20,7 +21,9 @@ void LevelManager::runLevel(int levelNumber) {
     for (const auto& level : *levels) {
         if (level.levelNumber == levelNumber) {
             currentLevel = level;
+            // reset per-level state
             resetCurrentLevelTime();
+            progressAccumulator = 0;
             setLevelRunning(true);
             switch (level.type) {
             case LevelType::SurviveAsteroidField:
@@ -177,12 +180,20 @@ void LevelManager::loadLevelsToMemory() {
 	level6.objective = "Defeat 15 enemies";
 	level6.objectiveCount = 15;
 
+    LevelData level7;
+    level7.levelNumber = 7;
+    level7.difficulty = 2;
+    level7.type = LevelType::SurviveAsteroidField;
+    level7.duration = 120.0f;
+    level7.objective = "Survive 120 seconds";
+
     levels->push_back(level1);
     levels->push_back(level2);
 	levels->push_back(level3);
 	levels->push_back(level4);
 	levels->push_back(level5);
 	levels->push_back(level6);
+    levels->push_back(level7);
 }
 
 void LevelManager::drawLevelEndOverlay(int screenWidth, int screenHeight) {
@@ -229,7 +240,7 @@ void LevelManager::initAsteroidFieldLevel(const LevelData &level)
 
     if (asteroidHelper)
     {
-        asteroidHelper->setAsteroidCount(level.difficulty * 10);
+        asteroidHelper->setAsteroidCount(level.difficulty * 5);
     }
 }
 
@@ -276,6 +287,8 @@ void LevelManager::initEnemyInvasionLevel(const LevelData &level)   {
     if (currentLevel.type != LevelType::EnemyInvasion)
         return;
 
+    // reset progress accumulator for enemy-kill objectives
+    progressAccumulator = 0;
     std::array<int, 3> desiredCounts{ {0,0,0} };
 
 	switch (level.difficulty) {
@@ -338,8 +351,6 @@ void LevelManager::initShipEscortLevel(const LevelData& level)
 
     asteroidHelper->setAsteroidCount(10);
     ui->setArrowDestination(customShipManager->getShipPosition(0));    
-
-    progressAccumulator = 0;
 }
 
 void LevelManager::updateShipEscortLevel()  {

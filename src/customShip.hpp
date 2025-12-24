@@ -26,7 +26,7 @@ struct CustomShip {
 			constexpr float speed = 5.0f;
 			const Vector2 direction = Vector2Scale(Vector2Normalize(toDestination), speed);
 			velocity = direction;
-			rotation = atan2f(velocity.y, velocity.x) * RAD2DEG + 90.0f; // align texture with velocity; tweak offset if ship graphic points another way
+			rotation = atan2f(velocity.y, velocity.x) * RAD2DEG + 90.0f; 
 			position.x += velocity.x;
 			position.y += velocity.y;
 		}
