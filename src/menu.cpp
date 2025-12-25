@@ -219,7 +219,7 @@ void Menu::renderLevelsGrid() {
         }
 
         if (!isInputLocked && CheckCollisionPointRec(lastMousePos, tileRect) 
-            && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+            && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && level.isUnlocked)
         {
             fillColor = Fade(SKYBLUE, 0.6f);
             borderColor = WHITE;
@@ -237,9 +237,14 @@ void Menu::renderLevelsGrid() {
         std::string levelLabel = "Poziom " + std::to_string(level.levelNumber);
         DrawText(levelLabel.c_str(), textX, textY, 20, WHITE);
 
-        DrawText(TextFormat("Difficulty: %d", level.difficulty), textX, textY + 26, 18, LIGHTGRAY);
-        DrawText(TextFormat("%s", level.objective.c_str()), textX, textY + 50, 15, GRAY);
-        //DrawText(TextFormat("Type: %d", static_cast<int>(level.type)), textX, textY + 66, 16, SKYBLUE);
+        if(level.isUnlocked)    {
+            DrawText(TextFormat("Difficulty: %d", level.difficulty), textX, textY + 26, 18, LIGHTGRAY);
+            DrawText(TextFormat("%s", level.objective.c_str()), textX, textY + 50, 15, GRAY);
+            //DrawText(TextFormat("Type: %d", static_cast<int>(level.type)), textX, textY + 66, 16, SKYBLUE);
+        }
+        else    {
+            DrawText(TextFormat("Level locked"), textX, textY + 26, 18, LIGHTGRAY);
+        }
     }
 
     //back to menu button

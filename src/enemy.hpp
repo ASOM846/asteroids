@@ -10,18 +10,10 @@
 #include "laser.h"
 #include "player.h"
 
-enum class EnemyType
-{
+enum class EnemyType    {
     Basic,
     Fast,
-    Tank
-};
-
-enum class EnemyState
-{
-    Idle,
-    Attacking,
-    Fleeing
+    Tank,
 };
 
 struct sEnemy
@@ -30,7 +22,6 @@ struct sEnemy
     bool active;
 
     EnemyType type;
-    EnemyState state;
 
     int health;
     int radius;
@@ -52,7 +43,6 @@ struct sEnemy
         : position(pos),
           active(true),
           type(pType),
-          state(EnemyState::Idle),
           health(0),
           radius(0),
           minDistanceToTarget(0),
