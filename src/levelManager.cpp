@@ -187,6 +187,13 @@ void LevelManager::loadLevelsToMemory() {
     level7.duration = 120.0f;
     level7.objective = "Survive 120 seconds";
 
+    LevelData level8;
+    level8.levelNumber = 8;
+    level8.difficulty = 3;
+    level8.type = LevelType::BossFight;
+    level8.duration = 120.0f;
+    level8.objective = "Defeat the Boss";
+
     levels->push_back(level1);
     levels->push_back(level2);
 	levels->push_back(level3);
@@ -194,6 +201,7 @@ void LevelManager::loadLevelsToMemory() {
 	levels->push_back(level5);
 	levels->push_back(level6);
     levels->push_back(level7);
+    levels->push_back(level8);
 }
 
 void LevelManager::drawLevelEndOverlay(int screenWidth, int screenHeight) {
