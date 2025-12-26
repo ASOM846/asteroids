@@ -47,11 +47,13 @@ public:
   float getCurrentLevelTime() const;
   float getRemainingLevelTime() const;
   bool isLevelRunning() const;
+  int getUnlockedLevels() const;
 
   void setReturnToMenuCallback(std::function<void()> cb) {
     returnToMenuCallback = cb;
   }
-  void setLevelUnlockedState(int levelNumber, bool isUnlocked);
+  void setLevelUnlockedState(int levelNumber, bool isUnlocked); 
+  void setUnlockedLevels(int numberOfUnlockedLevels);
 
   void drawLevelEndOverlay(int screenWidth, int screenHeight);
 

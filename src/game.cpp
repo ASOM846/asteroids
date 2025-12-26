@@ -24,6 +24,7 @@ Game::Game()
       customShipManager(),
       collisionSystem(),
       camera(),
+      saveManager(),
       gameState(eGameState::Playing){
 }
 
@@ -66,6 +67,8 @@ void Game::updatePlaying() {
         return;
     }
 
+    if(IsKeyPressed(KEY_L))
+        std::cout <<  levelManager.getUnlockedLevels() << std::endl;
     collisionSystem.handleCollision();
     player.update();
     camera.updateCamera();
@@ -150,7 +153,7 @@ void Game::initialize() {
     textureManager.loadAll();
 
     gameHelper.setPlayer(&player);
-
+    
     gameHelper.setTextures(textureManager, player);
     gameHelper.setCustomShipManager(&customShipManager);
 
@@ -160,17 +163,23 @@ void Game::initialize() {
 
     dropHelper.setTextureManager(textureManager);
     dropHelper.setDrops(&drops);
-
+    
     levelManager.setPointers(&levels, &dropHelper, &player,
-                             &asteroidHelper, &customShipManager, 
-                             &enemyManager, &ui, &drops, &enemies);
+        &asteroidHelper, &customShipManager, 
+        &enemyManager, &ui, &drops, &enemies);
+        
+    saveManager.readData(eDataPosition::LevelsUnlocked);
+
     levelManager.loadLevelsToMemory();
+    levelManager.setUnlockedLevels(saveManager.readData(eDataPosition::LevelsUnlocked));
+
     levelManager.reset();
 
     customShipManager.setPointers(&customShips, &textureManager);
 
     ui.initButtons(GetScreenWidth(), GetScreenHeight());
     ui.setGame(this);
+
 
     levelManager.setReturnToMenuCallback([this]()
                                     { this->returnToMenuCallback(); });
@@ -182,6 +191,7 @@ void Game::initialize() {
 }
 
 void Game::shutdown() {
+    saveManager.writeData(eDataPosition::LevelsUnlocked, levelManager.getUnlockedLevels());
     textureManager.unloadAll();
 }
 

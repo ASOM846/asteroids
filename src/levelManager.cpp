@@ -125,6 +125,21 @@ float LevelManager::getCurrentLevelTime() const { return currentLevelTime; }
 
 bool LevelManager::isLevelRunning() const { return levelRunning; }
 
+int LevelManager::getUnlockedLevels() const
+{
+  if(!levels) 
+    return 1;
+
+  int count = 0;
+
+  for(auto l : *levels) {
+    if(l.isUnlocked == 1)
+      ++count;
+  }
+
+  return count;
+}
+
 float LevelManager::getRemainingLevelTime() const {
   return currentLevel.duration - currentLevelTime;
 }
@@ -216,6 +231,15 @@ void LevelManager::setLevelUnlockedState(int levelNumber, bool isUnlocked) {
       level.isUnlocked = isUnlocked;
       break;
     }
+  }
+}
+
+void LevelManager::setUnlockedLevels(int numberOfUnlockedLevels)  {
+  if(!levels)
+    return;
+  for(auto &level : *levels)  {
+    if(level.levelNumber <= numberOfUnlockedLevels)
+    level.isUnlocked = true;
   }
 }
 
