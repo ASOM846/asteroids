@@ -73,7 +73,7 @@ void LevelManager::updateCurrentLevel() {
   if (!levelRunning)
     return;
 
-  if (currentLevelTime >= currentLevel.duration ||
+  if (((currentLevelTime >= currentLevel.duration) && currentLevel.duration > 0) ||
       progressAccumulator >= currentLevel.objectiveCount) {
     std::cout << "Level " << currentLevel.levelNumber
               << " completed! Starting end animation...\n";
@@ -167,7 +167,6 @@ void LevelManager::loadLevelsToMemory() {
   level3.levelNumber = 3;
   level3.difficulty = 2;
   level3.type = LevelType::DestroyAsteroids;
-  level3.duration = 60.0f;
   level3.objective = "Destroy 10 Asteroids";
   level3.objectiveCount = 10;
   level3.isUnlocked = false;
