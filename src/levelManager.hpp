@@ -112,6 +112,7 @@ private:
 
   std::function<void()> returnToMenuCallback;
   bool levelEnding = false;
+  bool isLevelCompleted = false;
   float endTimer = 0.0f;
   float endDuration = 2.0f;
   int progressAccumulator = 0;

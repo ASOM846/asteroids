@@ -9,6 +9,8 @@ LevelManager::~LevelManager() {}
 void LevelManager::reset() {
   currentLevel = LevelData{};
   levelRunning = false;
+  isLevelCompleted = false;
+  levelEnding = false;
   progressAccumulator = 0;
   resetCurrentLevelTime();
   if (ui) {
