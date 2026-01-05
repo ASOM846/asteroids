@@ -178,7 +178,7 @@ void LevelManager::loadLevelsToMemory() {
   level4.difficulty = 2;
   level4.type = LevelType::ShipEscort;
   level4.duration = 90.0f;
-  level4.objective = "Escort the ship safely";
+  level4.objective = "Escort the ship safely \n (work in progress)";
   level4.isUnlocked = false;
 
   LevelData level5;
@@ -186,17 +186,17 @@ void LevelManager::loadLevelsToMemory() {
   level5.difficulty = 3;
   level5.type = LevelType::BossFight;
   level5.duration = 120.0f;
-  level5.objective = "Defeat the Boss";
+  level5.objective = "Defeat the Boss \n (work in progress)";
   level5.isUnlocked = false;
 
   LevelData level6;
   level6.levelNumber = 6;
   level6.difficulty = 3;
   level6.type = LevelType::EnemyInvasion;
-  level6.duration = 90.0f;
+  level6.duration = 0.0f;
   level6.objective = "Defeat 15 enemies";
   level6.objectiveCount = 15;
-  level6.isUnlocked = false;
+  level6.isUnlocked = true;
 
   LevelData level7;
   level7.levelNumber = 7;
@@ -204,14 +204,14 @@ void LevelManager::loadLevelsToMemory() {
   level7.type = LevelType::SurviveAsteroidField;
   level7.duration = 120.0f;
   level7.objective = "Survive 120 seconds";
-  level7.isUnlocked = false;
+  level7.isUnlocked = true;
 
   LevelData level8;
   level8.levelNumber = 8;
   level8.difficulty = 3;
   level8.type = LevelType::BossFight;
   level8.duration = 120.0f;
-  level8.objective = "Defeat the Boss";
+  level8.objective = "Defeat the Boss \n (work in progress)";
   level8.isUnlocked = false;
 
   levels->push_back(level1);
