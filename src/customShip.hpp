@@ -16,7 +16,7 @@ struct CustomShip {
 		health(100),
 		shield(50),
 		bAlive(true),
-		texture{ texture }{
+		texture{ texture } {
 	}
 
 	void update() {
@@ -26,7 +26,7 @@ struct CustomShip {
 			constexpr float speed = 5.0f;
 			const Vector2 direction = Vector2Scale(Vector2Normalize(toDestination), speed);
 			velocity = direction;
-			rotation = atan2f(velocity.y, velocity.x) * RAD2DEG + 90.0f; 
+			rotation = atan2f(velocity.y, velocity.x) * RAD2DEG + 90.0f;
 			position.x += velocity.x;
 			position.y += velocity.y;
 		}
@@ -35,12 +35,9 @@ struct CustomShip {
 			velocity = { 0.0f, 0.0f };
 		}
 
-		if(health == 0)	{
+		if (health == 0) {
 			bAlive = false;
 		}
-
-		// std::cout << "CustomShip Position: (" << static_cast<int>(position.x) 
-		// 	<< ", " << static_cast<int>(position.y) << ")\n";
 
 		std::printf("CustomShip HP: %d, Shield: %d\n", health, shield);
 	}
@@ -67,17 +64,17 @@ struct CustomShip {
 		};
 	}
 
-	void takeDamage(int amount)	{
+	void takeDamage(int amount) {
 		if (amount <= 0)
 			return;
 
-		if (shield > 0)	{
+		if (shield > 0) {
 			const int absorbed = std::min(shield, amount);
 			shield -= absorbed;
 			amount -= absorbed;
 		}
 
-		if (amount > 0)	{
+		if (amount > 0) {
 			health -= amount;
 			if (health < 0)
 				health = 0;
@@ -96,6 +93,9 @@ struct CustomShip {
 	int shield;
 	bool bAlive;
 	Texture2D texture{};
+
+	float noDamageTime;
+	float noDamageCounter;
 };
 
 class CustomShipManager {
@@ -150,7 +150,7 @@ public:
 	}
 
 	Vector2 getShipPosition(int index) const {
-		if (ships == nullptr || index < 0 || 
+		if (ships == nullptr || index < 0 ||
 			index >= static_cast<int>(ships->size())) {
 			return { 0.0f, 0.0f };
 		}

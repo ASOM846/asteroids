@@ -76,7 +76,7 @@ void LevelManager::updateCurrentLevel() {
     return;
 
   if (((currentLevelTime >= currentLevel.duration) && currentLevel.duration > 0) ||
-      progressAccumulator >= currentLevel.objectiveCount) {
+      (progressAccumulator >= currentLevel.objectiveCount) && currentLevel.objectiveCount > 0) {
     std::cout << "Level " << currentLevel.levelNumber
               << " completed! Starting end animation...\n";
     levelEnding = true;
@@ -175,9 +175,11 @@ void LevelManager::loadLevelsToMemory() {
   level4.levelNumber = 4;
   level4.difficulty = 2;
   level4.type = LevelType::ShipEscort;
-  level4.duration = 90.0f;
-  level4.objective = "Escort the ship safely \n (work in progress)";
-  level4.isUnlocked = false;
+  level4.duration = 0.0f;
+  level4.objectiveCount = 0;
+  level4.objective = "Escort the ship safely";
+  level4.isUnlocked = true;
+  level4.waypoint;
 
   LevelData level5;
   level5.levelNumber = 5;
@@ -353,12 +355,6 @@ void LevelManager::updateEnemyInvasionLevel() {
 
   progressAccumulator = enemyManager->getKilledEnemies();
 
-  //if (progressAccumulator >= currentLevel.objectiveCount) {
-  //  std::cout << "Killed required enemies for level completion!\n";
-  //  levelEnding = true;
-  //  return;
-  //}
-
   if (enemyManager->getKilledEnemies() > currentLevel.currentCount) {
     currentLevel.currentCount++;
     std::cout << "Current killed enemies: " << enemyManager->getKilledEnemies()
@@ -374,7 +370,6 @@ void LevelManager::initShipEscortLevel(const LevelData &level) {
   if (currentLevel.type != LevelType::ShipEscort)
     return;
 
-  (void)level;
 
   if (!customShipManager)
     throw std::runtime_error(std::string("customShipManagerNotLoaded"));
@@ -384,7 +379,7 @@ void LevelManager::initShipEscortLevel(const LevelData &level) {
   customShipManager->addShip({-100.0f, GetScreenHeight() / 2.0f},
                              {GetScreenWidth() + 100000.0f, 100000.0f});
 
-  asteroidHelper->setAsteroidCount(10);
+  asteroidHelper->setAsteroidCount(2);
   ui->setArrowDestination(customShipManager->getShipPosition(0));
 }
 
