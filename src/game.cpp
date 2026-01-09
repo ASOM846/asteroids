@@ -9,6 +9,7 @@
 *ideas:
 -add levels with upgrades like in vamipre survivors, collecting scrap from destroyed ships and asteroids
     and buying upgrades when the bar of scrap is full
+-upgrady w kampani, na przyjk³ad pod koniec mo¿na wybraæ 1/3 któy zostaje na nastêpne poziomy
 */
 
 Game::Game()

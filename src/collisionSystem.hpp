@@ -138,6 +138,7 @@ public:
                     playerRect)) {
                     player->takeDamage(l.getDamage());
                     l.active = false;
+                    cameraManager->triggerShake();
                 }
             }
         }

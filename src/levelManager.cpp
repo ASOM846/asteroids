@@ -109,8 +109,6 @@ void LevelManager::updateCurrentLevel() {
 }
 
 const LevelData *LevelManager::getCurrentLevelData() const {
-  // Only expose data when a level is active or finishing to keep UI optional
-  // path sane
   if (!levelRunning && !levelEnding) {
     return nullptr;
   }
@@ -153,7 +151,7 @@ void LevelManager::loadLevelsToMemory() {
   level1.type = LevelType::SurviveAsteroidField;
   level1.objective = "Survive 60 seconds";
   level1.objectiveCount = 0;
-  level1.duration = 60.0f;
+  level1.duration = 10.0f;
   level1.isUnlocked = true;
 
   LevelData level2;
@@ -162,7 +160,7 @@ void LevelManager::loadLevelsToMemory() {
   level2.type = LevelType::EnemyInvasion;
   level2.duration = 0.0f;
   level2.objective = "Defeat 5 enemies";
-  level2.objectiveCount = 5;
+  level2.objectiveCount = 2;
   level2.isUnlocked = false;
 
   LevelData level3;
@@ -212,7 +210,7 @@ void LevelManager::loadLevelsToMemory() {
   level8.type = LevelType::BossFight;
   level8.duration = 120.0f;
   level8.objective = "Defeat the Boss \n (work in progress)";
-  level8.isUnlocked = false;
+  level8.isUnlocked = true;
 
   levels->push_back(level1);
   levels->push_back(level2);
@@ -323,7 +321,6 @@ void LevelManager::initEnemyInvasionLevel(const LevelData &level) {
   if (currentLevel.type != LevelType::EnemyInvasion)
     return;
 
-  // reset progress accumulator for enemy-kill objectives
   progressAccumulator = 0;
   std::array<int, 3> desiredCounts{{0, 0, 0}};
 
@@ -356,11 +353,11 @@ void LevelManager::updateEnemyInvasionLevel() {
 
   progressAccumulator = enemyManager->getKilledEnemies();
 
-  if (progressAccumulator >= currentLevel.objectiveCount) {
-    std::cout << "Killed required enemies for level completion!\n";
-    levelEnding = true;
-    return;
-  }
+  //if (progressAccumulator >= currentLevel.objectiveCount) {
+  //  std::cout << "Killed required enemies for level completion!\n";
+  //  levelEnding = true;
+  //  return;
+  //}
 
   if (enemyManager->getKilledEnemies() > currentLevel.currentCount) {
     currentLevel.currentCount++;
