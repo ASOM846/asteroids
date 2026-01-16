@@ -129,6 +129,7 @@ void Game::renderPaused() {
     asteroidHelper.renderAsteroids(asteroids);
     dropHelper.renderDrops(drops);
     enemyManager.renderEnemies();
+    customShipManager.renderShips();
     player.render();
 
     EndMode2D();
@@ -206,6 +207,7 @@ void Game::startNewGame() {
     gameHelper.setTextures(textureManager, player);
     gameState = eGameState::Playing;
     levelManager.reset();
+    ui.resetAll();
 }
 
 void Game::endGame() {

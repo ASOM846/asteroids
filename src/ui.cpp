@@ -6,6 +6,7 @@
 #include <cmath>
 #include <random>
 #include <raymath.h>
+#include <iostream>
 
 Ui::Ui() : cachedWidth(0), cachedHeight(0), hasLastPlayerPos(false), drawArrow(false), arrowDestination{0.0f, 0.0f} {
     std::random_device rd;
@@ -13,6 +14,12 @@ Ui::Ui() : cachedWidth(0), cachedHeight(0), hasLastPlayerPos(false), drawArrow(f
 }
 
 Ui::~Ui() {}
+
+void Ui::resetAll() {
+    clearArrowDestination();
+    starLayers.clear();
+    std::printf("UI RESETED ------------------------------------------\n");
+}
 
 void Ui::initStarLayers(int screenW, int screenH) {
     cachedWidth = screenW;
@@ -254,11 +261,6 @@ void Ui::drawArrowAngled(float angle)
 	DrawTriangleLines(baseLeft, baseRight, tip, WHITE);
 }
 
-void Ui::resetAll() {
-    clearArrowDestination();
-    starLayers.clear();
-}
-
 void Ui::drawStars(Vector2 playerPos) {
     const int screenW = GetScreenWidth();
     const int screenH = GetScreenHeight();
@@ -376,4 +378,5 @@ void Ui::setArrowDestination(const Vector2 &dest)
 void Ui::clearArrowDestination()
 {
     drawArrow = false;
+    std::printf("ARROW CLEARED ===============================================");
 }

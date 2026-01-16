@@ -15,7 +15,8 @@ enum class LevelType {
   EnemyInvasion,
   ShipEscort,
   BossFight,
-  ProtectBase
+  ProtectBase,
+  Pursuit
 };
 
 struct LevelData {
@@ -58,6 +59,8 @@ public:
   void drawLevelEndOverlay(int screenWidth, int screenHeight);
 
   bool isEnding() const { return levelEnding; }
+
+  void setLevelLose(bool state) { isLevelLose = state; }
 
   void setPointers(std::vector<LevelData> *levelVec, DropHelper *dh, Player *p,
                    AsteroidHelper *ah, CustomShipManager *csm, EnemyManager *em,
@@ -113,6 +116,7 @@ private:
   std::function<void()> returnToMenuCallback;
   bool levelEnding = false;
   bool isLevelCompleted = false;
+  bool isLevelLose = false;
   float endTimer = 0.0f;
   float endDuration = 2.0f;
   int progressAccumulator = 0;

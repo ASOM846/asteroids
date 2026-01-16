@@ -81,6 +81,8 @@ public:
                 for (auto& cs : *customShips)   {
                     if(CheckCollisionCircleRec(Vector2{ a.x, a.y }, (float)a.radius, cs.getRect())) {
                         cs.takeDamage(a.radius);
+                        cameraManager->triggerShake();
+                        a.active = false;
                     }
                 }
             }
@@ -120,13 +122,7 @@ public:
                         if (cs.texture.id == 0) continue;
                         if (CheckCollisionCircleRec(Vector2{ l.x, l.y }, (float)l.radius,
                             cs.getRect())) {
-                           // cs.takeDamage(l.getDamage());
                             l.active = false;
-                            // remove ship if destroyed
-                            //if (cs.health <= 0) {
-                            //    customShips->erase(customShips->begin() + i);
-                            //    --i;
-                            //}
                             break;
                         }
                     }
