@@ -43,10 +43,10 @@ private:
 
     WindowManager* gamePtr = nullptr;
     Ui* uiPtr = nullptr;
+    std::vector<LevelData>* levels = nullptr;
 
 
     Vector2 lastMousePos;
-    std::vector<LevelData>* levels = nullptr;
     bool buttonsInitialized;
     int cachedScreenWidth;
     int cachedScreenHeight;

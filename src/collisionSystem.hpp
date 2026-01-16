@@ -51,6 +51,7 @@ public:
             if (!a.active) continue;
             for (auto& l : *lasers) {
                 if (!l.active) continue;
+                //kolizja lasera z asteroidą
                 if (CheckCollisionCircles(Vector2{ l.x, l.y }, (float)l.radius,
                                           Vector2{ a.x, a.y }, (float)a.radius)) {
                     a.applyDamage(l.getDamage(), *asteroids);
@@ -67,10 +68,23 @@ public:
                     break;
                 }
             }
+
+            //kolizja asteroidy z graczem
             if (CheckCollisionCircleRec(Vector2{ a.x, a.y }, (float)a.radius, playerRect)) {
                 player->takeDamage(a.radius);
                 cameraManager->triggerShake();
                 a.active = false;
+            }
+
+            //kolizja asteroidy z custom ship
+            if (customShips) {
+                for (auto& cs : *customShips)   {
+                    if(CheckCollisionCircleRec(Vector2{ a.x, a.y }, (float)a.radius, cs.getRect())) {
+                        cs.takeDamage(a.radius);
+                        cameraManager->triggerShake();
+                        a.active = false;
+                    }
+                }
             }
         }
 
@@ -108,13 +122,7 @@ public:
                         if (cs.texture.id == 0) continue;
                         if (CheckCollisionCircleRec(Vector2{ l.x, l.y }, (float)l.radius,
                             cs.getRect())) {
-                            cs.health -= l.getDamage();
                             l.active = false;
-                            // remove ship if destroyed
-                            if (cs.health <= 0) {
-                                customShips->erase(customShips->begin() + i);
-                                --i;
-                            }
                             break;
                         }
                     }
@@ -126,6 +134,7 @@ public:
                     playerRect)) {
                     player->takeDamage(l.getDamage());
                     l.active = false;
+                    cameraManager->triggerShake();
                 }
             }
         }

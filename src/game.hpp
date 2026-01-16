@@ -19,6 +19,7 @@
 #include "customShip.hpp"
 #include "collisionSystem.hpp"
 #include "cameraManager.hpp"
+#include "saveManager.hpp"
 
 enum class eGameState {
     Playing,
@@ -72,6 +73,7 @@ private:
     CustomShipManager customShipManager;
     CollisionSystem collisionSystem;
     CameraManager camera;
+    SaveManager saveManager;
 
     eGameState gameState;
 

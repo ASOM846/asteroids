@@ -10,11 +10,10 @@
 #include "laser.h"
 #include "player.h"
 
-enum class EnemyType
-{
+enum class EnemyType    {
     Basic,
     Fast,
-    Tank
+    Tank,
 };
 
 struct sEnemy
@@ -27,6 +26,8 @@ struct sEnemy
     int health;
     int radius;
 
+    int minDistanceToTarget;
+    int distanceToTarget;
     float speed;
     const Texture2D *texture = nullptr;
     float rotation;
@@ -44,6 +45,8 @@ struct sEnemy
           type(pType),
           health(0),
           radius(0),
+          minDistanceToTarget(0),
+          distanceToTarget(0),
           speed(0.0f),
           texture(tex),
           rotation(0.0f),
@@ -56,19 +59,21 @@ struct sEnemy
             int radius;
             float speed;
             float shootInterval;
+            int minDistanceToTarget;
             const Texture2D *tex;
         };
 
         static constexpr Params table[] = {
-            /* Basic */ {30, 20, 2.0f, 1.5f, nullptr},
-            /* Fast  */ {40, 15, 4.0f, 0.8f, nullptr},
-            /* Tank  */ {100, 30, 2.0f, 2.5f, nullptr}};
+            /* Basic */ {30, 20, 2.0f, 1.5f, 200, nullptr},
+            /* Fast  */ {40, 15, 4.0f, 0.8f, 100, nullptr},
+            /* Tank  */ {100, 30, 2.0f, 2.5f, 300, nullptr}};
 
         const auto idx = static_cast<size_t>(type);
         const auto &p = table[idx];
         health = p.health;
         radius = p.radius;
         speed = p.speed;
+        minDistanceToTarget = p.minDistanceToTarget;
         texture = p.tex;
 
         // Init shooting timers
@@ -76,10 +81,8 @@ struct sEnemy
         shootTimer = 0.0f;
     }
 
-    void update(const Vector2 &targetPos, std::vector<Laser> &lasers)
-    {
-        if (shootTimer > 0.0f)
-        {
+    void update(const Vector2 &targetPos, std::vector<Laser> &lasers)   {
+        if (shootTimer > 0.0f) {
             shootTimer -= GetFrameTime();
             if (shootTimer < 0.0f)
                 shootTimer = 0.0f;
@@ -87,7 +90,9 @@ struct sEnemy
 
         Vector2 dir = {targetPos.x - position.x, targetPos.y - position.y};
         float len = sqrtf(dir.x * dir.x + dir.y * dir.y);
-        if (len > 0.0001f)
+        distanceToTarget = static_cast<int>(len);
+
+        if (len > 0.0001f && distanceToTarget > minDistanceToTarget)
         {
             dir.x /= len;
             dir.y /= len;
@@ -97,12 +102,10 @@ struct sEnemy
             float angleRad = atan2f(dir.y, dir.x);
             rotation = angleRad * (180.0f / 3.14159274101257324f);
         }
-
         shoot(targetPos, lasers);
     }
 
-    void render() const
-    {
+    void render() const {
         if (!active)
             return;
         if (texture && texture->id != 0)

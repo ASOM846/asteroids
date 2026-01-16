@@ -9,8 +9,9 @@
 *ideas:
 -add levels with upgrades like in vamipre survivors, collecting scrap from destroyed ships and asteroids
     and buying upgrades when the bar of scrap is full
-    
+-upgrady w kampani, na przyjk³ad pod koniec mo¿na wybraæ 1/3 któy zostaje na nastêpne poziomy
 */
+
 Game::Game()
     : player(),
       laserHelper(),
@@ -24,6 +25,7 @@ Game::Game()
       customShipManager(),
       collisionSystem(),
       camera(),
+      saveManager(),
       gameState(eGameState::Playing){
 }
 
@@ -66,6 +68,8 @@ void Game::updatePlaying() {
         return;
     }
 
+    if(IsKeyPressed(KEY_L))
+        std::cout <<  levelManager.getUnlockedLevels() << std::endl;
     collisionSystem.handleCollision();
     player.update();
     camera.updateCamera();
@@ -125,6 +129,7 @@ void Game::renderPaused() {
     asteroidHelper.renderAsteroids(asteroids);
     dropHelper.renderDrops(drops);
     enemyManager.renderEnemies();
+    customShipManager.renderShips();
     player.render();
 
     EndMode2D();
@@ -150,7 +155,7 @@ void Game::initialize() {
     textureManager.loadAll();
 
     gameHelper.setPlayer(&player);
-
+    
     gameHelper.setTextures(textureManager, player);
     gameHelper.setCustomShipManager(&customShipManager);
 
@@ -160,17 +165,23 @@ void Game::initialize() {
 
     dropHelper.setTextureManager(textureManager);
     dropHelper.setDrops(&drops);
-
+    
     levelManager.setPointers(&levels, &dropHelper, &player,
-                             &asteroidHelper, &customShipManager, 
-                             &enemyManager, &ui, &drops, &enemies);
+        &asteroidHelper, &customShipManager, 
+        &enemyManager, &ui, &drops, &enemies);
+        
+    saveManager.readData(eDataPosition::LevelsUnlocked);
+
     levelManager.loadLevelsToMemory();
+    levelManager.setUnlockedLevels(saveManager.readData(eDataPosition::LevelsUnlocked));
+
     levelManager.reset();
 
     customShipManager.setPointers(&customShips, &textureManager);
 
     ui.initButtons(GetScreenWidth(), GetScreenHeight());
     ui.setGame(this);
+
 
     levelManager.setReturnToMenuCallback([this]()
                                     { this->returnToMenuCallback(); });
@@ -182,6 +193,7 @@ void Game::initialize() {
 }
 
 void Game::shutdown() {
+    saveManager.writeData(eDataPosition::LevelsUnlocked, levelManager.getUnlockedLevels());
     textureManager.unloadAll();
 }
 
@@ -194,6 +206,8 @@ void Game::startNewGame() {
     customShipManager.reset();
     gameHelper.setTextures(textureManager, player);
     gameState = eGameState::Playing;
+    levelManager.reset();
+    ui.resetAll();
 }
 
 void Game::endGame() {
