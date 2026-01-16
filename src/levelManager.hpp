@@ -19,17 +19,31 @@ enum class LevelType {
   Pursuit
 };
 
+inline const char* LevelTypeToString(LevelType t) noexcept {
+    switch (t) {
+    case LevelType::SurviveAsteroidField: return "Asteroid Field";
+    case LevelType::DestroyAsteroids:     return "Destroy Asteroids";
+    case LevelType::EnemyInvasion:        return "Enemy Invasion";
+    case LevelType::ShipEscort:           return "Ship Escort";
+    case LevelType::BossFight:            return "Boss Fight";
+    case LevelType::ProtectBase:          return "Protect Base";
+    case LevelType::Pursuit:              return "Pursuit";
+    default:                              return "Unknown";
+    }
+}
+
 struct LevelData {
-  int levelNumber;
-  int difficulty;
-  float duration;
-  std::string objective;
-  int objectiveCount;
-  int currentCount;
-  LevelType type;
-  Vector2 waypoint;
-  bool isUnlocked;
+    LevelType type;
+    bool isUnlocked;
+    int levelNumber;
+    int objectiveCount;
+    float duration;
+    int desiredAsteroidCount;
+    std::array<int, 3> desiredEnemiesCount;
+    std::string objective;
+    Vector2 waypoint;
 };
+
 
 class Ui;
 
@@ -97,6 +111,8 @@ private:
 
   void resetCurrentLevelTime();
   void setLevelRunning(bool running) { levelRunning = running; }
+
+  void initLevel(const LevelData& level);
 
   void initAsteroidFieldLevel(const LevelData &level);
   void updateAsteroidFieldLevel();

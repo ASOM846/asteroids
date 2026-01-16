@@ -238,8 +238,8 @@ void Menu::renderLevelsGrid() {
         DrawText(levelLabel.c_str(), textX, textY, 20, WHITE);
 
         if(level.isUnlocked)    {
-            DrawText(TextFormat("Difficulty: %d", level.difficulty), textX, textY + 26, 18, LIGHTGRAY);
-            DrawText(TextFormat("%s", level.objective.c_str()), textX, textY + 50, 15, GRAY);
+            DrawText(TextFormat("%s", LevelTypeToString(level.type)), textX, textY + 26, 18, LIGHTGRAY);
+            DrawText(TextFormat("%s", level.objective.c_str()), textX, textY + 46, 15, GRAY);
             //DrawText(TextFormat("Type: %d", static_cast<int>(level.type)), textX, textY + 66, 16, SKYBLUE);
         }
         else    {

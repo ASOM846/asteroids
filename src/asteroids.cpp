@@ -5,6 +5,4 @@
 int main()
 {
 	WindowManager windowManager;
-
-    return 0;
 }

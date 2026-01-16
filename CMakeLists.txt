@@ -16,7 +16,7 @@ file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS
     "${CMAKE_SOURCE_DIR}/src/*.h"
 )
 
-add_executable(MyCppProject ${SRC_FILES}  "src/graphicsManager.cpp")
+add_executable(MyCppProject ${SRC_FILES})
 
 # --- Znajdowanie raylib w r�nych �rodowiskach --------------------------------
 set(RAYLIB_TARGET "")

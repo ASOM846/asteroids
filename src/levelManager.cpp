@@ -26,10 +26,12 @@ void LevelManager::runLevel(int levelNumber) {
     for (const auto& level : *levels) {
         if (level.levelNumber == levelNumber) {
             currentLevel = level;
-            // reset per-level state
             resetCurrentLevelTime();
             progressAccumulator = 0;
             setLevelRunning(true);
+
+            initLevel(level);
+
             switch (level.type) {
             case LevelType::SurviveAsteroidField:
                 initAsteroidFieldLevel(level);
@@ -149,73 +151,87 @@ float LevelManager::getRemainingLevelTime() const {
 
 void LevelManager::loadLevelsToMemory() {
     LevelData level1;
-    level1.levelNumber = 1;
-    level1.difficulty = 1;
     level1.type = LevelType::SurviveAsteroidField;
-    level1.objective = "Survive 60 seconds";
-    level1.objectiveCount = 0;
-    level1.duration = 10.0f;
     level1.isUnlocked = true;
+    level1.levelNumber = 1;
+    level1.objectiveCount = 0;
+    level1.duration = 60.0f;
+    level1.desiredAsteroidCount = 5;
+    level1.desiredEnemiesCount = { {0, 0, 0} };
+    level1.objective = "Survive 60 seconds";
+
+
 
     LevelData level2;
-    level2.levelNumber = 2;
-    level2.difficulty = 1;
     level2.type = LevelType::EnemyInvasion;
-    level2.duration = 0.0f;
-    level2.objective = "Defeat 5 enemies";
-    level2.objectiveCount = 2;
     level2.isUnlocked = false;
+    level2.levelNumber = 2;
+    level2.objectiveCount = 3;
+    level2.duration = 60.0f;
+    level2.desiredAsteroidCount = 2;
+    level2.desiredEnemiesCount = { {2, 0, 0} };
+    level2.objective = "Defeat 3 enemies";
 
     LevelData level3;
-    level3.levelNumber = 3;
-    level3.difficulty = 2;
     level3.type = LevelType::DestroyAsteroids;
-    level3.objective = "Destroy 10 Asteroids";
-    level3.objectiveCount = 10;
     level3.isUnlocked = false;
+    level3.levelNumber = 3;
+    level3.objectiveCount = 10;
+    level3.duration = 60.0f;
+    level3.desiredAsteroidCount = 6;
+    level3.desiredEnemiesCount = { {0, 0, 0} };
+    level3.objective = "Destroy 10 asteroids";
 
     LevelData level4;
-    level4.levelNumber = 4;
-    level4.difficulty = 2;
     level4.type = LevelType::ShipEscort;
-    level4.duration = 0.0f;
+    level4.isUnlocked = false;
+    level4.levelNumber = 4;
     level4.objectiveCount = 0;
-    level4.objective = "Escort the ship safely";
-    level4.isUnlocked = true;
-    level4.waypoint;
+    level4.duration = 0.0f;
+    level4.desiredAsteroidCount = 3;
+    level4.desiredEnemiesCount = { {0, 0, 0} };
+    level4.objective = "Escort ship safely";
+    level4.waypoint = { 1000, 1500 };
 
     LevelData level5;
-    level5.levelNumber = 5;
-    level5.difficulty = 3;
     level5.type = LevelType::BossFight;
-    level5.duration = 120.0f;
-    level5.objective = "Defeat the Boss \n (work in progress)";
     level5.isUnlocked = false;
+    level5.levelNumber = 5;
+    level5.objectiveCount = 0;
+    level5.duration = 120.0f;
+    level5.desiredAsteroidCount = 3;
+    level5.desiredEnemiesCount = { {0, 0, 0} };
+    level5.objective = "Defeat the Boss \n (work in progress)";
 
     LevelData level6;
-    level6.levelNumber = 6;
-    level6.difficulty = 3;
     level6.type = LevelType::EnemyInvasion;
-    level6.duration = 0.0f;
+    level6.isUnlocked = false;
+    level6.levelNumber = 6;
+    level5.objectiveCount = 10;
+    level6.duration = 120.0f;
+    level6.desiredAsteroidCount = 3;
+    level6.desiredEnemiesCount = { {2, 1, 1} };
     level6.objective = "Defeat 15 enemies";
-    level6.objectiveCount = 15;
-    level6.isUnlocked = true;
 
     LevelData level7;
-    level7.levelNumber = 7;
-    level7.difficulty = 2;
     level7.type = LevelType::SurviveAsteroidField;
+    level7.isUnlocked = false;
+    level7.levelNumber = 7;
+    level7.objectiveCount = 0;
     level7.duration = 120.0f;
+    level7.desiredAsteroidCount = 6;
+    level7.desiredEnemiesCount = { {2, 0, 0} };
     level7.objective = "Survive 120 seconds";
-    level7.isUnlocked = true;
 
     LevelData level8;
+    level8.type = LevelType::Pursuit;
+    level8.isUnlocked = false;
     level8.levelNumber = 8;
-    level8.difficulty = 3;
-    level8.type = LevelType::BossFight;
+    level8.objectiveCount = 0;
     level8.duration = 120.0f;
-    level8.objective = "Defeat the Boss \n (work in progress)";
-    level8.isUnlocked = true;
+    level8.desiredAsteroidCount = 4;
+    level8.desiredEnemiesCount = { {2, 0, 0} };
+    level8.objective = "Pursiut enemy ship";
 
     levels->push_back(level1);
     levels->push_back(level2);
@@ -286,13 +302,20 @@ void LevelManager::drawLevelEndOverlay(int screenWidth, int screenHeight) {
 
 void LevelManager::resetCurrentLevelTime() { currentLevelTime = 0.0f; }
 
+void LevelManager::initLevel(const LevelData& level)
+{
+    if (asteroidHelper)
+        asteroidHelper->setAsteroidCount(level.desiredAsteroidCount);
+
+    if (enemyManager)
+        enemyManager->setDesiredCounts(level.desiredEnemiesCount);
+    
+}
+
 void LevelManager::initAsteroidFieldLevel(const LevelData& level) {
     if (level.type != LevelType::SurviveAsteroidField)
         return;
 
-    if (asteroidHelper) {
-        asteroidHelper->setAsteroidCount(level.difficulty * 5);
-    }
     progressAccumulator = -1;
 }
 
@@ -304,10 +327,6 @@ void LevelManager::updateAsteroidFieldLevel() {
 void LevelManager::initDestroyAsteroidsLevel(const LevelData& level) {
     if (currentLevel.type != LevelType::DestroyAsteroids)
         return;
-
-    if (asteroidHelper) {
-        asteroidHelper->setAsteroidCount(level.objectiveCount + 5);
-    }
 }
 
 void LevelManager::updateDestroyAsteroidsLevel() {
@@ -320,48 +339,14 @@ void LevelManager::updateDestroyAsteroidsLevel() {
 void LevelManager::initEnemyInvasionLevel(const LevelData& level) {
     if (currentLevel.type != LevelType::EnemyInvasion)
         return;
-
-    progressAccumulator = 0;
-    std::array<int, 3> desiredCounts{ {0, 0, 0} };
-
-    switch (level.difficulty) {
-    case 1:
-        desiredCounts = { {2, 0, 0} };
-        asteroidHelper->setAsteroidCount(2);
-        break;
-    case 2:
-        desiredCounts = { {3, 1, 0} };
-        asteroidHelper->setAsteroidCount(3);
-        break;
-    case 3:
-        desiredCounts = { {4, 2, 1} };
-        asteroidHelper->setAsteroidCount(4);
-        break;
-    default:
-        desiredCounts = { {2, 0, 0} };
-        asteroidHelper->setAsteroidCount(6);
-        break;
-    }
-
-    enemyManager->setDesiredCounts(desiredCounts);
 }
 
 void LevelManager::updateEnemyInvasionLevel() {
-    if (currentLevel.type != LevelType::EnemyInvasion) {
+    if (currentLevel.type != LevelType::EnemyInvasion)
         return;
-    }
 
-    progressAccumulator = enemyManager->getKilledEnemies();
-
-    if (enemyManager->getKilledEnemies() > currentLevel.currentCount) {
-        currentLevel.currentCount++;
-        std::cout << "Current killed enemies: " << enemyManager->getKilledEnemies()
-            << " / " << currentLevel.objectiveCount << "\n";
-    }
-
-    std::cout << "Enemy Invasion Level running. Time: "
-        << static_cast<int>(currentLevelTime) << " / "
-        << currentLevel.duration << "\n";
+    if (enemyManager->getKilledEnemies() > progressAccumulator)
+        progressAccumulator++;
 }
 
 void LevelManager::initShipEscortLevel(const LevelData& level) {
@@ -374,10 +359,9 @@ void LevelManager::initShipEscortLevel(const LevelData& level) {
     if (!ui)
         throw std::runtime_error(std::string("uiNotLoaded"));
 
-    customShipManager->addShip({ -100.0f, GetScreenHeight() / 2.0f },
-        { GetScreenWidth() / 2.0f + 5000, GetScreenHeight() / 2.0f});
+    //zrobic randomowe pocz¹tkowe miejsce w promieniu np 500px i randomowy waypoint np 1500-2000px
+    customShipManager->addShip({ -100.0f, GetScreenHeight() / 2.0f }, level.waypoint);
 
-    asteroidHelper->setAsteroidCount(6);
     ui->setArrowDestination(customShipManager->getShipPosition(0));
 }
 
@@ -385,9 +369,8 @@ void LevelManager::updateShipEscortLevel() {
     if (currentLevel.type != LevelType::ShipEscort)
         return;
 
-    if (!customShipManager || !ui) {
+    if (!customShipManager || !ui)
         return;
-    }
 
     if (customShipManager->isEmpty()) {
         isLevelLose = true;
@@ -415,6 +398,7 @@ void LevelManager::updateShipEscortLevel() {
     }
 
     if (escortShip->isDestinationReached()) {
+        std::printf("DESTINATION REACHED+++++++++++++++++++++++");
         levelEnding = true;
         endTimer = 0.0f;
         setLevelRunning(false);
@@ -427,4 +411,6 @@ void LevelManager::updateShipEscortLevel() {
         endTimer = 0.0f;
         setLevelRunning(false);
     }
+
+
 }

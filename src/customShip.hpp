@@ -5,6 +5,7 @@
 #include <iostream>
 #include "textureManager.h"
 #include "laser.h"
+#include "entityUtils.hpp"
 
 struct CustomShip {
 	CustomShip(Texture2D texture, Vector2 initialPosition,
@@ -30,17 +31,21 @@ struct CustomShip {
 		const float distance = Vector2Length(toDestination);
 		const float dt = GetFrameTime();
 
-		if (distance > 0.1f) {
+		if (position == destination) {
+			position = destination;
+			velocity = { 0.0f, 0.0f };
+		}
+
+		const float epsilon = 1.0f;
+		if (Vector2Distance(position, destination) <= epsilon)
+			velocity = { 0,0 };
+		else if (distance > 0.1f) {
 			constexpr float speed = 5.0f;
 			const Vector2 direction = Vector2Scale(Vector2Normalize(toDestination), speed);
 			velocity = direction;
 			rotation = atan2f(velocity.y, velocity.x) * RAD2DEG + 90.0f;
 			position.x += velocity.x;
 			position.y += velocity.y;
-		}
-		else {
-			position = destination;
-			velocity = { 0.0f, 0.0f };
 		}
 
 		if (health == 0) {
@@ -70,6 +75,8 @@ struct CustomShip {
 			DrawCircle((int)position.x, (int)position.y, size / 2.0f, RED);
 		}
 
+		if (drawHealthBar)
+			eUtils::drawBarNoBg(position.x, position.y, health, maxHealth);
 	}
 
 	Rectangle getRect() const {
@@ -113,10 +120,9 @@ struct CustomShip {
 		}
 	}
 
-	bool isDestinationReached() {
-		if (position == destination)
-			return true;
-		return false;
+	bool isDestinationReached() const {
+		const float epsilon = 1.0f;
+		return Vector2Distance(position, destination) <= epsilon;
 	}
 
 	Vector2 velocity;
@@ -141,7 +147,7 @@ struct CustomShip {
 
 class CustomShipManager {
 public:
-	CustomShipManager() 
+	CustomShipManager()
 		: drawHealthBars(true) {
 	}
 
@@ -229,6 +235,8 @@ public:
 	}
 
 	void setDrawHealthBars(bool state) { drawHealthBars = state; }
+	bool getDrawHealthBars() { return drawHealthBars; }
+
 private:
 	std::vector<CustomShip>* ships = nullptr;
 	TextureManager* textureManager = nullptr;
