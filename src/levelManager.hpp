@@ -1,49 +1,11 @@
 #pragma once
-#include "asteroid.h"
-#include "customShip.hpp"
+#include "levels.hpp"
+#include "LevelLogic.hpp"
 #include "drop.h"
-#include "enemy.hpp"
-#include "player.h"
 #include <functional>
 #include <raylib.h>
 #include <string>
 #include <vector>
-
-enum class LevelType {
-  SurviveAsteroidField,
-  DestroyAsteroids,
-  EnemyInvasion,
-  ShipEscort,
-  BossFight,
-  ProtectBase,
-  Pursuit
-};
-
-inline const char* LevelTypeToString(LevelType t) noexcept {
-    switch (t) {
-    case LevelType::SurviveAsteroidField: return "Asteroid Field";
-    case LevelType::DestroyAsteroids:     return "Destroy Asteroids";
-    case LevelType::EnemyInvasion:        return "Enemy Invasion";
-    case LevelType::ShipEscort:           return "Ship Escort";
-    case LevelType::BossFight:            return "Boss Fight";
-    case LevelType::ProtectBase:          return "Protect Base";
-    case LevelType::Pursuit:              return "Pursuit";
-    default:                              return "Unknown";
-    }
-}
-
-struct LevelData {
-    LevelType type;
-    bool isUnlocked;
-    int levelNumber;
-    int objectiveCount;
-    float duration;
-    int desiredAsteroidCount;
-    std::array<int, 3> desiredEnemiesCount;
-    std::string objective;
-    Vector2 waypoint;
-};
-
 
 class Ui;
 
@@ -76,10 +38,14 @@ public:
 
   void setLevelLose(bool state) { isLevelLose = state; }
 
+  void initializeModules(AsteroidHelper *ah, CustomShipManager *csm,
+                       EnemyManager *em, Ui *pUi) {
+    levelLogic.setPointers(ah, csm, em, pUi, &progressAccumulator);
+	}
+  
   void setPointers(std::vector<LevelData> *levelVec, DropHelper *dh, Player *p,
-                   AsteroidHelper *ah, CustomShipManager *csm, EnemyManager *em,
-                   Ui *pUi, std::vector<sDrop> *dropVec,
-                   std::vector<sEnemy> *enemyVec) {
+                 AsteroidHelper *ah, CustomShipManager *csm, EnemyManager *em, Ui *pUi,
+                 std::vector<sDrop> *dropVec, std::vector<sEnemy> *enemyVec) {
     levels = levelVec;
     dropHelper = dh;
     player = p;
@@ -89,12 +55,17 @@ public:
     ui = pUi;
     drops = dropVec;
     enemies = enemyVec;
+
+    // ważne:
+    levelLogic.setPointers(ah, csm, em, pUi, &progressAccumulator);
   }
 
   void loadLevelsToMemory();
 
 private:
   LevelData currentLevel;
+
+  LevelLogic levelLogic;
 
   std::vector<LevelData> *levels;
   DropHelper *dropHelper = nullptr;
@@ -114,20 +85,7 @@ private:
 
   void initLevel(const LevelData& level);
 
-  void initAsteroidFieldLevel(const LevelData &level);
-  void updateAsteroidFieldLevel();
 
-  void initDestroyAsteroidsLevel(const LevelData &level);
-  void updateDestroyAsteroidsLevel();
-
-  void initEnemyInvasionLevel(const LevelData &level);
-  void updateEnemyInvasionLevel();
-
-  void initShipEscortLevel(const LevelData &level);
-  void updateShipEscortLevel();
-
-  void initBossFightLevel(const LevelData &level);
-  void updateBossFightLevel();
 
   std::function<void()> returnToMenuCallback;
   bool levelEnding = false;

@@ -34,28 +34,28 @@ void LevelManager::runLevel(int levelNumber) {
 
             switch (level.type) {
             case LevelType::SurviveAsteroidField:
-                initAsteroidFieldLevel(level);
+                levelLogic.initAsteroidFieldLevel(level);
                 std::cout << "Starting Asteroid Field Level " << level.levelNumber
                     << "\n";
                 break;
             case LevelType::DestroyAsteroids:
-                initDestroyAsteroidsLevel(level);
+                levelLogic.initDestroyAsteroidsLevel(level);
                 std::cout << "Starting Destroy Asteroids Level " << level.levelNumber
                     << "\n";
                 break;
             case LevelType::EnemyInvasion:
-                initEnemyInvasionLevel(level);
+                levelLogic.initEnemyInvasionLevel(level);
                 std::cout << "Starting Enemy Invasion Level " << level.levelNumber
                     << "\n";
                 break;
             case LevelType::ShipEscort:
-                initShipEscortLevel(level);
+                levelLogic.initShipEscortLevel(level);
                 break;
             case LevelType::BossFight:
                 // initBossFightLevel(level); --- IGNORE ---
                 break;
             default:
-                initAsteroidFieldLevel(level);
+                levelLogic.initAsteroidFieldLevel(level);
                 break;
             }
             break;
@@ -64,6 +64,8 @@ void LevelManager::runLevel(int levelNumber) {
 }
 
 void LevelManager::updateCurrentLevel() {
+    LevelUpdateResult result;
+
     if (levelEnding) {
         endTimer += GetFrameTime();
         if (endTimer >= endDuration) {
@@ -93,23 +95,37 @@ void LevelManager::updateCurrentLevel() {
     currentLevelTime += GetFrameTime();
     switch (currentLevel.type) {
     case LevelType::SurviveAsteroidField:
-        updateAsteroidFieldLevel();
+        result = levelLogic.updateAsteroidFieldLevel(currentLevel);
         break;
     case LevelType::DestroyAsteroids:
-        updateDestroyAsteroidsLevel();
+        result = levelLogic.updateDestroyAsteroidsLevel(currentLevel);
         break;
     case LevelType::EnemyInvasion:
-        updateEnemyInvasionLevel();
-        break;
+		result = levelLogic.updateEnemyInvasionLevel(currentLevel);
+		break;
     case LevelType::ShipEscort:
-        updateShipEscortLevel();
-        break;
+		result = levelLogic.updateShipEscortLevel(currentLevel);
+		break;
     case LevelType::BossFight:
         // updateBossFightLevel(); --- IGNORE ---
         break;
     default:
-        updateAsteroidFieldLevel();
-        break;
+		result = levelLogic.updateAsteroidFieldLevel(currentLevel);
+		break;
+    }
+
+    if(result == LevelUpdateResult::None)   {
+        return;
+    }
+
+    if(result == LevelUpdateResult::Completed)  {
+        levelEnding = true;
+    }
+
+    if(result == LevelUpdateResult::Failed) {
+        levelEnding = true;
+        isLevelLose = true;
+        setLevelRunning(false);   
     }
 }
 
@@ -159,8 +175,6 @@ void LevelManager::loadLevelsToMemory() {
     level1.desiredAsteroidCount = 5;
     level1.desiredEnemiesCount = { {0, 0, 0} };
     level1.objective = "Survive 60 seconds";
-
-
 
     LevelData level2;
     level2.type = LevelType::EnemyInvasion;
@@ -309,108 +323,5 @@ void LevelManager::initLevel(const LevelData& level)
 
     if (enemyManager)
         enemyManager->setDesiredCounts(level.desiredEnemiesCount);
-    
 }
 
-void LevelManager::initAsteroidFieldLevel(const LevelData& level) {
-    if (level.type != LevelType::SurviveAsteroidField)
-        return;
-
-    progressAccumulator = -1;
-}
-
-void LevelManager::updateAsteroidFieldLevel() {
-    if (currentLevel.type != LevelType::SurviveAsteroidField)
-        return;
-}
-
-void LevelManager::initDestroyAsteroidsLevel(const LevelData& level) {
-    if (currentLevel.type != LevelType::DestroyAsteroids)
-        return;
-}
-
-void LevelManager::updateDestroyAsteroidsLevel() {
-    if (currentLevel.type != LevelType::DestroyAsteroids)
-        return;
-
-    progressAccumulator = asteroidHelper->getDestroyedAsteroidCount();
-}
-
-void LevelManager::initEnemyInvasionLevel(const LevelData& level) {
-    if (currentLevel.type != LevelType::EnemyInvasion)
-        return;
-}
-
-void LevelManager::updateEnemyInvasionLevel() {
-    if (currentLevel.type != LevelType::EnemyInvasion)
-        return;
-
-    if (enemyManager->getKilledEnemies() > progressAccumulator)
-        progressAccumulator++;
-}
-
-void LevelManager::initShipEscortLevel(const LevelData& level) {
-    if (currentLevel.type != LevelType::ShipEscort)
-        return;
-
-
-    if (!customShipManager)
-        throw std::runtime_error(std::string("customShipManagerNotLoaded"));
-    if (!ui)
-        throw std::runtime_error(std::string("uiNotLoaded"));
-
-    //zrobic randomowe pocz¹tkowe miejsce w promieniu np 500px i randomowy waypoint np 1500-2000px
-    customShipManager->addShip({ -100.0f, GetScreenHeight() / 2.0f }, level.waypoint);
-
-    ui->setArrowDestination(customShipManager->getShipPosition(0));
-}
-
-void LevelManager::updateShipEscortLevel() {
-    if (currentLevel.type != LevelType::ShipEscort)
-        return;
-
-    if (!customShipManager || !ui)
-        return;
-
-    if (customShipManager->isEmpty()) {
-        isLevelLose = true;
-        levelEnding = true;
-        endTimer = 0.0f;
-        setLevelRunning(false);
-        ui->clearArrowDestination();
-        return;
-    }
-
-    CustomShip* escortShip = customShipManager->getCustomShipPtr(0);
-    if (!escortShip) {
-        isLevelLose = true;
-        levelEnding = true;
-        endTimer = 0.0f;
-        setLevelRunning(false);
-        ui->clearArrowDestination();
-        return;
-    }
-
-    const Vector2 escortPos = escortShip->position;
-
-    if (!Vector2Equals(escortPos, Vector2{ 0.0f, 0.0f })) {
-        ui->setArrowDestination(escortPos);
-    }
-
-    if (escortShip->isDestinationReached()) {
-        std::printf("DESTINATION REACHED+++++++++++++++++++++++");
-        levelEnding = true;
-        endTimer = 0.0f;
-        setLevelRunning(false);
-        return;
-    }
-
-    if (!escortShip->bAlive || customShipManager->isEmpty()) {
-        isLevelLose = true;
-        levelEnding = true;
-        endTimer = 0.0f;
-        setLevelRunning(false);
-    }
-
-
-}
