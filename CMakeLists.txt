@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(MyCppProject VERSION 1.0 LANGUAGES CXX)
+project(asteroids VERSION 1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -16,7 +16,7 @@ file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS
     "${CMAKE_SOURCE_DIR}/src/*.h"
 )
 
-add_executable(MyCppProject ${SRC_FILES})
+add_executable(asteroids ${SRC_FILES})
 
 # --- Znajdowanie raylib w r�nych �rodowiskach --------------------------------
 set(RAYLIB_TARGET "")
@@ -70,12 +70,12 @@ if(NOT RAYLIB_TARGET)
 endif()
 
 # Linkuj docelowy target raylib do aplikacji
-target_link_libraries(MyCppProject PRIVATE ${RAYLIB_TARGET})
+target_link_libraries(asteroids PRIVATE ${RAYLIB_TARGET})
 
 # Drobne ustawienia dla wygody deweloperskiej
 if(MSVC)
     # na Windows wy��cz niepotrzebne warnings lub ustaw tryb wyj�cia konsoli je�li potrzebne
-    target_compile_options(MyCppProject PRIVATE /W4)
+    target_compile_options(asteroids PRIVATE /W4)
 else()
-    target_compile_options(MyCppProject PRIVATE -Wall -Wextra -Wpedantic)
+    target_compile_options(asteroids PRIVATE -Wall -Wextra -Wpedantic)
 endif()
