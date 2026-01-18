@@ -10,7 +10,8 @@ Menu::Menu()
             cachedScreenHeight(0),
             currentState(MenuState::Main),
             nextInputAllowedTime(0.0),
-            levelClickDelaySeconds(0.2) {}
+            levelClickDelaySeconds(0.2),
+            currentPage(0) {}
 
 void Menu::update() {
     lastMousePos = GetMousePosition();
@@ -88,9 +89,12 @@ void Menu::initButtons(int w, int h) {
     const int startY = h / 2 - columnHeight / 2 + verticalOffset;
     const int x = w / 2 - mainBtnW / 2;
 
-    quickStartButton = Button(x, startY + (mainBtnH + spacing) * 0, mainBtnW, mainBtnH, "Quick Start");
+    endlessModeButton = Button(x, startY + (mainBtnH + spacing) * 0, mainBtnW, mainBtnH, "Quick Start");
     arcadeModeButton = Button(x, startY + (mainBtnH + spacing) * 1, mainBtnW, mainBtnH, "Arcade Mode");
     levelsButton = Button(x, startY + (mainBtnH + spacing) * 2, mainBtnW, mainBtnH, "Level Selection");
+
+    nextPageButton = Button(w - 200, h / 2, 140, 40, ">");
+    prevPageButton = Button(60, h / 2, 140, 40, "<");
 
     const int smallBtnW = 140;
     const int smallBtnH = 40;
@@ -112,7 +116,7 @@ void Menu::renderButtons() {
         return;
     }
 
-    quickStartButton.Draw();
+    endlessModeButton.Draw();
     arcadeModeButton.Draw();
     levelsButton.Draw();
     settingsButton.Draw();
@@ -129,7 +133,7 @@ void Menu::updateMainMenu() {
         return;
     }
 
-    if (quickStartButton.IsClicked()) {
+    if (endlessModeButton.IsClicked()) {
         gamePtr->setWindowState(eWindowState::Gameplay);
         nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
     }
@@ -192,7 +196,7 @@ void Menu::renderLevelsGrid() {
     int screenWidth = GetScreenWidth();
     int screenHeight = GetScreenHeight();
 
-    int rows = (static_cast<int>(levels->size()) + columns - 1) / columns;
+    int rows = 2;
     int gridWidth = columns * tileWidth + (columns - 1) * spacing;
     int gridHeight = rows * tileHeight + (rows - 1) * spacing;
 
@@ -201,10 +205,15 @@ void Menu::renderLevelsGrid() {
 
     const bool isInputLocked = GetTime() < nextInputAllowedTime;
 
-    for (size_t i = 0; i < levels->size(); ++i) {
+    const size_t pageStart = static_cast<size_t>(currentPage) * 8;
+    const size_t total = levels->size();
+    const size_t pageEnd = std::min(pageStart + 8, total);
+
+    for (size_t i = pageStart; i < pageEnd; ++i) {
         const LevelData& level = levels->at(i);
-        int row = static_cast<int>(i) / columns;
-        int col = static_cast<int>(i) % columns;
+        size_t localIndex = i - pageStart;
+        int row = static_cast<int>(localIndex) / columns;
+        int col = static_cast<int>(localIndex) % columns;
 
         float tileX = static_cast<float>(startX + col * (tileWidth + spacing));
         float tileY = static_cast<float>(startY + row * (tileHeight + spacing));
@@ -253,6 +262,22 @@ void Menu::renderLevelsGrid() {
     if (!isInputLocked && backButton.IsClicked()) {
         currentState = MenuState::Main;
         nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
+    }
+
+    nextPageButton.Draw();
+    if (!isInputLocked && nextPageButton.IsClicked()) {
+        if ((currentPage + 1) * 8 < static_cast<size_t>(levels->size())) {
+            currentPage++;
+            nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
+        }
+    }
+
+    prevPageButton.Draw();
+    if (!isInputLocked && prevPageButton.IsClicked()) {
+        if (currentPage > 0) {
+            currentPage--;
+            nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
+        }
     }
 }
 

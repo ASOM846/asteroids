@@ -55,11 +55,16 @@ private:
     double nextInputAllowedTime;
     const double levelClickDelaySeconds;
 
+    int currentPage;
+
     //menu buttons
-    Button quickStartButton;
+    Button endlessModeButton;
     Button levelsButton;
     Button settingsButton;
     Button exitButton;
     Button backButton;
 	Button arcadeModeButton;
+
+    Button nextPageButton;
+    Button prevPageButton;
 };

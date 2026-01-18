@@ -14,8 +14,7 @@ LevelUpdateResult LevelLogic::updateAsteroidFieldLevel(const LevelData &level) {
 void LevelLogic::initDestroyAsteroidsLevel(const LevelData &level) {
 }
 
-LevelUpdateResult
-LevelLogic::updateDestroyAsteroidsLevel(const LevelData &level) {
+LevelUpdateResult LevelLogic::updateDestroyAsteroidsLevel(const LevelData &level) {
 	*progressAccumulator = asteroidHelper->getDestroyedAsteroidCount();
 
 	if (*progressAccumulator >= level.objectiveCount) {

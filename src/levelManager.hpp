@@ -56,7 +56,6 @@ public:
     drops = dropVec;
     enemies = enemyVec;
 
-    // ważne:
     levelLogic.setPointers(ah, csm, em, pUi, &progressAccumulator);
   }
 

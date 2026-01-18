@@ -247,7 +247,29 @@ void LevelManager::loadLevelsToMemory() {
     level8.desiredEnemiesCount = { {2, 0, 0} };
     level8.objective = "Pursiut enemy ship";
 
-    levels->push_back(level1);
+	LevelData level9;
+	level9.type = LevelType::ShipEscort;
+	level9.isUnlocked = false;
+	level9.levelNumber = 9;
+	level9.objectiveCount = 0;
+	level9.duration = 0.0f;
+	level9.desiredAsteroidCount = 3;
+	level9.desiredEnemiesCount = {{0, 0, 0}};
+	level9.objective = "Escort ship safely";
+	level9.waypoint = {1000, 1500};
+
+	LevelData level10;
+	level10.type = LevelType::ShipEscort;
+	level10.isUnlocked = false;
+	level10.levelNumber = 10;
+	level10.objectiveCount = 0;
+	level10.duration = 0.0f;
+	level10.desiredAsteroidCount = 3;
+	level10.desiredEnemiesCount = {{0, 0, 0}};
+	level10.objective = "Escort ship safely";
+	level10.waypoint = {1000, 1500};
+
+	levels->push_back(level1);
     levels->push_back(level2);
     levels->push_back(level3);
     levels->push_back(level4);
@@ -255,6 +277,9 @@ void LevelManager::loadLevelsToMemory() {
     levels->push_back(level6);
     levels->push_back(level7);
     levels->push_back(level8);
+
+    levels->push_back(level9);
+    levels->push_back(level10);
 }
 
 void LevelManager::setLevelUnlockedState(int levelNumber, bool isUnlocked) {
