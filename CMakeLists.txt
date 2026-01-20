@@ -18,47 +18,6 @@ file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS
 
 add_executable(asteroids ${SRC_FILES})
 
-# --- Wbudowanie assets w .exe (Windows-friendly) -----------------------------
-option(EMBED_ASSETS "Embed assets into the executable" ON)
-
-if(EMBED_ASSETS)
-    set(EMBEDDED_ASSETS_DIR "${CMAKE_BINARY_DIR}/generated")
-    file(MAKE_DIRECTORY "${EMBEDDED_ASSETS_DIR}")
-
-    set(EMBEDDED_ASSETS_H "${EMBEDDED_ASSETS_DIR}/embedded_assets.h")
-    set(EMBEDDED_ASSETS_CPP "${EMBEDDED_ASSETS_DIR}/embedded_assets.cpp")
-
-    file(WRITE "${EMBEDDED_ASSETS_H}" "#pragma once\n#include <cstddef>\n\nstruct EmbeddedAsset {\n    const char* name;\n    const unsigned char* data;\n    unsigned int size;\n    const char* ext;\n};\n\nconst EmbeddedAsset* FindEmbeddedAsset(const char* name);\n")
-    file(WRITE "${EMBEDDED_ASSETS_CPP}" "#include \"embedded_assets.h\"\n#include <cstring>\n\n")
-
-    file(GLOB ASSET_FILES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/assets/*")
-
-    set(EMBED_ASSET_TABLE "")
-    foreach(ASSET_FILE IN LISTS ASSET_FILES)
-        get_filename_component(ASSET_NAME "${ASSET_FILE}" NAME)
-        get_filename_component(ASSET_EXT "${ASSET_FILE}" EXT)
-        string(SUBSTRING "${ASSET_EXT}" 1 -1 ASSET_EXT_NO_DOT)
-
-        string(REGEX REPLACE "[^A-Za-z0-9_]" "_" ASSET_VAR "${ASSET_NAME}")
-        set(ASSET_VAR "asset_${ASSET_VAR}")
-
-        file(READ "${ASSET_FILE}" ASSET_HEX HEX)
-        string(REGEX REPLACE "([0-9A-Fa-f]{2})" "0x\\1," ASSET_HEX "${ASSET_HEX}")
-
-        file(APPEND "${EMBEDDED_ASSETS_CPP}" "static const unsigned char ${ASSET_VAR}[] = {${ASSET_HEX}};\n")
-
-        file(SIZE "${ASSET_FILE}" ASSET_SIZE)
-        string(APPEND EMBED_ASSET_TABLE "    {\"assets/${ASSET_NAME}\", ${ASSET_VAR}, ${ASSET_SIZE}, \"${ASSET_EXT_NO_DOT}\"},\n")
-    endforeach()
-
-    file(APPEND "${EMBEDDED_ASSETS_CPP}" "\nstatic const EmbeddedAsset kEmbeddedAssets[] = {\n${EMBED_ASSET_TABLE}};\n")
-    file(APPEND "${EMBEDDED_ASSETS_CPP}" "static const unsigned int kEmbeddedAssetsCount = sizeof(kEmbeddedAssets) / sizeof(kEmbeddedAssets[0]);\n\n")
-    file(APPEND "${EMBEDDED_ASSETS_CPP}" "const EmbeddedAsset* FindEmbeddedAsset(const char* name) {\n    for (unsigned int i = 0; i < kEmbeddedAssetsCount; ++i) {\n        if (std::strcmp(kEmbeddedAssets[i].name, name) == 0) {\n            return &kEmbeddedAssets[i];\n        }\n    }\n    return nullptr;\n}\n")
-
-    target_sources(asteroids PRIVATE "${EMBEDDED_ASSETS_CPP}")
-    target_include_directories(asteroids PRIVATE "${EMBEDDED_ASSETS_DIR}")
-endif()
-
 # --- Znajdowanie raylib w r�nych �rodowiskach --------------------------------
 set(RAYLIB_TARGET "")
 
