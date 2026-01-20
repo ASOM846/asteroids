@@ -217,17 +217,17 @@ void LevelManager::loadLevelsToMemory() {
     level5.desiredEnemiesCount = { {0, 0, 0} };
     level5.objective = "Defeat the Boss \n (work in progress)";
 
-    LevelData level6;
-    level6.type = LevelType::EnemyInvasion;
-    level6.isUnlocked = false;
-    level6.levelNumber = 6;
-    level5.objectiveCount = 10;
-    level6.duration = 120.0f;
-    level6.desiredAsteroidCount = 3;
-    level6.desiredEnemiesCount = { {2, 1, 1} };
-    level6.objective = "Defeat 15 enemies";
+	LevelData level6;
+	level6.type = LevelType::EnemyInvasion;
+	level6.isUnlocked = false;
+	level6.levelNumber = 6;
+	level6.objectiveCount = 3;
+	level6.duration = 60.0f;
+	level6.desiredAsteroidCount = 2;
+	level6.desiredEnemiesCount = {{2, 0, 0}};
+	level6.objective = "Defeat 3 enemies";
 
-    LevelData level7;
+	LevelData level7;
     level7.type = LevelType::SurviveAsteroidField;
     level7.isUnlocked = false;
     level7.levelNumber = 7;

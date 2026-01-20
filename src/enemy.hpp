@@ -2,6 +2,7 @@
 #include "laser.h"
 #include "player.h"
 #include "textureManager.h"
+#include "entityUtils.hpp"
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -23,6 +24,7 @@ struct sEnemy {
 	EnemyType type;
 
 	int health;
+	int maxHealth;
 	int radius;
 
 	int minDistanceToTarget;
@@ -42,7 +44,7 @@ struct sEnemy {
 	}
 
 	sEnemy(Vector2 pos, EnemyType pType, const Texture2D *tex = nullptr)
-		: position(pos), active(true), type(pType), health(0), radius(0),
+		: position(pos), active(true), type(pType), health(0), maxHealth(0), radius(0),
 		  minDistanceToTarget(0), distanceToTarget(0), speed(0.0f),
 		  texture(tex), rotation(0.0f), shootInterval(0.0f), shootTimer(0.0f) {
 		struct Params {
@@ -62,6 +64,7 @@ struct sEnemy {
 		const auto idx = static_cast<size_t>(type);
 		const auto &p = table[idx];
 		health = p.health;
+		maxHealth = p.health;
 		radius = p.radius;
 		speed = p.speed;
 		minDistanceToTarget = p.minDistanceToTarget;
@@ -95,7 +98,7 @@ struct sEnemy {
 		shoot(targetPos, lasers);
 	}
 
-	void render() const {
+	void render(const int drawHealthBars) const {
 		if (!active)
 			return;
 		if (texture && texture->id != 0) {
@@ -107,6 +110,8 @@ struct sEnemy {
 		} else {
 			DrawCircle((int)position.x, (int)position.y, (float)radius, BLUE);
 		}
+		if (drawHealthBars)
+			eUtils::drawBarNoBg(position.x, position.y, health, maxHealth);
 	}
 
 	void takeDamage(int dmg) {
@@ -177,7 +182,7 @@ class EnemyManager {
 		if (!enemies)
 			return;
 		for (const auto &e : *enemies) {
-			e.render();
+			e.render(drawHealthBars);
 		}
 	}
 
@@ -294,7 +299,12 @@ class EnemyManager {
 				  << " at (" << pos.x << ", " << pos.y << ")\n";
 	}
 
+	void setDrawHealthBars(bool draw) {
+		drawHealthBars = draw;
+	}
+
   private:
+	bool drawHealthBars;
 	int killedEnemies;
 	std::array<int, 3> activeCounts{{0, 0, 0}};
 	std::array<int, 3> desiredCounts{{0, 0, 0}};
