@@ -60,11 +60,28 @@ public:
             return;
 
         screenShake.update(GetFrameTime());
-        Vector2 p = player->getPosition();
-        camera.target = Vector2{p.x + screenShake.offset.x, p.y + screenShake.offset.y};
-    }
 
-    void triggerShake(float intensity, float duration) {
+        UpdateCameraCenterSmoothFollow(GetFrameTime(), GetScreenWidth(), GetScreenHeight());
+    }
+//zwiększyć odległość asteroid kiedy sie despawnują
+
+	void UpdateCameraCenterSmoothFollow(float delta, int width, int height) {
+		static float minSpeed = 40;
+		static float minEffectLength = 10;
+		static float fractionSpeed = 4.8f;
+
+		camera.offset = {width / 2.0f, height / 2.0f};
+		Vector2 diff = Vector2Subtract(player->getPosition(), camera.target);
+		float length = Vector2Length(diff);
+
+		if (length > minEffectLength) {
+			float speed = fmaxf(fractionSpeed * length, minSpeed);
+			camera.target = Vector2Add(
+				camera.target, Vector2Scale(diff, speed * delta / length));
+		}
+	}
+
+	void triggerShake(float intensity, float duration) {
         screenShake.trigger(intensity, duration);
     }
 
@@ -76,6 +93,8 @@ public:
     Camera2D& getCamera() { return camera; }
 
 private:
+
+    int cameraMode = 1;
     Camera2D camera;
     ScreenShake screenShake;
 
