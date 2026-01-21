@@ -17,6 +17,9 @@ public:
   LevelLogic() = default;
   ~LevelLogic() = default;
 
+  void initLevel(const LevelData &level);
+  LevelUpdateResult update(const LevelData &level);
+
   void initAsteroidFieldLevel(const LevelData &level);
   LevelUpdateResult updateAsteroidFieldLevel(const LevelData &level);
 

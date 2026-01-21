@@ -1,5 +1,65 @@
 #include "LevelLogic.hpp"
 
+void LevelLogic::initLevel(const LevelData &level) {
+	if (asteroidHelper)
+		asteroidHelper->setAsteroidCount(level.desiredAsteroidCount);
+
+	if (enemyManager)
+		enemyManager->setDesiredCounts(level.desiredEnemiesCount);
+
+	switch (level.type) {
+	case LevelType::SurviveAsteroidField:
+		initAsteroidFieldLevel(level);
+		std::cout << "Starting Asteroid Field Level " << level.levelNumber
+				  << "\n";
+		break;
+	case LevelType::DestroyAsteroids:
+		initDestroyAsteroidsLevel(level);
+		std::cout << "Starting Destroy Asteroids Level " << level.levelNumber
+				  << "\n";
+		break;
+	case LevelType::EnemyInvasion:
+		initEnemyInvasionLevel(level);
+		std::cout << "Starting Enemy Invasion Level " << level.levelNumber
+				  << "\n";
+		break;
+	case LevelType::ShipEscort:
+		initShipEscortLevel(level);
+		break;
+	case LevelType::BossFight:
+		// initBossFightLevel(level); --- IGNORE ---
+		break;
+	default:
+		initAsteroidFieldLevel(level);
+		break;
+	}
+}
+
+LevelUpdateResult LevelLogic::update(const LevelData& level) {
+	LevelUpdateResult result;
+	switch (level.type) {
+	case LevelType::SurviveAsteroidField:
+		result = updateAsteroidFieldLevel(level);
+		break;
+	case LevelType::DestroyAsteroids:
+		result = updateDestroyAsteroidsLevel(level);
+		break;
+	case LevelType::EnemyInvasion:
+		result = updateEnemyInvasionLevel(level);
+		break;
+	case LevelType::ShipEscort:
+		result = updateShipEscortLevel(level);
+		break;
+	case LevelType::BossFight:
+		// updateBossFightLevel(); --- IGNORE ---
+		break;
+	default:
+		result = updateAsteroidFieldLevel(level);
+		break;
+	}
+	return result;
+}
+
 void LevelLogic::initAsteroidFieldLevel(const LevelData &level) {
 	if (level.type != LevelType::SurviveAsteroidField)
 		return;

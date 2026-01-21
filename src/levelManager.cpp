@@ -30,35 +30,7 @@ void LevelManager::runLevel(int levelNumber) {
             progressAccumulator = 0;
             setLevelRunning(true);
 
-            initLevel(level);
-
-            switch (level.type) {
-            case LevelType::SurviveAsteroidField:
-                levelLogic.initAsteroidFieldLevel(level);
-                std::cout << "Starting Asteroid Field Level " << level.levelNumber
-                    << "\n";
-                break;
-            case LevelType::DestroyAsteroids:
-                levelLogic.initDestroyAsteroidsLevel(level);
-                std::cout << "Starting Destroy Asteroids Level " << level.levelNumber
-                    << "\n";
-                break;
-            case LevelType::EnemyInvasion:
-                levelLogic.initEnemyInvasionLevel(level);
-                std::cout << "Starting Enemy Invasion Level " << level.levelNumber
-                    << "\n";
-                break;
-            case LevelType::ShipEscort:
-                levelLogic.initShipEscortLevel(level);
-                break;
-            case LevelType::BossFight:
-                // initBossFightLevel(level); --- IGNORE ---
-                break;
-            default:
-                levelLogic.initAsteroidFieldLevel(level);
-                break;
-            }
-            break;
+            levelLogic.initLevel(level);
         }
     }
 }
@@ -93,40 +65,21 @@ void LevelManager::updateCurrentLevel() {
     }
 
     currentLevelTime += GetFrameTime();
-    switch (currentLevel.type) {
-    case LevelType::SurviveAsteroidField:
-        result = levelLogic.updateAsteroidFieldLevel(currentLevel);
-        break;
-    case LevelType::DestroyAsteroids:
-        result = levelLogic.updateDestroyAsteroidsLevel(currentLevel);
-        break;
-    case LevelType::EnemyInvasion:
-		result = levelLogic.updateEnemyInvasionLevel(currentLevel);
-		break;
-    case LevelType::ShipEscort:
-		result = levelLogic.updateShipEscortLevel(currentLevel);
-		break;
-    case LevelType::BossFight:
-        // updateBossFightLevel(); --- IGNORE ---
-        break;
-    default:
-		result = levelLogic.updateAsteroidFieldLevel(currentLevel);
-		break;
-    }
 
-    if(result == LevelUpdateResult::None)   {
-        return;
-    }
+	result = levelLogic.update(currentLevel);
 
-    if(result == LevelUpdateResult::Completed)  {
-        levelEnding = true;
-    }
+    if (result == LevelUpdateResult::None) {
+		return;
+	}
 
-    if(result == LevelUpdateResult::Failed) {
-        levelEnding = true;
-        isLevelLose = true;
-        setLevelRunning(false);   
-    }
+	if (result == LevelUpdateResult::Completed) {
+		levelEnding = true;
+	}
+
+	if (result == LevelUpdateResult::Failed) {
+		levelEnding = true;
+		isLevelLose = true;
+	}
 }
 
 const LevelData* LevelManager::getCurrentLevelData() const {
@@ -340,13 +293,3 @@ void LevelManager::drawLevelEndOverlay(int screenWidth, int screenHeight) {
 }
 
 void LevelManager::resetCurrentLevelTime() { currentLevelTime = 0.0f; }
-
-void LevelManager::initLevel(const LevelData& level)
-{
-    if (asteroidHelper)
-        asteroidHelper->setAsteroidCount(level.desiredAsteroidCount);
-
-    if (enemyManager)
-        enemyManager->setDesiredCounts(level.desiredEnemiesCount);
-}
-
