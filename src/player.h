@@ -8,6 +8,8 @@
 #include "laser.h"
 #include "textureManager.h"
 
+class UpgradeSystem;
+
 extern TextureManager gTextures;
 
 class Player
@@ -40,6 +42,10 @@ public:
     void setTexture(Texture2D texture) {
         playerTexture = texture;
     }
+    
+    void applyUpgrades(const UpgradeSystem& upgradeSystem);
+    
+    float getDamageMultiplier() const { return damageMultiplier; }
 
 private:
     float size;
@@ -67,6 +73,10 @@ private:
     float maxSpeed;
     float shootInterval;
     float shootTimer;
+
+    float damageMultiplier;
+    float shieldRegenRate;
+    float shieldRegenTimer;
 
     Texture2D playerTexture;
     Vector2 vPosition;

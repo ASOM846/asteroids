@@ -4,6 +4,8 @@
 #include "button.hpp"
 #include "levelManager.hpp"
 #include "GameHelper.h"
+#include "upgradeShop.hpp"
+#include "upgradeSystem.hpp"
 
 enum class eWindowState;
 class WindowManager;
@@ -12,7 +14,8 @@ class Ui;
 enum class MenuState {
     Main,
     Levels,
-    Settings
+    Settings,
+    UpgradeShop
 };
 
 class Menu {
@@ -24,7 +27,7 @@ public:
     void setMenuState(MenuState newState);
 
     void setPointers(WindowManager* game, Ui* ui,
-        std::vector<LevelData>* levelData);
+        std::vector<LevelData>* levelData, UpgradeSystem* upgrades, int* currency);
 private:
     void renderStars();
     void initButtons(int screenWidth, int screenHeight);
@@ -41,9 +44,16 @@ private:
     void updateSettingsMenu();
     void renderSettingsMenu();
 
+    void updateUpgradeShop();
+    void renderUpgradeShop();
+
     WindowManager* gamePtr = nullptr;
     Ui* uiPtr = nullptr;
     std::vector<LevelData>* levels = nullptr;
+    UpgradeSystem* upgradeSystem = nullptr;
+    int* currency = nullptr;
+
+    UpgradeShop upgradeShop;
 
 
     Vector2 lastMousePos;
@@ -60,6 +70,7 @@ private:
     //menu buttons
     NewButton endlessModeButton;
     NewButton levelsButton;
+    NewButton upgradesButton;
     NewButton settingsButton;
     NewButton exitButton;
     NewButton backButton;

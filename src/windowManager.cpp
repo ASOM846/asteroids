@@ -25,6 +25,10 @@ void WindowManager::runLevel(int levelNumber) {
     game.runLevel(levelNumber);
 }
 
+void WindowManager::startArcadeMode() {
+    game.startArcadeMode();
+}
+
 void WindowManager::initialize() {
     InitWindow(screenWidth, screenHeight, "Asteroids Game");
     SetWindowState(FLAG_VSYNC_HINT);
@@ -35,7 +39,7 @@ void WindowManager::initialize() {
         this->setWindowState(eWindowState::Menu);
     });
 
-    menu.setPointers(this, &game.ui, &game.levels);
+    menu.setPointers(this, &game.ui, &game.levels, &game.upgradeSystem, &game.currency);
 }
 
 void WindowManager::shutdown() {

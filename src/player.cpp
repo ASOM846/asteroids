@@ -1,4 +1,5 @@
 #include "player.h"
+#include "upgradeSystem.hpp"
 
 Player::Player()
         : size(50.0f),
@@ -21,6 +22,9 @@ Player::Player()
             maxSpeed(9.0f),
             shootInterval(0.18f),
             shootTimer(0.0f),
+            damageMultiplier(1.0f),
+            shieldRegenRate(0.0f),
+            shieldRegenTimer(0.0f),
             playerTexture{},
             vPosition{ x, y } {
 }
@@ -35,6 +39,15 @@ void Player::update() {
     vPosition = { x, y };
 
     if (shootTimer > 0.0f) shootTimer -= dt;
+    
+    // Shield regeneration
+    if (shieldRegenRate > 0.0f) {
+        shieldRegenTimer += dt;
+        if (shieldRegenTimer >= 1.0f) {
+            shieldRegenTimer = 0.0f;
+            healShield((int)shieldRegenRate);
+        }
+    }
 }
 
 void Player::render() {
@@ -150,4 +163,30 @@ void Player::healShield(int amount)
     if (amount <= 0) return;
     shield += amount;
     if (shield > maxShield) shield = maxShield;
+}
+
+void Player::applyUpgrades(const UpgradeSystem& upgradeSystem) {
+    // Apply stat bonuses
+    maxHealth = 100 + upgradeSystem.getMaxHealthBonus();
+    maxShield = 100 + upgradeSystem.getMaxShieldBonus();
+    maxAmmo = 500 + upgradeSystem.getMaxAmmoBonus();
+    
+    // Apply multipliers
+    float speedMult = upgradeSystem.getSpeedMultiplier();
+    thrust = 0.18f * speedMult;
+    maxSpeed = 9.0f * speedMult;
+    
+    float turnMult = upgradeSystem.getTurnSpeedMultiplier();
+    turnSpeed = 3.5f * turnMult;
+    
+    float fireRateMult = upgradeSystem.getFireRateMultiplier();
+    shootInterval = 0.18f / fireRateMult;
+    
+    damageMultiplier = upgradeSystem.getDamageMultiplier();
+    shieldRegenRate = upgradeSystem.getShieldRegenRate();
+    
+    // Restore health, shield, and ammo to max after applying upgrades
+    health = maxHealth;
+    shield = maxShield;
+    ammo = maxAmmo;
 }

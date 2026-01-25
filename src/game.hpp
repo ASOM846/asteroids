@@ -20,6 +20,7 @@
 #include "collisionSystem.hpp"
 #include "cameraManager.hpp"
 #include "saveManager.hpp"
+#include "upgradeSystem.hpp"
 
 enum class eGameState {
     Playing,
@@ -37,10 +38,18 @@ public:
     void render();
 
     void runLevel(int levelNumber);
+    void startArcadeMode();
+    
+    void awardCurrency(int amount) { currency += amount; }
+    
+    int getCurrency() const { return currency; }
+    UpgradeSystem& getUpgradeSystem() { return upgradeSystem; }
 private:
 
     void updatePlaying();
     void renderPlaying();
+    
+    void updateArcadeMode();
 
     void updatePaused();
     void renderPaused();
@@ -74,8 +83,15 @@ private:
     CollisionSystem collisionSystem;
     CameraManager camera;
     SaveManager saveManager;
+    UpgradeSystem upgradeSystem;
 
     eGameState gameState;
+    
+    int currency;
+    bool isArcadeMode;
+    float arcadeTimer;
+    int arcadeWave;
+    float waveSpawnTimer;
 
     std::vector<Laser> lasers;
     std::vector<sAsteroid> asteroids;

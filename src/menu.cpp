@@ -26,6 +26,9 @@ void Menu::update() {
     case MenuState::Settings:   
         updateSettingsMenu();
         break;
+    case MenuState::UpgradeShop:
+        updateUpgradeShop();
+        break;
     }
 }
 
@@ -41,6 +44,9 @@ void Menu::render() {
     case MenuState::Settings:
         renderSettingsMenu();
         break;
+    case MenuState::UpgradeShop:
+        renderUpgradeShop();
+        break;
     }
 }
 
@@ -52,10 +58,12 @@ void Menu::setMenuState(MenuState newState) {
 }
 
 void Menu::setPointers(WindowManager* game, Ui* ui,
-    std::vector<LevelData>* levelData) {
+    std::vector<LevelData>* levelData, UpgradeSystem* upgrades, int* curr) {
     gamePtr = game;
     uiPtr = ui;
     levels = levelData;
+    upgradeSystem = upgrades;
+    currency = curr;
 }
 
 void Menu::renderStars() {
@@ -82,7 +90,7 @@ void Menu::initButtons(int w, int h) {
     const int mainBtnW = 220;
     const int mainBtnH = 60;
     const int spacing = 24;
-    const int mainBtnCount = 3;
+    const int mainBtnCount = 4;
     const int verticalOffset = 60;
 
     const int columnHeight = mainBtnCount * mainBtnH + (mainBtnCount - 1) * spacing;
@@ -92,6 +100,7 @@ void Menu::initButtons(int w, int h) {
     endlessModeButton = NewButton(x, startY + (mainBtnH + spacing) * 0, mainBtnW, mainBtnH, "Quick Start");
     arcadeModeButton = NewButton(x, startY + (mainBtnH + spacing) * 1, mainBtnW, mainBtnH, "Arcade Mode");
     levelsButton = NewButton(x, startY + (mainBtnH + spacing) * 2, mainBtnW, mainBtnH, "Level Selection");
+    upgradesButton = NewButton(x, startY + (mainBtnH + spacing) * 3, mainBtnW, mainBtnH, "Upgrades");
 
     nextPageButton = NewButton(w - 200, h / 2, 140, 40, ">");
     prevPageButton = NewButton(60, h / 2, 140, 40, "<");
@@ -119,6 +128,7 @@ void Menu::renderButtons() {
     endlessModeButton.Draw();
     arcadeModeButton.Draw();
     levelsButton.Draw();
+    upgradesButton.Draw();
     settingsButton.Draw();
     exitButton.Draw();
 }
@@ -138,11 +148,17 @@ void Menu::updateMainMenu() {
         nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
     }
     else if (arcadeModeButton.IsClicked()) {
+        gamePtr->startArcadeMode();
         gamePtr->setWindowState(eWindowState::Gameplay);
         nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
     }
     else if (levelsButton.IsClicked()) {
         currentState = MenuState::Levels;
+        nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
+    }
+    else if (upgradesButton.IsClicked()) {
+        currentState = MenuState::UpgradeShop;
+        upgradeShop.reset();
         nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
     }
     else if (settingsButton.IsClicked()) {
@@ -162,6 +178,13 @@ void Menu::renderMainMenu() {
 
 
     DrawText("ASTEROIDS", w / 2 - 180, h / 2 - 120, 60, WHITE);
+    
+    // Display currency in main menu
+    if (currency != nullptr) {
+        std::string currencyText = "Credits: " + std::to_string(*currency);
+        DrawText(currencyText.c_str(), w - 200, 20, 24, GOLD);
+    }
+    
     renderButtons();
 }
 
@@ -298,4 +321,23 @@ void Menu::renderSettingsMenu() {
 
     DrawText("SETTINGS", w / 2 - 150, h / 2 - 120, 50, WHITE);
     DrawText("Click to return to menu", w / 2 - 220, h - 100, 20, GRAY);
+}
+
+void Menu::updateUpgradeShop() {
+    updateLayout();
+    if (currency != nullptr && upgradeSystem != nullptr) {
+        upgradeShop.update(*currency, *upgradeSystem);
+        
+        if (upgradeShop.shouldClose()) {
+            currentState = MenuState::Main;
+            nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
+        }
+    }
+}
+
+void Menu::renderUpgradeShop() {
+    updateLayout();
+    if (currency != nullptr && upgradeSystem != nullptr) {
+        upgradeShop.render(*currency, *upgradeSystem);
+    }
 }

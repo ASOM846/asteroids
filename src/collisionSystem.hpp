@@ -29,7 +29,8 @@ public:
                      Player* pPlayer,
                      DropHelper* pDropHelper,
                      GameHelper* pGameHelper,
-                     CameraManager* pCameraManager) {
+                     CameraManager* pCameraManager,
+                     Game* pGame = nullptr) {
         lasers = pLasers;
         asteroids = pAsteroids;
         drops = pDrops;
@@ -39,6 +40,7 @@ public:
         dropHelper = pDropHelper;
         gameHelper = pGameHelper;
         cameraManager = pCameraManager;
+        game = pGame;
     }
 
     void handleCollision() {
@@ -64,6 +66,12 @@ public:
                     if (!a.active) {
                         dropHelper->maybeSpawnDrop(a.x, a.y);
                         player->increaseScore(a.radius);
+                        // Award currency for destroying asteroids
+                        if (game) {
+                            int currencyReward = a.radius / 10; // 1-3 currency per asteroid
+                            if (currencyReward < 1) currencyReward = 1;
+                            game->awardCurrency(currencyReward);
+                        }
                     }
                     break;
                 }
@@ -110,6 +118,13 @@ public:
                         e.getPosition(), (float)e.getRadius())) {
                         e.takeDamage(l.getDamage());
                         l.active = false;
+                        // Award currency for destroying enemies
+                        if (!e.active && game) {
+                            int currencyReward = 5; // Base reward for enemies
+                            if (e.type == EnemyType::Tank) currencyReward = 10;
+                            else if (e.type == EnemyType::Fast) currencyReward = 7;
+                            game->awardCurrency(currencyReward);
+                        }
                         break;
                     }
                 }

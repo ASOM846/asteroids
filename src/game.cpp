@@ -9,7 +9,7 @@
 *ideas:
 -add levels with upgrades like in vamipre survivors, collecting scrap from destroyed ships and asteroids
     and buying upgrades when the bar of scrap is full
--upgrady w kampani, na przyjk³ad pod koniec mo¿na wybraæ 1/3 któy zostaje na nastêpne poziomy
+-upgrady w kampani, na przyjkï¿½ad pod koniec moï¿½na wybraï¿½ 1/3 ktï¿½y zostaje na nastï¿½pne poziomy
 */
 
 Game::Game()
@@ -26,7 +26,13 @@ Game::Game()
       collisionSystem(),
       camera(),
       saveManager(),
-      gameState(eGameState::Playing){
+      upgradeSystem(),
+      gameState(eGameState::Playing),
+      currency(0),
+      isArcadeMode(false),
+      arcadeTimer(0.0f),
+      arcadeWave(1),
+      waveSpawnTimer(0.0f){
 }
 
 Game::~Game() {
@@ -78,7 +84,11 @@ void Game::updatePlaying() {
     enemyManager.updateEnemies(player.getPosition());
     customShipManager.updateShips();
 
-    levelManager.updateCurrentLevel();
+    if (isArcadeMode) {
+        updateArcadeMode();
+    } else {
+        levelManager.updateCurrentLevel();
+    }
 
     dropHelper.updateDrops(drops);
 
@@ -108,6 +118,15 @@ void Game::renderPlaying() {
             levelManager.getCurrentLevelData(),
             levelManager.getProgressAccumulator());
 
+    // Display arcade mode info
+    if (isArcadeMode) {
+        int screenWidth = GetScreenWidth();
+        std::string waveText = "WAVE: " + std::to_string(arcadeWave);
+        DrawText(waveText.c_str(), screenWidth / 2 - 60, 50, 30, GOLD);
+        
+        std::string currencyText = "Credits: " + std::to_string(currency);
+        DrawText(currencyText.c_str(), screenWidth - 200, 20, 24, SKYBLUE);
+    }
 
     levelManager.drawLevelEndOverlay(GetScreenWidth(), GetScreenHeight());
 }
@@ -148,7 +167,14 @@ void Game::renderPaused() {
 
 void Game::runLevel(int levelNumber) {
     startNewGame();
+    isArcadeMode = false;
     levelManager.runLevel(levelNumber);
+}
+
+void Game::startArcadeMode() {
+    startNewGame();
+    isArcadeMode = true;
+    // Arcade mode doesn't use level manager, instead we'll use continuous spawning
 }
 
 void Game::initialize() {
@@ -170,7 +196,10 @@ void Game::initialize() {
         &asteroidHelper, &customShipManager, 
         &enemyManager, &ui, &drops, &enemies);
         
-    saveManager.readData(eDataPosition::LevelsUnlocked);
+    // Load save data
+    currency = saveManager.readData(eDataPosition::Currency);
+    std::string upgradeData = saveManager.readStringData(eDataPosition::UpgradeData);
+    upgradeSystem.loadFromString(upgradeData);
 
     levelManager.loadLevelsToMemory();
     levelManager.setUnlockedLevels(saveManager.readData(eDataPosition::LevelsUnlocked));
@@ -187,13 +216,19 @@ void Game::initialize() {
                                     { this->returnToMenuCallback(); });
 
     collisionSystem.setPointers(&lasers, &asteroids, &drops,
-        &enemies, &customShips, &player, &dropHelper, &gameHelper, &camera);
+        &enemies, &customShips, &player, &dropHelper, &gameHelper, &camera, this);
 
     camera.initialize(&player);
 }
 
 void Game::shutdown() {
     saveManager.writeData(eDataPosition::LevelsUnlocked, levelManager.getUnlockedLevels());
+    saveManager.writeData(eDataPosition::Currency, currency);
+    
+    std::string upgradeData;
+    upgradeSystem.saveToString(upgradeData);
+    saveManager.writeStringData(eDataPosition::UpgradeData, upgradeData);
+    
     textureManager.unloadAll();
 }
 
@@ -202,12 +237,21 @@ void Game::startNewGame() {
     asteroidHelper.resetAsteroids(asteroids);
     drops.clear();
     player = Player();
+    
+    // Apply upgrade bonuses to player
+    player.applyUpgrades(upgradeSystem);
+    
     enemyManager.resetEnemies();
     customShipManager.reset();
     gameHelper.setTextures(textureManager, player);
     gameState = eGameState::Playing;
     levelManager.reset();
     ui.resetAll();
+    
+    // Reset arcade mode variables
+    arcadeTimer = 0.0f;
+    arcadeWave = 1;
+    waveSpawnTimer = 0.0f;
 }
 
 void Game::endGame() {
@@ -236,5 +280,34 @@ void Game::togglePause() {
     }
     else if (gameState == eGameState::Paused) {
         gameState = eGameState::Playing;
+    }
+}
+
+void Game::updateArcadeMode() {
+    arcadeTimer += GetFrameTime();
+    waveSpawnTimer += GetFrameTime();
+    
+    // Progressive difficulty - increase wave every 30 seconds
+    int currentWave = (int)(arcadeTimer / 30.0f) + 1;
+    if (currentWave > arcadeWave) {
+        arcadeWave = currentWave;
+    }
+    
+    // Spawn asteroids periodically
+    int desiredAsteroids = 5 + arcadeWave * 2;
+    if (asteroids.size() < (size_t)desiredAsteroids && waveSpawnTimer > 2.0f) {
+        asteroidHelper.spawnAsteroid(asteroids, player.getPosition());
+        waveSpawnTimer = 0.0f;
+    }
+    
+    // Spawn enemies based on wave
+    if (arcadeWave >= 2) {
+        int basicEnemies = arcadeWave - 1;
+        int fastEnemies = arcadeWave >= 4 ? (arcadeWave - 3) : 0;
+        int tankEnemies = arcadeWave >= 6 ? (arcadeWave - 5) / 2 : 0;
+        
+        enemyManager.setDesiredCount(EnemyType::Basic, basicEnemies);
+        enemyManager.setDesiredCount(EnemyType::Fast, fastEnemies);
+        enemyManager.setDesiredCount(EnemyType::Tank, tankEnemies);
     }
 }
