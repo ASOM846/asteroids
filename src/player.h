@@ -39,6 +39,9 @@ public:
     void healShield(int amount);
     void increaseAmmo(int amount);
     void increaseScore(int aomunt);
+    void registerKill(); // For combo system
+    int getComboCount() const { return comboCount; }
+    float getComboMultiplier() const;
     void setTexture(Texture2D texture) {
         playerTexture = texture;
     }
@@ -77,6 +80,11 @@ private:
     float damageMultiplier;
     float shieldRegenRate;
     float shieldRegenTimer;
+    
+    // Combo system
+    int comboCount;
+    float comboTimer;
+    static constexpr float COMBO_TIMEOUT = 3.0f;
 
     Texture2D playerTexture;
     Vector2 vPosition;

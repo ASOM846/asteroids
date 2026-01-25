@@ -58,12 +58,13 @@ void Menu::setMenuState(MenuState newState) {
 }
 
 void Menu::setPointers(WindowManager* game, Ui* ui,
-    std::vector<LevelData>* levelData, UpgradeSystem* upgrades, int* curr) {
+    std::vector<LevelData>* levelData, UpgradeSystem* upgrades, int* curr, SaveManager* saveMgr) {
     gamePtr = game;
     uiPtr = ui;
     levels = levelData;
     upgradeSystem = upgrades;
     currency = curr;
+    saveManager = saveMgr;
 }
 
 void Menu::renderStars() {
@@ -144,6 +145,7 @@ void Menu::updateMainMenu() {
     }
 
     if (endlessModeButton.IsClicked()) {
+        gamePtr->startQuickStart();
         gamePtr->setWindowState(eWindowState::Gameplay);
         nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
     }
@@ -183,6 +185,15 @@ void Menu::renderMainMenu() {
     if (currency != nullptr) {
         std::string currencyText = "Credits: " + std::to_string(*currency);
         DrawText(currencyText.c_str(), w - 200, 20, 24, GOLD);
+    }
+    
+    // Display high score
+    if (saveManager != nullptr) {
+        int highScore = saveManager->readData(eDataPosition::HighScore);
+        if (highScore > 0) {
+            std::string highScoreText = "High Score: " + std::to_string(highScore);
+            DrawText(highScoreText.c_str(), 20, 20, 24, SKYBLUE);
+        }
     }
     
     renderButtons();

@@ -29,6 +29,10 @@ void WindowManager::startArcadeMode() {
     game.startArcadeMode();
 }
 
+void WindowManager::startQuickStart() {
+    game.startQuickStart();
+}
+
 void WindowManager::initialize() {
     InitWindow(screenWidth, screenHeight, "Asteroids Game");
     SetWindowState(FLAG_VSYNC_HINT);
@@ -39,7 +43,7 @@ void WindowManager::initialize() {
         this->setWindowState(eWindowState::Menu);
     });
 
-    menu.setPointers(this, &game.ui, &game.levels, &game.upgradeSystem, &game.currency);
+    menu.setPointers(this, &game.ui, &game.levels, &game.upgradeSystem, &game.currency, &game.saveManager);
 }
 
 void WindowManager::shutdown() {

@@ -27,7 +27,7 @@ public:
     void setMenuState(MenuState newState);
 
     void setPointers(WindowManager* game, Ui* ui,
-        std::vector<LevelData>* levelData, UpgradeSystem* upgrades, int* currency);
+        std::vector<LevelData>* levelData, UpgradeSystem* upgrades, int* currency, SaveManager* saveMgr);
 private:
     void renderStars();
     void initButtons(int screenWidth, int screenHeight);
@@ -52,6 +52,7 @@ private:
     std::vector<LevelData>* levels = nullptr;
     UpgradeSystem* upgradeSystem = nullptr;
     int* currency = nullptr;
+    SaveManager* saveManager = nullptr;
 
     UpgradeShop upgradeShop;
 

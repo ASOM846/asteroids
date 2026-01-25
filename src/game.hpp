@@ -40,6 +40,8 @@ public:
     void runLevel(int levelNumber);
     void startArcadeMode();
     
+    void startQuickStart();
+    
     void awardCurrency(int amount) { currency += amount; }
     
     int getCurrency() const { return currency; }

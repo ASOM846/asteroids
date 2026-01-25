@@ -25,6 +25,8 @@ Player::Player()
             damageMultiplier(1.0f),
             shieldRegenRate(0.0f),
             shieldRegenTimer(0.0f),
+            comboCount(0),
+            comboTimer(0.0f),
             playerTexture{},
             vPosition{ x, y } {
 }
@@ -46,6 +48,14 @@ void Player::update() {
         if (shieldRegenTimer >= 1.0f) {
             shieldRegenTimer = 0.0f;
             healShield((int)shieldRegenRate);
+        }
+    }
+    
+    // Combo timer
+    if (comboCount > 0) {
+        comboTimer -= dt;
+        if (comboTimer <= 0.0f) {
+            comboCount = 0;
         }
     }
 }
@@ -190,3 +200,20 @@ void Player::applyUpgrades(const UpgradeSystem& upgradeSystem) {
     shield = maxShield;
     ammo = maxAmmo;
 }
+
+void Player::registerKill() {
+    comboCount++;
+    comboTimer = COMBO_TIMEOUT;
+    
+    // Award bonus score based on combo
+    int bonusScore = comboCount * 10;
+    increaseScore(bonusScore);
+}
+
+float Player::getComboMultiplier() const {
+    if (comboCount <= 1) return 1.0f;
+    if (comboCount <= 5) return 1.0f + (comboCount - 1) * 0.1f; // Up to 1.4x
+    if (comboCount <= 10) return 1.4f + (comboCount - 5) * 0.15f; // Up to 2.15x
+    return 2.15f + (comboCount - 10) * 0.05f; // Max grows slowly after 10
+}
+

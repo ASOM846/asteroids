@@ -127,6 +127,23 @@ void Game::renderPlaying() {
         std::string currencyText = "Credits: " + std::to_string(currency);
         DrawText(currencyText.c_str(), screenWidth - 200, 20, 24, SKYBLUE);
     }
+    
+    // Display combo counter
+    if (player.getComboCount() > 1) {
+        int screenWidth = GetScreenWidth();
+        int screenHeight = GetScreenHeight();
+        
+        std::string comboText = std::to_string(player.getComboCount()) + "x COMBO!";
+        float multiplier = player.getComboMultiplier();
+        std::string multText = "Score x" + std::to_string(multiplier).substr(0, 4);
+        
+        Color comboColor = YELLOW;
+        if (player.getComboCount() >= 10) comboColor = RED;
+        else if (player.getComboCount() >= 5) comboColor = ORANGE;
+        
+        DrawText(comboText.c_str(), screenWidth - 250, screenHeight / 2 - 50, 36, comboColor);
+        DrawText(multText.c_str(), screenWidth - 250, screenHeight / 2 - 10, 24, SKYBLUE);
+    }
 
     levelManager.drawLevelEndOverlay(GetScreenWidth(), GetScreenHeight());
 }
@@ -175,6 +192,16 @@ void Game::startArcadeMode() {
     startNewGame();
     isArcadeMode = true;
     // Arcade mode doesn't use level manager, instead we'll use continuous spawning
+}
+
+void Game::startQuickStart() {
+    startNewGame();
+    isArcadeMode = false;
+    // Quick Start - free play mode with no objectives
+    // Just spawn some asteroids for practice
+    for (int i = 0; i < 8; ++i) {
+        asteroidHelper.spawnAsteroid(asteroids, player.getPosition());
+    }
 }
 
 void Game::initialize() {
@@ -261,6 +288,12 @@ void Game::endGame() {
 void Game::updateGameOver() {
     if (IsKeyPressed(KEY_R)){
         startNewGame();
+        if (isArcadeMode) {
+            // Reset arcade mode
+            arcadeTimer = 0.0f;
+            arcadeWave = 1;
+            waveSpawnTimer = 0.0f;
+        }
     }
     else if (IsKeyPressed(KEY_M))   {
         returnToMenuCallback();
@@ -269,9 +302,29 @@ void Game::updateGameOver() {
 
 void Game::renderGameOver() {
     ui.drawStars(player.getPosition());
-    DrawText("GAME OVER", GetScreenWidth() / 2 - 190, GetScreenHeight() / 2 - 80, 60, RED);
-    DrawText("R - Restart", GetScreenWidth() / 2 - 120, GetScreenHeight() / 2 + 10, 30, GRAY);
-    DrawText("M - Menu", GetScreenWidth() / 2 - 100, GetScreenHeight() / 2 + 50, 30, GRAY);
+    DrawText("GAME OVER", GetScreenWidth() / 2 - 190, GetScreenHeight() / 2 - 120, 60, RED);
+    
+    // Display final stats
+    int score = player.getScore();
+    std::string scoreText = "Final Score: " + std::to_string(score);
+    DrawText(scoreText.c_str(), GetScreenWidth() / 2 - 150, GetScreenHeight() / 2 - 40, 30, WHITE);
+    
+    if (isArcadeMode) {
+        std::string waveText = "Survived to Wave " + std::to_string(arcadeWave);
+        DrawText(waveText.c_str(), GetScreenWidth() / 2 - 180, GetScreenHeight() / 2, 26, SKYBLUE);
+        
+        int highScore = saveManager.readData(eDataPosition::HighScore);
+        if (score > highScore) {
+            saveManager.writeData(eDataPosition::HighScore, score);
+            DrawText("NEW HIGH SCORE!", GetScreenWidth() / 2 - 160, GetScreenHeight() / 2 + 35, 28, GOLD);
+        } else {
+            std::string highScoreText = "High Score: " + std::to_string(highScore);
+            DrawText(highScoreText.c_str(), GetScreenWidth() / 2 - 140, GetScreenHeight() / 2 + 35, 24, GRAY);
+        }
+    }
+    
+    DrawText("R - Restart", GetScreenWidth() / 2 - 120, GetScreenHeight() / 2 + 80, 30, GRAY);
+    DrawText("M - Menu", GetScreenWidth() / 2 - 100, GetScreenHeight() / 2 + 120, 30, GRAY);
 }
     
 void Game::togglePause() {

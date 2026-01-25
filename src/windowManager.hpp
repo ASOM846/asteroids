@@ -33,6 +33,7 @@ class WindowManager
 	void setWindowState(eWindowState newState);
 	void runLevel(int levelNumber);
 	void startArcadeMode();
+	void startQuickStart();
 
 private:
 	void initialize();
