@@ -35,7 +35,8 @@ void UpgradeShop::update(int& currency, UpgradeSystem& upgradeSystem) {
     // Handle upgrade purchases
     const auto& upgrades = upgradeSystem.getAllUpgrades();
     int startY = 150;
-    int rows = (upgrades.size() + CARDS_PER_ROW - 1) / CARDS_PER_ROW;
+    // Note: rows calculation kept for potential future use
+    // int rows = (upgrades.size() + CARDS_PER_ROW - 1) / CARDS_PER_ROW;
     
     for (size_t i = 0; i < upgrades.size(); ++i) {
         int row = i / CARDS_PER_ROW;
@@ -106,7 +107,7 @@ void UpgradeShop::render(int currency, const UpgradeSystem& upgradeSystem) {
 
 void UpgradeShop::renderUpgradeCard(const Upgrade* upgrade, int x, int y, 
                                    int width, int height, int currency,
-                                   bool isHovered, bool isSelected) {
+                                   bool isHovered, bool /* isSelected */) {
     Rectangle cardRect = {(float)x, (float)y, (float)width, (float)height};
     
     Color bgColor = Fade(DARKBLUE, 0.7f);
@@ -130,7 +131,7 @@ void UpgradeShop::renderUpgradeCard(const Upgrade* upgrade, int x, int y,
     
     // Draw card background
     DrawRectangleRounded(cardRect, 0.1f, 8, bgColor);
-    DrawRectangleRoundedLines(cardRect, 0.1f, 8, 2.0f, borderColor);
+    DrawRectangleRoundedLines(cardRect, 0.1f, 8, 2, borderColor);
     
     int textX = x + 15;
     int textY = y + 15;

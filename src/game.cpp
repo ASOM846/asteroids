@@ -200,7 +200,7 @@ void Game::startQuickStart() {
     // Quick Start - free play mode with no objectives
     // Just spawn some asteroids for practice
     for (int i = 0; i < 8; ++i) {
-        asteroidHelper.spawnAsteroid(asteroids, player.getPosition());
+        asteroidHelper.generateAsteroid(asteroids, player.getPosition());
     }
 }
 
@@ -349,7 +349,7 @@ void Game::updateArcadeMode() {
     // Spawn asteroids periodically
     int desiredAsteroids = BASE_ASTEROIDS_PER_WAVE + arcadeWave * ASTEROIDS_INCREMENT_PER_WAVE;
     if (asteroids.size() < (size_t)desiredAsteroids && waveSpawnTimer > ASTEROID_SPAWN_INTERVAL) {
-        asteroidHelper.spawnAsteroid(asteroids, player.getPosition());
+        asteroidHelper.generateAsteroid(asteroids, player.getPosition());
         waveSpawnTimer = 0.0f;
     }
     

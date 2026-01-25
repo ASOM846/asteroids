@@ -10,6 +10,7 @@
 enum class eWindowState;
 class WindowManager;
 class Ui;
+class SaveManager;
 
 enum class MenuState {
     Main,

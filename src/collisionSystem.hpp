@@ -10,11 +10,11 @@
 #include "GameHelper.h"
 #include "customShip.hpp"
 #include "player.h"
-#include "drop.h"
-#include "game.hpp" // Note: Circular dependency with Game is acceptable here - Game needs CollisionSystem for collision handling, CollisionSystem needs Game for currency rewards
 #include "cameraManager.hpp"
 
+// Forward declarations
 class Player;
+class Game;
 
 class CollisionSystem {
 public:
@@ -43,123 +43,7 @@ public:
         game = pGame;
     }
 
-    void handleCollision() {
-        if(!lasers || !asteroids || !player 
-            || !drops || !enemies || !customShips) return;
-
-        Rectangle playerRect = player->getRect();
-
-        for (auto& a : *asteroids) {
-            if (!a.active) continue;
-            for (auto& l : *lasers) {
-                if (!l.active) continue;
-                //kolizja lasera z asteroidą
-                if (CheckCollisionCircles(Vector2{ l.x, l.y }, (float)l.radius,
-                                          Vector2{ a.x, a.y }, (float)a.radius)) {
-                    a.applyDamage(l.getDamage(), *asteroids);
-                    float lvx = l.vx, lvy = l.vy;
-                    float len = std::sqrt(lvx * lvx + lvy * lvy);
-                    if (len > 0.0001f) { lvx /= len; lvy /= len; }
-                    float impulse = (float)l.getDamage() / (float)a.radius * 2.0f;
-                    a.applyImpulse(lvx * impulse, lvy * impulse);
-                    l.active = false;
-                    if (!a.active) {
-                        dropHelper->maybeSpawnDrop(a.x, a.y);
-                        player->increaseScore(a.radius);
-                        player->registerKill(); // Combo system
-                        // Award currency for destroying asteroids
-                        if (game) {
-                            int currencyReward = a.radius / 10; // 1-3 currency per asteroid
-                            if (currencyReward < 1) currencyReward = 1;
-                            game->awardCurrency(currencyReward);
-                        }
-                    }
-                    break;
-                }
-            }
-
-            //kolizja asteroidy z graczem
-            if (CheckCollisionCircleRec(Vector2{ a.x, a.y }, (float)a.radius, playerRect)) {
-                player->takeDamage(a.radius);
-                cameraManager->triggerShake();
-                a.active = false;
-            }
-
-            //kolizja asteroidy z custom ship
-            if (customShips) {
-                for (auto& cs : *customShips)   {
-                    if(CheckCollisionCircleRec(Vector2{ a.x, a.y }, (float)a.radius, cs.getRect())) {
-                        cs.takeDamage(a.radius);
-                        cameraManager->triggerShake();
-                        a.active = false;
-                    }
-                }
-            }
-        }
-
-        for (auto& d : *drops) {
-            if (!d.active) continue;
-            if (CheckCollisionRecs(playerRect, d.getRect())) {
-                if (d.getType() == DropType::Health) player->heal(20);
-                if (d.getType() == DropType::Shield) player->healShield(20);
-                if (d.getType() == DropType::Ammo) player->increaseAmmo(50);
-                d.active = false;
-            }
-        }
-
-        // Handle laser collisions in a single pass so checks run regardless of enemy count
-        for (auto& l : *lasers) {
-            if (!l.active) continue;
-
-            if (l.getIsPlayerOwned()) {
-                // Player lasers: check enemies first
-                for (auto& e : *enemies) {
-                    if (!e.active) continue;
-                    if (CheckCollisionCircles(Vector2{ l.x, l.y }, (float)l.radius,
-                        e.getPosition(), (float)e.getRadius())) {
-                        e.takeDamage(l.getDamage());
-                        l.active = false;
-                        // Award currency for destroying enemies
-                        if (!e.active) {
-                            player->registerKill(); // Combo system
-                            if (game) {
-                                int currencyReward = 5; // Base reward for enemies
-                                if (e.type == EnemyType::Tank) currencyReward = 10;
-                                else if (e.type == EnemyType::Fast) currencyReward = 7;
-                                game->awardCurrency(currencyReward);
-                            }
-                        }
-                        break;
-                    }
-                }
-                if (!l.active) continue;
-
-                // Then check friendly/custom ships
-                if (customShips) {
-                    for (size_t i = 0; i < customShips->size(); ++i) {
-                        auto& cs = (*customShips)[i];
-                        if (cs.texture.id == 0) continue;
-                        if (CheckCollisionCircleRec(Vector2{ l.x, l.y }, (float)l.radius,
-                            cs.getRect())) {
-                            l.active = false;
-                            break;
-                        }
-                    }
-                }
-            }
-            else {
-                // Enemy/projectile not owned by player -> can hit player
-                if (CheckCollisionCircleRec(Vector2{ l.x, l.y }, (float)l.radius,
-                    playerRect)) {
-                    player->takeDamage(l.getDamage());
-                    l.active = false;
-                    cameraManager->triggerShake();
-                }
-            }
-        }
-    }
-
-
+    void handleCollision();
 
 private:
     std::vector<Laser>* lasers = nullptr;
