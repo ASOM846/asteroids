@@ -142,6 +142,12 @@ void UpgradeSystem::loadFromString(const std::string& data) {
             int typeInt = std::stoi(token.substr(0, colonPos));
             int level = std::stoi(token.substr(colonPos + 1));
             
+            // Validate enum value is in range
+            if (typeInt < 0 || typeInt >= static_cast<int>(UpgradeType::ShieldRegenRate) + 1) {
+                std::cerr << "Invalid upgrade type in save data: " << typeInt << std::endl;
+                continue;
+            }
+            
             UpgradeType type = static_cast<UpgradeType>(typeInt);
             auto it = upgradeIndexMap.find(type);
             if (it != upgradeIndexMap.end()) {

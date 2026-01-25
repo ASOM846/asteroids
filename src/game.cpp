@@ -265,8 +265,8 @@ void Game::startNewGame() {
     drops.clear();
     player = Player();
     
-    // Apply upgrade bonuses to player
-    player.applyUpgrades(upgradeSystem);
+    // Apply upgrade bonuses and reset stats to full
+    player.resetWithUpgrades(upgradeSystem);
     
     enemyManager.resetEnemies();
     customShipManager.reset();

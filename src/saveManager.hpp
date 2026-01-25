@@ -95,8 +95,10 @@ public:
 private:
     std::string filename;
     
+    static constexpr int SAVE_DATA_COUNT = 4; // levelsUnlocked, currency, upgradeDataPlaceholder, highScore
+    
     std::vector<int> loadAllData() {
-        std::vector<int> data(4, 0); // levelsUnlocked, currency, upgradeDataPlaceholder, highScore
+        std::vector<int> data(SAVE_DATA_COUNT, 0);
         
         std::ifstream file(filename, std::ios::in);
         if (!file.is_open()) {

@@ -175,13 +175,13 @@ void Player::healShield(int amount)
     if (shield > maxShield) shield = maxShield;
 }
 
-void Player::applyUpgrades(const UpgradeSystem& upgradeSystem) {
-    // Apply stat bonuses
+void Player::resetWithUpgrades(const UpgradeSystem& upgradeSystem) {
+    // Apply stat bonuses from upgrades
     maxHealth = 100 + upgradeSystem.getMaxHealthBonus();
     maxShield = 100 + upgradeSystem.getMaxShieldBonus();
     maxAmmo = 500 + upgradeSystem.getMaxAmmoBonus();
     
-    // Apply multipliers
+    // Apply multipliers to ship stats
     float speedMult = upgradeSystem.getSpeedMultiplier();
     thrust = 0.18f * speedMult;
     maxSpeed = 9.0f * speedMult;
@@ -195,7 +195,7 @@ void Player::applyUpgrades(const UpgradeSystem& upgradeSystem) {
     damageMultiplier = upgradeSystem.getDamageMultiplier();
     shieldRegenRate = upgradeSystem.getShieldRegenRate();
     
-    // Restore health, shield, and ammo to max after applying upgrades
+    // Reset player stats to full after applying upgrades
     health = maxHealth;
     shield = maxShield;
     ammo = maxAmmo;
@@ -211,12 +211,24 @@ void Player::registerKill() {
 }
 
 float Player::getComboMultiplier() const {
-    if (comboCount <= 1) return COMBO_TIER_1_BASE;
-    if (comboCount <= COMBO_TIER_1_MAX) 
+    // No combo
+    if (comboCount <= 1) {
+        return COMBO_TIER_1_BASE;
+    }
+    
+    // Tier 1: combo 2-5
+    if (comboCount <= COMBO_TIER_1_MAX) {
         return COMBO_TIER_1_BASE + (comboCount - 1) * COMBO_TIER_1_MULT;
-    if (comboCount <= COMBO_TIER_2_MAX) 
+    }
+    
+    // Tier 2: combo 6-10
+    if (comboCount <= COMBO_TIER_2_MAX) {
         return COMBO_TIER_2_BASE + (comboCount - COMBO_TIER_1_MAX) * COMBO_TIER_2_MULT;
-    return COMBO_TIER_2_BASE + (COMBO_TIER_2_MAX - COMBO_TIER_1_MAX) * COMBO_TIER_2_MULT + 
-           (comboCount - COMBO_TIER_2_MAX) * COMBO_TIER_3_MULT;
+    }
+    
+    // Tier 3: combo 11+
+    const float tier2Bonus = (COMBO_TIER_2_MAX - COMBO_TIER_1_MAX) * COMBO_TIER_2_MULT;
+    const float tier3Bonus = (comboCount - COMBO_TIER_2_MAX) * COMBO_TIER_3_MULT;
+    return COMBO_TIER_2_BASE + tier2Bonus + tier3Bonus;
 }
 

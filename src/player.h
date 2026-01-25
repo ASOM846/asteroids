@@ -46,7 +46,7 @@ public:
         playerTexture = texture;
     }
     
-    void applyUpgrades(const UpgradeSystem& upgradeSystem);
+    void resetWithUpgrades(const UpgradeSystem& upgradeSystem);
     
     float getDamageMultiplier() const { return damageMultiplier; }
 

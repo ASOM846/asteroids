@@ -11,7 +11,7 @@
 #include "customShip.hpp"
 #include "player.h"
 #include "drop.h"
-#include "game.hpp"
+#include "game.hpp" // Note: Circular dependency with Game is acceptable here - Game needs CollisionSystem for collision handling, CollisionSystem needs Game for currency rewards
 #include "cameraManager.hpp"
 
 class Player;
