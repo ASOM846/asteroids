@@ -300,7 +300,7 @@ void Menu::renderLevelsGrid() {
 
     nextPageButton.Draw();
     if (!isInputLocked && nextPageButton.IsClicked()) {
-        if ((currentPage + 1) * 8 < static_cast<size_t>(levels->size())) {
+        if (static_cast<size_t>((currentPage + 1) * 8) < levels->size()) {
             currentPage++;
             nextInputAllowedTime = GetTime() + levelClickDelaySeconds;
         }

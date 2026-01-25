@@ -131,7 +131,7 @@ void UpgradeShop::renderUpgradeCard(const Upgrade* upgrade, int x, int y,
     
     // Draw card background
     DrawRectangleRounded(cardRect, 0.1f, 8, bgColor);
-    DrawRectangleRoundedLines(cardRect, 0.1f, 8, 2, borderColor);
+    DrawRectangleRoundedLines(cardRect, 0.1f, 8, borderColor);
     
     int textX = x + 15;
     int textY = y + 15;
