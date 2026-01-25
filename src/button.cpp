@@ -86,3 +86,87 @@ float Button::GetX() const { // Implementacja metody GetX
 float Button::GetY() const { // Implementacja metody GetY
     return y;
 }
+
+// NewButton
+NewButton::NewButton() : x(0), y(0), width(100), height(50), label("Button"), color(Green), isToggled(false) {
+}
+
+NewButton::NewButton(float xPos, float yPos, float btnWidth, float btnHeight, const std::string& btnLabel)
+    : x(xPos), y(yPos), width(btnWidth), height(btnHeight), label(btnLabel), color(Green), isToggled(false) {
+}
+
+void NewButton::Draw() const {
+    Rectangle tileRect{ x, y, width, height };
+    DrawRectangleRounded(tileRect, 0.1f, 4, fillColor);
+    DrawRectangleRoundedLines(tileRect, 0.1f, 4, borderColor);
+
+    int textWidth = MeasureText(label.c_str(), 20);
+    int textX = static_cast<int>(x + (width - textWidth) / 2);
+    int textY = static_cast<int>(y + (height - 20) / 2);
+    DrawText(label.c_str(), textX, textY, 20, WHITE);
+}
+
+bool NewButton::IsClicked() const {
+    return CheckCollisionPointRec(GetMousePosition(), { x, y, width, height })
+        && IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
+}
+
+bool NewButton::IsHovered() const {
+    return CheckCollisionPointRec(GetMousePosition(), { x, y, width, height });
+}
+
+void NewButton::SetLabel(const std::string& newLabel) {
+    label = newLabel;
+}
+
+void NewButton::Update() {
+    if (CheckCollisionPointRec(GetMousePosition(), { x, y, width, height })) {
+        fillColor = Fade(SKYBLUE, 0.6f);
+        borderColor = WHITE;
+    }
+    else {
+        fillColor = Fade(DARKBLUE, 0.6f);
+        borderColor = Fade(SKYBLUE, 0.9f);
+    }
+}
+
+void NewButton::Toggle() {
+    size_t pos = label.find(" : OFF");
+    if (pos != std::string::npos) {
+        label = label.substr(0, pos);
+    }
+    pos = label.find(" : ON");
+    if (pos != std::string::npos) {
+        label = label.substr(0, pos);
+    }
+
+    isToggled = !isToggled;
+    if (isToggled) {
+        SetLabel(label + " : OFF");
+    }
+    else {
+        SetLabel(label + " : ON");
+    }
+}
+
+void NewButton::SetPosition(float newX, float newY) {
+    x = newX;
+    y = newY;
+}
+
+float NewButton::GetWidth() const {
+    return width;
+}
+
+float NewButton::GetHeight() const {
+    return height;
+}
+
+float NewButton::GetX() const {
+    return x;
+}
+
+float NewButton::GetY() const {
+    return y;
+}
+

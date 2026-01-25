@@ -30,4 +30,32 @@ private:
     bool isToggled;
 };
 
+class NewButton {
+public:
+    NewButton();
+    NewButton(float xPos, float yPos, float btnWidth, float btnHeight, const std::string& btnLabel);
+    void Draw() const;
+    bool IsClicked() const;
+    bool IsHovered() const;
+    void SetLabel(const std::string& newLabel);
+    void Update();
+    void Toggle();
+    void SetPosition(float newX, float newY);
+    float GetWidth() const;
+    float GetHeight() const;
+    float GetX() const;
+    float GetY() const;
+    private:
+    float x;
+    float y;
+    float width;
+    float height;
+    std::string label;
+    Color color;
+    bool isToggled;
+
+	Color fillColor = Fade(DARKBLUE, 0.6f);
+	Color borderColor = Fade(SKYBLUE, 0.9f);
+};
+
 #endif // BUTTON_HPP

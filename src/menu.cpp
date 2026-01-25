@@ -89,12 +89,12 @@ void Menu::initButtons(int w, int h) {
     const int startY = h / 2 - columnHeight / 2 + verticalOffset;
     const int x = w / 2 - mainBtnW / 2;
 
-    endlessModeButton = Button(x, startY + (mainBtnH + spacing) * 0, mainBtnW, mainBtnH, "Quick Start");
-    arcadeModeButton = Button(x, startY + (mainBtnH + spacing) * 1, mainBtnW, mainBtnH, "Arcade Mode");
-    levelsButton = Button(x, startY + (mainBtnH + spacing) * 2, mainBtnW, mainBtnH, "Level Selection");
+    endlessModeButton = NewButton(x, startY + (mainBtnH + spacing) * 0, mainBtnW, mainBtnH, "Quick Start");
+    arcadeModeButton = NewButton(x, startY + (mainBtnH + spacing) * 1, mainBtnW, mainBtnH, "Arcade Mode");
+    levelsButton = NewButton(x, startY + (mainBtnH + spacing) * 2, mainBtnW, mainBtnH, "Level Selection");
 
-    nextPageButton = Button(w - 200, h / 2, 140, 40, ">");
-    prevPageButton = Button(60, h / 2, 140, 40, "<");
+    nextPageButton = NewButton(w - 200, h / 2, 140, 40, ">");
+    prevPageButton = NewButton(60, h / 2, 140, 40, "<");
 
     const int smallBtnW = 140;
     const int smallBtnH = 40;
@@ -105,10 +105,10 @@ void Menu::initButtons(int w, int h) {
     const int exitY = h - smallBtnH - margin;
     const int settingsX = exitX - bottomGap - smallBtnW;
 
-    settingsButton = Button(settingsX, exitY, smallBtnW, smallBtnH, "Settings");
-    exitButton = Button(exitX, exitY, smallBtnW, smallBtnH, "Exit");
+    settingsButton = NewButton(settingsX, exitY, smallBtnW, smallBtnH, "Settings");
+    exitButton = NewButton(exitX, exitY, smallBtnW, smallBtnH, "Exit");
 
-    backButton = Button(w / 2 - mainBtnW / 2, h - 80, mainBtnW, mainBtnH, "Menu");
+    backButton = NewButton(w / 2 - mainBtnW / 2, h - 80, mainBtnW, mainBtnH, "Menu");
 }
 
 void Menu::renderButtons() {
