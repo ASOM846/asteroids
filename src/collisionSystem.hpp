@@ -30,7 +30,7 @@ public:
                      DropHelper* pDropHelper,
                      GameHelper* pGameHelper,
                      CameraManager* pCameraManager,
-                     Game* pGame = nullptr) {
+                     Game* pGame) {
         lasers = pLasers;
         asteroids = pAsteroids;
         drops = pDrops;

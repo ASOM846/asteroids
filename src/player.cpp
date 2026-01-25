@@ -211,9 +211,12 @@ void Player::registerKill() {
 }
 
 float Player::getComboMultiplier() const {
-    if (comboCount <= 1) return 1.0f;
-    if (comboCount <= 5) return 1.0f + (comboCount - 1) * 0.1f; // Up to 1.4x
-    if (comboCount <= 10) return 1.4f + (comboCount - 5) * 0.15f; // Up to 2.15x
-    return 2.15f + (comboCount - 10) * 0.05f; // Max grows slowly after 10
+    if (comboCount <= 1) return COMBO_TIER_1_BASE;
+    if (comboCount <= COMBO_TIER_1_MAX) 
+        return COMBO_TIER_1_BASE + (comboCount - 1) * COMBO_TIER_1_MULT;
+    if (comboCount <= COMBO_TIER_2_MAX) 
+        return COMBO_TIER_2_BASE + (comboCount - COMBO_TIER_1_MAX) * COMBO_TIER_2_MULT;
+    return COMBO_TIER_2_BASE + (COMBO_TIER_2_MAX - COMBO_TIER_1_MAX) * COMBO_TIER_2_MULT + 
+           (comboCount - COMBO_TIER_2_MAX) * COMBO_TIER_3_MULT;
 }
 

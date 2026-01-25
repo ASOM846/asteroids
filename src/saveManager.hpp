@@ -113,7 +113,10 @@ private:
         std::getline(file, line);
         std::istringstream iss(line);
         
-        for (size_t i = 0; i < data.size() && iss >> data[i]; ++i) {}
+        // Read integer data
+        for (size_t i = 0; i < data.size(); ++i) {
+            if (!(iss >> data[i])) break;
+        }
         
         file.close();
         return data;

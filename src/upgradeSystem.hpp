@@ -3,6 +3,15 @@
 #include <vector>
 #include <map>
 
+/**
+ * @file upgradeSystem.hpp
+ * @brief Persistent upgrade system for player ship enhancements
+ * 
+ * This system manages permanent upgrades that persist across game sessions.
+ * Players can purchase upgrades using earned currency to improve their ship's
+ * stats including health, shield, damage, fire rate, and mobility.
+ */
+
 enum class UpgradeType {
     MaxHealth,
     MaxShield,

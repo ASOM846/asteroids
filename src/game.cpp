@@ -340,15 +340,15 @@ void Game::updateArcadeMode() {
     arcadeTimer += GetFrameTime();
     waveSpawnTimer += GetFrameTime();
     
-    // Progressive difficulty - increase wave every 30 seconds
-    int currentWave = (int)(arcadeTimer / 30.0f) + 1;
+    // Progressive difficulty - increase wave based on constant
+    int currentWave = (int)(arcadeTimer / WAVE_DURATION_SECONDS) + 1;
     if (currentWave > arcadeWave) {
         arcadeWave = currentWave;
     }
     
     // Spawn asteroids periodically
-    int desiredAsteroids = 5 + arcadeWave * 2;
-    if (asteroids.size() < (size_t)desiredAsteroids && waveSpawnTimer > 2.0f) {
+    int desiredAsteroids = BASE_ASTEROIDS_PER_WAVE + arcadeWave * ASTEROIDS_INCREMENT_PER_WAVE;
+    if (asteroids.size() < (size_t)desiredAsteroids && waveSpawnTimer > ASTEROID_SPAWN_INTERVAL) {
         asteroidHelper.spawnAsteroid(asteroids, player.getPosition());
         waveSpawnTimer = 0.0f;
     }

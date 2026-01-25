@@ -85,6 +85,15 @@ private:
     int comboCount;
     float comboTimer;
     static constexpr float COMBO_TIMEOUT = 3.0f;
+    
+    // Combo tier thresholds and multipliers
+    static constexpr int COMBO_TIER_1_MAX = 5;
+    static constexpr int COMBO_TIER_2_MAX = 10;
+    static constexpr float COMBO_TIER_1_MULT = 0.1f;
+    static constexpr float COMBO_TIER_2_MULT = 0.15f;
+    static constexpr float COMBO_TIER_3_MULT = 0.05f;
+    static constexpr float COMBO_TIER_1_BASE = 1.0f;
+    static constexpr float COMBO_TIER_2_BASE = 1.4f;
 
     Texture2D playerTexture;
     Vector2 vPosition;

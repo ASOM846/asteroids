@@ -94,6 +94,12 @@ private:
     float arcadeTimer;
     int arcadeWave;
     float waveSpawnTimer;
+    
+    // Arcade mode constants
+    static constexpr float WAVE_DURATION_SECONDS = 30.0f;
+    static constexpr float ASTEROID_SPAWN_INTERVAL = 2.0f;
+    static constexpr int BASE_ASTEROIDS_PER_WAVE = 5;
+    static constexpr int ASTEROIDS_INCREMENT_PER_WAVE = 2;
 
     std::vector<Laser> lasers;
     std::vector<sAsteroid> asteroids;
