@@ -88,22 +88,51 @@ float Button::GetY() const { // Implementacja metody GetY
 }
 
 // NewButton
-NewButton::NewButton() : x(0), y(0), width(100), height(50), label("Button"), color(Green), isToggled(false) {
+NewButton::NewButton()
+    : x(0)
+    , y(0)
+    , width(100)
+    , height(50)
+    , label("Button")
+    , color(Green)
+    , isToggled(false)
+    , fillColor(Fade(DARKBLUE, 0.6f))
+    , borderColor(Fade(SKYBLUE, 0.9f)) {
 }
 
 NewButton::NewButton(float xPos, float yPos, float btnWidth, float btnHeight, const std::string& btnLabel)
-    : x(xPos), y(yPos), width(btnWidth), height(btnHeight), label(btnLabel), color(Green), isToggled(false) {
+    : x(xPos)
+    , y(yPos)
+    , width(btnWidth)
+    , height(btnHeight)
+    , label(btnLabel)
+    , color(Green)
+    , isToggled(false)
+    , fillColor(Fade(DARKBLUE, 0.6f))
+    , borderColor(Fade(SKYBLUE, 0.9f)) {
 }
 
 void NewButton::Draw() const {
+    Color currentFillColor = fillColor;
+    Color currentBorderColor = borderColor;
+
+    if (IsHovered()) {
+        currentFillColor = Fade(SKYBLUE, 0.6f);
+        currentBorderColor = WHITE;
+    } else {
+        currentFillColor = Fade(DARKBLUE, 0.6f);
+        currentBorderColor = Fade(SKYBLUE, 0.9f);
+    }
+    
     Rectangle tileRect{ x, y, width, height };
-    DrawRectangleRounded(tileRect, 0.1f, 4, fillColor);
-    DrawRectangleRoundedLines(tileRect, 0.1f, 4, borderColor);
+    DrawRectangleRounded(tileRect, 0.1f, 4, currentFillColor);
+    DrawRectangleRoundedLines(tileRect, 0.1f, 4, currentBorderColor);
 
     int textWidth = MeasureText(label.c_str(), 20);
     int textX = static_cast<int>(x + (width - textWidth) / 2);
     int textY = static_cast<int>(y + (height - 20) / 2);
     DrawText(label.c_str(), textX, textY, 20, WHITE);
+
 }
 
 bool NewButton::IsClicked() const {

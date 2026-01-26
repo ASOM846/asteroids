@@ -55,7 +55,7 @@ void LevelManager::updateCurrentLevel() {
         return;
 
     if (((currentLevelTime >= currentLevel.duration) && currentLevel.duration > 0) ||
-        (progressAccumulator >= currentLevel.objectiveCount) && currentLevel.objectiveCount > 0) {
+        ((progressAccumulator >= currentLevel.objectiveCount) && currentLevel.objectiveCount > 0)) {
         std::cout << "Level " << currentLevel.levelNumber
             << " completed! Starting end animation...\n";
         levelEnding = true;

@@ -68,10 +68,12 @@ void LevelLogic::initAsteroidFieldLevel(const LevelData &level) {
 }
 
 LevelUpdateResult LevelLogic::updateAsteroidFieldLevel(const LevelData &level) {
+	(void)level;
 	return LevelUpdateResult::None;
 }
 
 void LevelLogic::initDestroyAsteroidsLevel(const LevelData &level) {
+	(void)level;
 }
 
 LevelUpdateResult LevelLogic::updateDestroyAsteroidsLevel(const LevelData &level) {

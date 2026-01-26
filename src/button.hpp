@@ -54,8 +54,8 @@ public:
     Color color;
     bool isToggled;
 
-	Color fillColor = Fade(DARKBLUE, 0.6f);
-	Color borderColor = Fade(SKYBLUE, 0.9f);
+	Color fillColor;
+	Color borderColor;
 };
 
 #endif // BUTTON_HPP
