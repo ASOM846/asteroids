@@ -9,9 +9,6 @@ LevelManager::~LevelManager() {}
 void LevelManager::reset() {
     currentLevel = LevelData{};
     levelRunning = false;
-    isLevelCompleted = false;
-    levelEnding = false;
-    isLevelLose = false;
     progressAccumulator = 0;
     endTimer = 0.0f;
     resetCurrentLevelTime();
@@ -36,18 +33,41 @@ void LevelManager::runLevel(int levelNumber) {
 }
 
 void LevelManager::updateCurrentLevel() {
-    LevelUpdateResult result;
 
-    if (levelEnding) {
-        endTimer += GetFrameTime();
-        if (endTimer >= endDuration) {
-            if (returnToMenuCallback)
-                returnToMenuCallback();
-            reset();
-            levelEnding = false;
+    if(IsKeyPressed(KEY_M)) {
+        if(currentMode == Mode::Endless)
+            currentMode = Mode::Levels;
+        else
+            currentMode = Mode::Endless;
+    }
+
+    if(currentMode == Mode::Endless)
+        DrawText("Endless Mode", 10, 10, 20, GREEN);
+
+    if (currentLevelResult == LevelUpdateResult::Completed || 
+        currentLevelResult == LevelUpdateResult::Failed) {
+        
+        switch (currentMode) {
+        case Mode::Endless:
+            currentLevel = LevelGenerator::generateLevel(1);
+            currentLevelResult = LevelUpdateResult::None;
+            resetCurrentLevelTime();
+            progressAccumulator = 0;
+            levelLogic.initLevel(currentLevel);
+            break;
+        case Mode::Levels:
+
+            endTimer += GetFrameTime();
+            if (endTimer >= endDuration) {
+                if (returnToMenuCallback)
+                    returnToMenuCallback();
+                reset();
+                currentLevelResult = LevelUpdateResult::None;
+            }
+            setLevelUnlockedState(currentLevel.levelNumber + 1, true);
+            setLevelRunning(false);
+        break;
         }
-        setLevelUnlockedState(currentLevel.levelNumber + 1, true);
-        setLevelRunning(false);
         return;
     }
 
@@ -58,7 +78,7 @@ void LevelManager::updateCurrentLevel() {
         ((progressAccumulator >= currentLevel.objectiveCount) && currentLevel.objectiveCount > 0)) {
         std::cout << "Level " << currentLevel.levelNumber
             << " completed! Starting end animation...\n";
-        levelEnding = true;
+        currentLevelResult = LevelUpdateResult::Completed;
         endTimer = 0.0f;
         setLevelRunning(false);
         return;
@@ -66,24 +86,11 @@ void LevelManager::updateCurrentLevel() {
 
     currentLevelTime += GetFrameTime();
 
-	result = levelLogic.update(currentLevel);
-
-    if (result == LevelUpdateResult::None) {
-		return;
-	}
-
-	if (result == LevelUpdateResult::Completed) {
-		levelEnding = true;
-	}
-
-	if (result == LevelUpdateResult::Failed) {
-		levelEnding = true;
-		isLevelLose = true;
-	}
+	currentLevelResult = levelLogic.update(currentLevel);
 }
 
 const LevelData* LevelManager::getCurrentLevelData() const {
-    if (!levelRunning && !levelEnding) {
+    if (!levelRunning) {
         return nullptr;
     }
     return &currentLevel;
@@ -256,12 +263,12 @@ void LevelManager::setUnlockedLevels(int numberOfUnlockedLevels) {
 }
 
 void LevelManager::drawLevelEndOverlay(int screenWidth, int screenHeight) {
-    if (!levelEnding)
+    if (currentLevelResult == LevelUpdateResult::None)
         return;
 
     const char* mainMsg = "Level Completed";
 
-    if (isLevelLose)
+    if (currentLevelResult == LevelUpdateResult::Failed)
         mainMsg = "Level Lose";
             
     float t = endTimer / endDuration;

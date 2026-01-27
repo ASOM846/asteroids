@@ -89,9 +89,9 @@ void Menu::initButtons(int w, int h) {
     const int startY = h / 2 - columnHeight / 2 + verticalOffset;
     const int x = w / 2 - mainBtnW / 2;
 
-    endlessModeButton = NewButton(x, startY + (mainBtnH + spacing) * 0, mainBtnW, mainBtnH, "Quick Start");
-    arcadeModeButton = NewButton(x, startY + (mainBtnH + spacing) * 1, mainBtnW, mainBtnH, "Arcade Mode");
-    levelsButton = NewButton(x, startY + (mainBtnH + spacing) * 2, mainBtnW, mainBtnH, "Level Selection");
+    endlessModeButton = NewButton(x, startY + (mainBtnH + spacing) * 0, mainBtnW, mainBtnH, "Endless");
+    arcadeModeButton = NewButton(x, startY + (mainBtnH + spacing) * 1, mainBtnW, mainBtnH, "Arcade");
+    levelsButton = NewButton(x, startY + (mainBtnH + spacing) * 2, mainBtnW, mainBtnH, "Levels");
 
     nextPageButton = NewButton(w - 200, h / 2, 140, 40, ">");
     prevPageButton = NewButton(60, h / 2, 140, 40, "<");

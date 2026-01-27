@@ -58,12 +58,13 @@ private:
     int currentPage;
 
     //menu buttons
-    NewButton endlessModeButton;
-    NewButton levelsButton;
     NewButton settingsButton;
     NewButton exitButton;
     NewButton backButton;
+    
+    NewButton endlessModeButton;
 	NewButton arcadeModeButton;
+    NewButton levelsButton;
 
     NewButton nextPageButton;
     NewButton prevPageButton;

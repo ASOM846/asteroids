@@ -8,9 +8,9 @@ enum class LevelType {
     DestroyAsteroids,
     EnemyInvasion,
     ShipEscort,
-    BossFight,
-    ProtectBase,
-    Pursuit
+    BossFight,//not working
+    ProtectBase,//not working
+    Pursuit//not working
 };
 
 inline const char* LevelTypeToString(LevelType t) noexcept {

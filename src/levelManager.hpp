@@ -2,12 +2,18 @@
 #include "LevelLogic.hpp"
 #include "drop.h"
 #include "levels.hpp"
+#include "levelGenerator.hpp"
 #include <functional>
 #include <raylib.h>
 #include <string>
 #include <vector>
 
 class Ui;
+
+enum class Mode {
+	Endless,
+	Levels
+};
 
 class LevelManager {
   public:
@@ -33,14 +39,6 @@ class LevelManager {
 	void setUnlockedLevels(int numberOfUnlockedLevels);
 
 	void drawLevelEndOverlay(int screenWidth, int screenHeight);
-
-	bool isEnding() const {
-		return levelEnding;
-	}
-
-	void setLevelLose(bool state) {
-		isLevelLose = state;
-	}
 
 	void initializeModules(AsteroidHelper *ah, CustomShipManager *csm,
 						   EnemyManager *em, Ui *pUi) {
@@ -68,8 +66,11 @@ class LevelManager {
 
   private:
 	LevelData currentLevel;
+	Mode currentMode;
+    LevelUpdateResult currentLevelResult;
 
 	LevelLogic levelLogic;
+	LevelGenerator levelGenerator;
 
 	std::vector<LevelData> *levels;
 	DropHelper *dropHelper = nullptr;
@@ -92,9 +93,6 @@ class LevelManager {
 	void initLevel(const LevelData &level);
 
 	std::function<void()> returnToMenuCallback;
-	bool levelEnding = false;
-	bool isLevelCompleted = false;
-	bool isLevelLose = false;
 	float endTimer = 0.0f;
 	float endDuration = 2.0f;
 	int progressAccumulator = 0;
