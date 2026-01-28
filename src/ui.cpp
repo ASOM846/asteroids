@@ -342,8 +342,8 @@ void Ui::initButtons(int sW, int sH)
     const float resumeY = sH / 2.0f + 30.0f;
     const float mainMenuY = sH / 2.0f + 100.0f;
 
-    resumeButton = Button(x, resumeY, btnW, btnH, std::string("WZNAWIAJ"));
-    mainMenuButton = Button(x, mainMenuY, btnW, btnH, std::string("MENU GLOWNE"));
+    resumeButton = NewButton(x, resumeY, btnW, btnH, std::string("Return"));
+    mainMenuButton = NewButton(x, mainMenuY, btnW, btnH, std::string("Main Menu"));
 }
 
 void Ui::renderPauseOverlay(int sW, int sH)

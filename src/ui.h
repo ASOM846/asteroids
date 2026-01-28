@@ -65,8 +65,8 @@ private:
     Vector2 arrowDestination;
 
     //paused state overlay buttons
-    Button resumeButton;
-    Button mainMenuButton;
+    NewButton resumeButton;
+    NewButton mainMenuButton;
 
     void initStarLayers(int screenW, int screenH);
 };
