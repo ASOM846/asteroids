@@ -2,7 +2,9 @@
 #include "ui.h"
 #include <raymath.h>
 
-LevelManager::LevelManager() {}
+LevelManager::LevelManager()
+        : currentMode(Mode::Levels),
+            currentLevelResult(LevelUpdateResult::None) {}
 
 LevelManager::~LevelManager() {}
 
@@ -11,6 +13,7 @@ void LevelManager::reset() {
     levelRunning = false;
     progressAccumulator = 0;
     endTimer = 0.0f;
+    currentLevelResult = LevelUpdateResult::None;
     resetCurrentLevelTime();
     if (ui) {
         ui->resetAll();

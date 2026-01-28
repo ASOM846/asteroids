@@ -304,7 +304,7 @@ class EnemyManager {
 	}
 
   private:
-	bool drawHealthBars;
+	bool drawHealthBars = true;
 	int killedEnemies;
 	std::array<int, 3> activeCounts{{0, 0, 0}};
 	std::array<int, 3> desiredCounts{{0, 0, 0}};
