@@ -138,7 +138,7 @@ void LevelManager::loadLevelsToMemory() {
 
     LevelData level2;
     level2.type = LevelType::EnemyInvasion;
-    level2.isUnlocked = false;
+    level2.isUnlocked = true;
     level2.levelNumber = 2;
     level2.objectiveCount = 3;
     level2.duration = 60.0f;
